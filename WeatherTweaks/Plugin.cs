@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
+using HarmonyLib;
 
 namespace WeatherTweaks
 {
@@ -13,6 +14,9 @@ namespace WeatherTweaks
         {
 
             logger = Logger;
+
+            var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+            harmony.PatchAll();
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
