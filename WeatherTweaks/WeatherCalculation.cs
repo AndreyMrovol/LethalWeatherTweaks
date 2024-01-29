@@ -8,22 +8,23 @@ namespace WeatherTweaks
 {
   internal class WeatherCalculation
   {
+    internal static Dictionary<string, LevelWeatherType> previousDayWeather = [];
+
     internal static Dictionary<string, LevelWeatherType> NewWeathers(StartOfRound startOfRound)
     {
       Plugin.logger.LogMessage("SetWeathers called.");
 
       if (!StartOfRound.Instance.IsHost)
       {
-        Plugin.logger.LogMessage("Not a host, cannot set weather!");
+        Plugin.logger.LogMessage("Not a host, cannot generate weather!");
         return null;
       }
 
-      var table = new ConsoleTables.ConsoleTable("Planet", "Weather", "Previous", "Vanilla");
+      previousDayWeather.Clear();
 
       int seed = startOfRound.randomMapSeed + 31;
       System.Random random = new System.Random(seed);
 
-      Dictionary<string, LevelWeatherType> previousDayWeather = new Dictionary<string, LevelWeatherType>();
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, startOfRound);
       Dictionary<string, LevelWeatherType> currentWeather = new Dictionary<string, LevelWeatherType>();
 
@@ -70,14 +71,12 @@ namespace WeatherTweaks
         Plugin.logger.LogDebug("-------------");
         Plugin.logger.LogDebug($"{level.PlanetName}");
 
-        level.currentWeather = LevelWeatherType.None;
+        currentWeather[level.PlanetName] = LevelWeatherType.None;
 
         if (level.overrideWeather)
         {
           Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
-          level.currentWeather = level.overrideWeatherType;
-          table.AddRow(level.PlanetName, level.currentWeather, previousDayWeather[level.PlanetName], vanillaWeather);
-          currentWeather[level.PlanetName] = level.currentWeather;
+          currentWeather[level.PlanetName] = level.overrideWeatherType;
           continue;
         }
 
@@ -89,25 +88,20 @@ namespace WeatherTweaks
           Plugin.logger.LogDebug("Weather was clear, 50% chance for weather");
           if (random.Next(0, 2) == 0)
           {
-            level.currentWeather = LevelWeatherType.None;
+            currentWeather[level.PlanetName] = LevelWeatherType.None;
           }
           else
           {
             if (level.randomWeathers.Length == 0 || level.randomWeathers == null)
             {
               Plugin.logger.LogDebug("No random weathers, setting to None");
-              level.currentWeather = LevelWeatherType.None;
-              table.AddRow(
-                level.PlanetName,
-                level.currentWeather,
-                previousDayWeather[level.PlanetName],
-                vanillaWeather
-              );
-              currentWeather[level.PlanetName] = level.currentWeather;
+              currentWeather[level.PlanetName] = LevelWeatherType.None;
               continue;
             }
 
-            level.currentWeather = level.randomWeathers[random.Next(0, level.randomWeathers.Length)].weatherType;
+            currentWeather[level.PlanetName] = level
+              .randomWeathers[random.Next(0, level.randomWeathers.Length)]
+              .weatherType;
           }
         }
         else
@@ -126,17 +120,14 @@ namespace WeatherTweaks
           if (random.Next(0, 100) > 55)
           {
             Plugin.logger.LogDebug("33% chance for weather");
-            level.currentWeather = LevelWeatherType.None;
-            table.AddRow(level.PlanetName, level.currentWeather, previousDayWeather[level.PlanetName], vanillaWeather);
-            currentWeather[level.PlanetName] = level.currentWeather;
+            currentWeather[level.PlanetName] = LevelWeatherType.None;
             continue;
           }
 
           if (possibleWeathers.Count == 0)
           {
             Plugin.logger.LogDebug("No possible weathers, setting to None");
-            table.AddRow(level.PlanetName, level.currentWeather, previousDayWeather[level.PlanetName], vanillaWeather);
-            currentWeather[level.PlanetName] = level.currentWeather;
+            currentWeather[level.PlanetName] = LevelWeatherType.None;
             continue;
           }
 
@@ -146,32 +137,24 @@ namespace WeatherTweaks
             if (random.Next(0, 100) < 85)
             {
               Plugin.logger.LogDebug("85% chance for no weather");
-              level.currentWeather = LevelWeatherType.None;
+              currentWeather[level.PlanetName] = LevelWeatherType.None;
             }
             else
             {
               Plugin.logger.LogDebug("15% chance for weather");
-              level.currentWeather = possibleWeathers[random.Next(0, possibleWeathers.Count)].weatherType;
+              currentWeather[level.PlanetName] = possibleWeathers[random.Next(0, possibleWeathers.Count)].weatherType;
             }
           }
           else
           {
-            level.currentWeather = possibleWeathers[random.Next(0, possibleWeathers.Count)].weatherType;
+            currentWeather[level.PlanetName] = possibleWeathers[random.Next(0, possibleWeathers.Count)].weatherType;
           }
         }
 
-        Plugin.logger.LogDebug($"currentWeather: {level.currentWeather}");
-        currentWeather[level.PlanetName] = level.currentWeather;
-        table.AddRow(level.PlanetName, level.currentWeather, previousDayWeather[level.PlanetName], vanillaWeather);
+        Plugin.logger.LogDebug($"currentWeather: {currentWeather[level.PlanetName]}");
+        currentWeather[level.PlanetName] = currentWeather[level.PlanetName];
       }
-
-      var tableToPrint = table.ToMinimalString();
-      Plugin.logger.LogInfo("\n" + tableToPrint);
-
-      GameNetworkManager.Instance.currentLobby?.SetData("previousWeather", JsonUtility.ToJson(previousDayWeather));
-
-      Plugin.logger.LogInfo("Hosting, setting previous weather");
-      NetworkedConfig.SetWeather(currentWeather);
+      Plugin.logger.LogDebug("-------------");
 
       return currentWeather;
     }
