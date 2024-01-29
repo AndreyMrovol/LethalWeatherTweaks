@@ -6,11 +6,11 @@ namespace WeatherTweaks
 {
   internal class NetworkedConfig
   {
-    public static LethalNetworkVariable<string> previousWeatherSynced = new("previousWeather");
+    public static LethalNetworkVariable<string> currentWeatherSynced = new("previousWeather");
 
     public static void Init()
     {
-      previousWeatherSynced.OnValueChanged += WeatherDataReceived;
+      currentWeatherSynced.OnValueChanged += WeatherDataReceived;
     }
 
     public static void WeatherDataReceived(string previousWeatherData)
@@ -29,26 +29,22 @@ namespace WeatherTweaks
         return;
       }
 
-      Plugin.logger.LogInfo("Received previous day's weather data from server, applying");
+      Plugin.logger.LogInfo("Received weather data from server, applying");
 
-      SetPlanetsWeatherPatch.SetWeathers(StartOfRound.Instance, previousWeather);
+      GameInteraction.SetWeather(previousWeather);
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
 
-    public static void SetPreviousWeather(Dictionary<string, LevelWeatherType> previousWeather)
+    public static void SetWeather(Dictionary<string, LevelWeatherType> previousWeather)
     {
-      NetworkedConfig.previousWeatherSynced.Value = JsonConvert.SerializeObject(
+      string serialized = JsonConvert.SerializeObject(
         previousWeather,
         Formatting.None,
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
       );
-    }
 
-    public static Dictionary<string, LevelWeatherType> GetPreviousWeather()
-    {
-      return JsonConvert.DeserializeObject<Dictionary<string, LevelWeatherType>>(
-        NetworkedConfig.previousWeatherSynced.Value
-      );
+      currentWeatherSynced.Value = serialized;
+      Plugin.logger.LogInfo($"Set weather data on server: {serialized}");
     }
   }
 }
