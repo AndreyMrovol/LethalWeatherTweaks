@@ -25,6 +25,8 @@ namespace WeatherTweaks
 
       // based on lobby tag we decide what scenario we're in
 
+      // this would probably require two-way communication - if all the clients don't have this mod, using it would cause desync
+
       bool isLobby = GameNetworkManager.Instance.currentLobby != null;
 
       if (StartOfRound.Instance.IsHost)
