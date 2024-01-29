@@ -237,7 +237,7 @@ namespace WeatherTweaks
     {
       Plugin.logger.LogInfo("First day, setting predefined weather conditions");
 
-      var table = new ConsoleTables.ConsoleTable("planet", "currentWeather");
+      var table = new ConsoleTables.ConsoleTable("planet", "currentWeather", "randomWeathers");
 
       // from all levels, 2 cannot have a weather condition (41 Experimentation and 56 Vow)
       // if there are more than 9 levels (vanilla amount), make it 3 without weather
@@ -246,50 +246,54 @@ namespace WeatherTweaks
       foreach (SelectableLevel level in levels)
       {
         string planetName = level.PlanetName;
+        Plugin.logger.LogDebug($"planet: {planetName}");
+
+        var randomWeathers = level.randomWeathers.ToList();
+        Plugin.logger.LogDebug($"randomWeathers count: {randomWeathers.Count}");
+        randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
+
+        var stringifiedRandomWeathers = JsonConvert.SerializeObject(
+          randomWeathers.Select(x => x.weatherType.ToString()).ToList()
+        );
+
+        if (randomWeathers.Count == 0 || randomWeathers == null)
+        {
+          Plugin.logger.LogDebug($"No random weathers for {planetName}, skipping");
+          table.AddRow(level.PlanetName, level.currentWeather, stringifiedRandomWeathers);
+          continue;
+        }
 
         if (planetsWithoutWeather.Contains(planetName))
         {
           level.currentWeather = LevelWeatherType.None;
+          Plugin.logger.LogDebug($"Skipping {planetName} (predefined)");
+          continue;
         }
-        else
-        {
-          var randomWeathers = level.randomWeathers.ToList();
-          randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
 
-          if (randomWeathers.Count == 0 || randomWeathers == null)
+        // 5% chance for eclipsed
+        bool shouldBeEclipsed = random.Next(0, 100) < 5;
+        var selectedRandom = randomWeathers[random.Next(0, randomWeathers.Count)];
+
+        if (shouldBeEclipsed)
+        {
+          Plugin.logger.LogDebug($"Setting eclipsed for {planetName}");
+          // check if eclipsed is possible in randomWeathers
+          if (!randomWeathers.Any(x => x.weatherType == LevelWeatherType.Eclipsed))
           {
-            Plugin.logger.LogDebug($"No random weathers for {planetName}, skipping");
-            table.AddRow(level.PlanetName, level.currentWeather);
+            Plugin.logger.LogDebug($"Eclipsed not possible for {planetName}, skipping");
+            table.AddRow(level.PlanetName, level.currentWeather, stringifiedRandomWeathers);
             continue;
           }
-
-          // 5% chance for eclipsed
-          bool shouldBeEclipsed = random.Next(0, 100) < 5;
-          var selectedRandom = randomWeathers[random.Next(0, randomWeathers.Count)];
-
-          if (shouldBeEclipsed)
+          else
           {
-            Plugin.logger.LogDebug($"Setting eclipsed for {planetName}");
-            // check if eclipsed is possible in randomWeathers
-            if (!randomWeathers.Any(x => x.weatherType == LevelWeatherType.Eclipsed))
-            {
-              Plugin.logger.LogDebug($"Eclipsed not possible for {planetName}, skipping");
-              table.AddRow(level.PlanetName, level.currentWeather);
-              continue;
-            }
-            else
-            {
-              selectedRandom = randomWeathers.First(x => x.weatherType == LevelWeatherType.Eclipsed);
-            }
+            selectedRandom = randomWeathers.First(x => x.weatherType == LevelWeatherType.Eclipsed);
           }
-
-          Plugin.logger.LogDebug($"planet: {planetName}");
-          Plugin.logger.LogDebug($"randomWeather: {selectedRandom.weatherType}");
-
-          level.currentWeather = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
         }
 
-        table.AddRow(level.PlanetName, level.currentWeather);
+        Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedRandom.weatherType}");
+        level.currentWeather = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
+
+        table.AddRow(level.PlanetName, level.currentWeather, stringifiedRandomWeathers);
       }
 
       var tableToPrint = table.ToMinimalString();
