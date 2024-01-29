@@ -34,7 +34,8 @@ namespace WeatherTweaks
 
       if (StartOfRound.Instance.IsHost)
       {
-        WeatherCalculation.NewWeathers(__instance);
+        Dictionary<string, LevelWeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+        NetworkedConfig.SetWeather(newWeathers);
 
         if (isLobby)
         {
