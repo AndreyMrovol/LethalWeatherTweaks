@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net46</TargetFramework>
+        <TargetFramework>net48</TargetFramework>
         <AssemblyName>WeatherTweaks</AssemblyName>
         <Description>A template for Lethal Company</Description>
         <Version>0.0.1</Version>
@@ -17,6 +17,8 @@
         <PackageReference Include="Lib.Harmony" Version="2.2.2" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
+
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.1.0" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
