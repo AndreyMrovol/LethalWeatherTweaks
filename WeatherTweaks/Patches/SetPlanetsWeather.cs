@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UIElements.Collections;
 
 namespace WeatherTweaks
 {
@@ -11,22 +10,43 @@ namespace WeatherTweaks
   {
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
-    private static bool SetWeathers(int connectedPlayersOnServer, StartOfRound __instance)
+    private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
-      if (!StartOfRound.Instance.IsHost)
-        return true;
-
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
+
+      if (StartOfRound.Instance.IsHost)
+      {
+        SetWeathers(__instance, []);
+      }
+      else
+      {
+        Plugin.logger.LogMessage("Not a host, waiting for host to update weather data");
+        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.previousWeatherSynced.Value}");
+      }
+
+      return false;
+    }
+
+    internal static void SetWeathers(StartOfRound __instance, Dictionary<string, LevelWeatherType> previousDayWeather)
+    {
+      Plugin.logger.LogMessage("SetWeathers called.");
+
+      bool isPreviousWeatherEmpty = previousDayWeather.Count == 0;
+      if (isPreviousWeatherEmpty)
+      {
+        Plugin.logger.LogDebug("previousDayWeather is empty");
+      }
 
       var table = new ConsoleTables.ConsoleTable("Planet", "Weather", "Previous", "Vanilla");
 
-      System.Random random = new System.Random(__instance.randomMapSeed + 31);
+      int seed = __instance.randomMapSeed + 31;
+      System.Random random = new System.Random(seed);
 
-      Dictionary<string, LevelWeatherType> previousDayWeather = new Dictionary<string, LevelWeatherType>();
-      Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(
-        connectedPlayersOnServer,
-        __instance
-      );
+      // late joining mods are kinda broken - they pull previous weather from ass (and also two times?)
+      // we need some sort of networked solution to fix this
+
+      // Dictionary<string, LevelWeatherType> previousDayWeather = new Dictionary<string, LevelWeatherType>();
+      Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, __instance);
 
       SelectableLevel[] levels = __instance.levels;
       int day = __instance.gameStats.daysSpent;
@@ -43,7 +63,7 @@ namespace WeatherTweaks
         }
 
         FirstDayWeathers(__instance, noWeatherOnStartPlanets, random);
-        return false;
+        return;
       }
 
       foreach (SelectableLevel level in levels)
@@ -53,7 +73,10 @@ namespace WeatherTweaks
           continue;
         }
 
-        previousDayWeather[level.PlanetName] = level.currentWeather;
+        if (isPreviousWeatherEmpty)
+        {
+          previousDayWeather[level.PlanetName] = level.currentWeather;
+        }
 
         LevelWeatherType vanillaWeather = vanillaSelectedWeather.ContainsKey(level.PlanetName)
           ? vanillaSelectedWeather[level.PlanetName]
@@ -63,6 +86,7 @@ namespace WeatherTweaks
 
         // if weather was clear, 50% chance for weather next day
         // if weather was not clear, weather cannot repeat
+        // 45% chance for weather next day
         // if eclipsed, 85% chance for no weather next day (15% chance for weather - not eclipsed)
 
         // possible weathers taken from level.randomWeathers
@@ -111,6 +135,7 @@ namespace WeatherTweaks
         }
         else
         // if weather was not clear, weather cannot repeat
+        // 45% chance for weather next day
         // if eclipsed, 85% chance for no weather next day (15% chance for weather - not eclipsed)
         {
           Plugin.logger.LogDebug("Weather was not clear, weather cannot repeat");
@@ -119,6 +144,15 @@ namespace WeatherTweaks
             .randomWeathers.ToList()
             .Where(x => x.weatherType != previousDayWeather[level.PlanetName])
             .ToList();
+
+          // 45% chance for weather next day
+          if (random.Next(0, 100) > 55)
+          {
+            Plugin.logger.LogDebug("33% chance for weather");
+            level.currentWeather = LevelWeatherType.None;
+            table.AddRow(level.PlanetName, level.currentWeather, previousDayWeather[level.PlanetName], vanillaWeather);
+            continue;
+          }
 
           if (possibleWeathers.Count == 0)
           {
@@ -129,14 +163,15 @@ namespace WeatherTweaks
 
           if (previousDayWeather[level.PlanetName] == LevelWeatherType.Eclipsed)
           {
+            Plugin.logger.LogDebug("Weather was eclipsed");
             if (random.Next(0, 100) < 85)
             {
-              Plugin.logger.LogDebug("Eclipsed, 85% chance for no weather");
+              Plugin.logger.LogDebug("85% chance for no weather");
               level.currentWeather = LevelWeatherType.None;
             }
             else
             {
-              Plugin.logger.LogDebug("Eclipsed, 15% chance for weather");
+              Plugin.logger.LogDebug("15% chance for weather");
               level.currentWeather = possibleWeathers[random.Next(0, possibleWeathers.Count)].weatherType;
             }
           }
@@ -148,19 +183,19 @@ namespace WeatherTweaks
 
         Plugin.logger.LogDebug($"currentWeather: {level.currentWeather}");
         table.AddRow(level.PlanetName, level.currentWeather, previousDayWeather[level.PlanetName], vanillaWeather);
-
-        // SavedWeatherData.SaveCurrentWeatherData(day, previousDayWeather);
-
-        //
-        //
       }
-
-      // VanillaWeather(connectedPlayersOnServer, __instance);
 
       var tableToPrint = table.ToMinimalString();
       Plugin.logger.LogInfo("\n" + tableToPrint);
 
-      return false;
+      GameNetworkManager.Instance.currentLobby?.SetData("previousWeather", JsonUtility.ToJson(previousDayWeather));
+
+      if (StartOfRound.Instance.IsHost)
+      {
+        Plugin.logger.LogInfo("Hosting, setting previous weather");
+        NetworkedConfig.SetPreviousWeather(previousDayWeather);
+      }
+      return;
     }
 
     private static void FirstDayWeathers(
