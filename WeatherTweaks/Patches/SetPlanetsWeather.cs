@@ -61,5 +61,19 @@ namespace WeatherTweaks
 
       return false;
     }
+
+    [HarmonyPatch("SetPlanetsWeather")]
+    [HarmonyPostfix]
+    private static void DisplayCurrentWeathers()
+    {
+      var table = new ConsoleTables.ConsoleTable("Planet", "Weather");
+      SelectableLevel[] levels = StartOfRound.Instance.levels;
+      foreach (SelectableLevel level in levels)
+      {
+        table.AddRow(level.PlanetName, level.currentWeather);
+      }
+
+      Plugin.logger.LogInfo("Currently set weathers: \n" + table.ToMinimalString());
+    }
   }
 }
