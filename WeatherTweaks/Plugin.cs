@@ -4,22 +4,22 @@ using HarmonyLib;
 
 namespace WeatherTweaks
 {
-    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    public class Plugin : BaseUnityPlugin
+  [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+  public class Plugin : BaseUnityPlugin
+  {
+    internal static ManualLogSource logger;
+
+    private void Awake()
     {
+      logger = Logger;
 
-        internal static ManualLogSource logger;
+      var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+      harmony.PatchAll();
 
-        private void Awake()
-        {
+      NetworkedConfig.Init();
 
-            logger = Logger;
-
-            var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
-            harmony.PatchAll();
-
-            // Plugin startup logic
-            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
-        }
+      // Plugin startup logic
+      Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
+  }
 }
