@@ -1,7 +1,7 @@
 {
 	"name": "WeatherTweaks",
-	"version_number": "0.0.1",
+	"version_number": "0.0.3",
 	"website_url": "https://github.com/AndreyMrovol/LethalWeatherTweaks",
-	"description": "Makes the weather more random.",
-	"dependencies": ["BepInEx-BepInExPack-5.4.2100"]
+	"description": "Tweaks the weather system to make it more random.",
+	"dependencies": ["BepInEx-BepInExPack-5.4.2100", "xilophor-LethalNetworkAPI-2.1.0"]
 }
