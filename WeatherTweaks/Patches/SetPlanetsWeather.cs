@@ -15,6 +15,8 @@ namespace WeatherTweaks
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
 
+      Variables.GetGameLevels(__instance);
+
       // there are 3 possible cases:
       // we're hosting - mod is active, we're syncing weather data
       // we're a client - mod is active, we're refreshing weathers based on received data
