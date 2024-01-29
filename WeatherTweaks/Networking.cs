@@ -13,11 +13,11 @@ namespace WeatherTweaks
       currentWeatherSynced.OnValueChanged += WeatherDataReceived;
     }
 
-    public static void WeatherDataReceived(string previousWeatherData)
+    public static void WeatherDataReceived(string weatherData)
     {
       Dictionary<string, LevelWeatherType> previousWeather = JsonConvert.DeserializeObject<
         Dictionary<string, LevelWeatherType>
-      >(previousWeatherData);
+      >(weatherData);
 
       if (previousWeather == null)
       {
@@ -30,6 +30,7 @@ namespace WeatherTweaks
       }
 
       Plugin.logger.LogInfo("Received weather data from server, applying");
+      Plugin.logger.LogDebug($"Received data: {weatherData}");
 
       GameInteraction.SetWeather(previousWeather);
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
