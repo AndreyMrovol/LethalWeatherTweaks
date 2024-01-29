@@ -8,27 +8,27 @@ namespace WeatherTweaks
 {
   internal class WeatherCalculation
   {
-    internal static void NewWeathers(StartOfRound __instance)
+    internal static Dictionary<string, LevelWeatherType> NewWeathers(StartOfRound startOfRound)
     {
       Plugin.logger.LogMessage("SetWeathers called.");
 
       if (!StartOfRound.Instance.IsHost)
       {
         Plugin.logger.LogMessage("Not a host, cannot set weather!");
-        return;
+        return null;
       }
 
       var table = new ConsoleTables.ConsoleTable("Planet", "Weather", "Previous", "Vanilla");
 
-      int seed = __instance.randomMapSeed + 31;
+      int seed = startOfRound.randomMapSeed + 31;
       System.Random random = new System.Random(seed);
 
       Dictionary<string, LevelWeatherType> previousDayWeather = new Dictionary<string, LevelWeatherType>();
-      Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, __instance);
+      Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, startOfRound);
       Dictionary<string, LevelWeatherType> currentWeather = new Dictionary<string, LevelWeatherType>();
 
-      SelectableLevel[] levels = __instance.levels;
-      int day = __instance.gameStats.daysSpent;
+      SelectableLevel[] levels = startOfRound.levels;
+      int day = startOfRound.gameStats.daysSpent;
       int dayInQuota = day % 3;
 
       if (day == 0)
@@ -41,8 +41,7 @@ namespace WeatherTweaks
           noWeatherOnStartPlanets.Add(levels[random.Next(0, levels.Length)].PlanetName);
         }
 
-        FirstDayWeathers(__instance, noWeatherOnStartPlanets, random);
-        return;
+        return FirstDayWeathers(startOfRound, noWeatherOnStartPlanets, random);
       }
 
       foreach (SelectableLevel level in levels)
@@ -174,23 +173,25 @@ namespace WeatherTweaks
       Plugin.logger.LogInfo("Hosting, setting previous weather");
       NetworkedConfig.SetWeather(currentWeather);
 
-      return;
+      return currentWeather;
     }
 
-    private static void FirstDayWeathers(
-      StartOfRound __instance,
+    private static Dictionary<string, LevelWeatherType> FirstDayWeathers(
+      StartOfRound startOfRound,
       List<string> planetsWithoutWeather,
       System.Random random
     )
     {
       Plugin.logger.LogInfo("First day, setting predefined weather conditions");
 
-      var table = new ConsoleTables.ConsoleTable("planet", "currentWeather", "randomWeathers");
+      var possibleWeathersTable = new ConsoleTables.ConsoleTable("planet", "randomWeathers");
 
       // from all levels, 2 cannot have a weather condition (41 Experimentation and 56 Vow)
       // if there are more than 9 levels (vanilla amount), make it 3 without weather
 
-      SelectableLevel[] levels = __instance.levels;
+      Dictionary<string, LevelWeatherType> selectedWeathers = new Dictionary<string, LevelWeatherType>();
+
+      SelectableLevel[] levels = startOfRound.levels;
       foreach (SelectableLevel level in levels)
       {
         string planetName = level.PlanetName;
@@ -207,13 +208,13 @@ namespace WeatherTweaks
         if (randomWeathers.Count == 0 || randomWeathers == null)
         {
           Plugin.logger.LogDebug($"No random weathers for {planetName}, skipping");
-          table.AddRow(level.PlanetName, level.currentWeather, stringifiedRandomWeathers);
+          possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
           continue;
         }
 
         if (planetsWithoutWeather.Contains(planetName))
         {
-          level.currentWeather = LevelWeatherType.None;
+          selectedWeathers[planetName] = LevelWeatherType.None;
           Plugin.logger.LogDebug($"Skipping {planetName} (predefined)");
           continue;
         }
@@ -229,7 +230,7 @@ namespace WeatherTweaks
           if (!randomWeathers.Any(x => x.weatherType == LevelWeatherType.Eclipsed))
           {
             Plugin.logger.LogDebug($"Eclipsed not possible for {planetName}, skipping");
-            table.AddRow(level.PlanetName, level.currentWeather, stringifiedRandomWeathers);
+            possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
             continue;
           }
           else
@@ -239,39 +240,43 @@ namespace WeatherTweaks
         }
 
         Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedRandom.weatherType}");
-        level.currentWeather = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
+        selectedWeathers[planetName] = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
 
-        table.AddRow(level.PlanetName, level.currentWeather, stringifiedRandomWeathers);
+        possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
       }
 
-      var tableToPrint = table.ToMinimalString();
-      Plugin.logger.LogInfo("\n" + tableToPrint);
+      Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
+      return selectedWeathers;
     }
+
+    //
+    //
+    //
 
     private static Dictionary<string, LevelWeatherType> VanillaWeathers(
       int connectedPlayersOnServer,
-      StartOfRound __instance
+      StartOfRound startOfRound
     )
     {
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = new Dictionary<string, LevelWeatherType>();
 
-      System.Random random = new System.Random(__instance.randomMapSeed + 31);
-      List<SelectableLevel> list = ((IEnumerable<SelectableLevel>)__instance.levels).ToList<SelectableLevel>();
+      System.Random random = new System.Random(startOfRound.randomMapSeed + 31);
+      List<SelectableLevel> list = ((IEnumerable<SelectableLevel>)startOfRound.levels).ToList<SelectableLevel>();
       float num1 = 1f;
       if (
         connectedPlayersOnServer + 1 > 1
-        && __instance.daysPlayersSurvivedInARow > 2
-        && __instance.daysPlayersSurvivedInARow % 3 == 0
+        && startOfRound.daysPlayersSurvivedInARow > 2
+        && startOfRound.daysPlayersSurvivedInARow % 3 == 0
       )
         num1 = (float)random.Next(15, 25) / 10f;
       int num2 = Mathf.Clamp(
         (int)(
           (double)
-            Mathf.Clamp(__instance.planetsWeatherRandomCurve.Evaluate((float)random.NextDouble()) * num1, 0.0f, 1f)
-          * (double)__instance.levels.Length
+            Mathf.Clamp(startOfRound.planetsWeatherRandomCurve.Evaluate((float)random.NextDouble()) * num1, 0.0f, 1f)
+          * (double)startOfRound.levels.Length
         ),
         0,
-        __instance.levels.Length
+        startOfRound.levels.Length
       );
       for (int index = 0; index < num2; ++index)
       {
