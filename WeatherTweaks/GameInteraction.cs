@@ -22,6 +22,9 @@ namespace WeatherTweaks
           Plugin.logger.LogWarning($"Weather data for {levelName} somehow not found, skipping");
         }
       }
+
+      DisplayTable.DisplayWeathersTable();
+      StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
   }
 }
