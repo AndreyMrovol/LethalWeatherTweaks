@@ -29,9 +29,14 @@ Weather calculation operates with parameters:
 
 - config file
 - ability to work with vanilla clients
+- additional parameters:
+  - chance for eclipse based on game's length
+  - crew daysInRow
 
 ## Credits
 
 This project uses [LethalCompanyTemplate](https://github.com/LethalCompany/LethalCompanyTemplate), licensed under [MIT License](https://github.com/LethalCompany/LethalCompanyTemplate/blob/main/LICENSE).
+
+This project uses [ConsoleTables](https://github.com/khalidabuhakmeh/ConsoleTables), licensed under [MIT License](https://github.com/khalidabuhakmeh/ConsoleTables/blob/main/LICENSE).
 
 This project uses [Xilophor's LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI).
