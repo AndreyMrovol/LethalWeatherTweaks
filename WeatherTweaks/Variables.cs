@@ -16,13 +16,27 @@ namespace WeatherTweaks
       return GameLevels;
     }
 
+    internal static List<LevelWeatherType> GetPlanetPossibleWeathers(SelectableLevel level)
+    {
+      List<LevelWeatherType> weathersToChooseFrom = level
+        .randomWeathers.Where(randomWeather =>
+          randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
+        )
+        .ToList()
+        .Select(x => x.weatherType)
+        .Append(LevelWeatherType.None)
+        .ToList();
+
+      return weathersToChooseFrom;
+    }
+
     internal static List<LevelWeatherType> GetPlanetWeightedList(SelectableLevel level, Dictionary<LevelWeatherType, int> weights)
     {
       var weatherList = new List<LevelWeatherType>();
 
-      foreach (var weather in level.randomWeathers.ToList())
+      foreach (var weather in GetPlanetPossibleWeathers(level))
       {
-        var weatherType = weather.weatherType;
+        var weatherType = weather;
         var weatherWeight = weights[weatherType];
         Plugin.logger.LogDebug($"weather: {weatherType} has weight {weatherWeight}");
 
@@ -35,50 +49,50 @@ namespace WeatherTweaks
       return weatherList;
     }
 
-    internal static List<bool> GetConditionsWeightedList(string condition)
-    {
-      var list = new List<bool>();
+    // internal static List<bool> GetConditionsWeightedList(string condition)
+    // {
+    //   var list = new List<bool>();
 
-      // switch: based on condition (none/weather/eclipse) get corresponding weights from ConfigManager
-      // then add to list
-      switch (condition)
-      {
-        case "none":
-          for (var i = 0; i < ConfigManager.NoneToWeatherBaseWeight.Value; i++)
-          {
-            list.Add(true);
-          }
+    //   // switch: based on condition (none/weather/eclipse) get corresponding weights from ConfigManager
+    //   // then add to list
+    //   switch (condition)
+    //   {
+    //     case "none":
+    //       for (var i = 0; i < ConfigManager.NoneToWeatherBaseWeight.Value; i++)
+    //       {
+    //         list.Add(true);
+    //       }
 
-          for (var i = 0; i < ConfigManager.NoneToNoneBaseWeight.Value; i++)
-          {
-            list.Add(false);
-          }
-          break;
-        case "weather":
-          for (var i = 0; i < ConfigManager.WeatherToWeatherBaseWeight.Value; i++)
-          {
-            list.Add(true);
-          }
+    //       for (var i = 0; i < ConfigManager.NoneToNoneBaseWeight.Value; i++)
+    //       {
+    //         list.Add(false);
+    //       }
+    //       break;
+    //     case "weather":
+    //       for (var i = 0; i < ConfigManager.WeatherToWeatherBaseWeight.Value; i++)
+    //       {
+    //         list.Add(true);
+    //       }
 
-          for (var i = 0; i < ConfigManager.WeatherToNoneBaseWeight.Value; i++)
-          {
-            list.Add(false);
-          }
-          break;
-        case "eclipse":
-          for (var i = 0; i < ConfigManager.EclipsedToWeatherBaseWeight.Value; i++)
-          {
-            list.Add(true);
-          }
+    //       for (var i = 0; i < ConfigManager.WeatherToNoneBaseWeight.Value; i++)
+    //       {
+    //         list.Add(false);
+    //       }
+    //       break;
+    //     case "eclipse":
+    //       for (var i = 0; i < ConfigManager.EclipsedToWeatherBaseWeight.Value; i++)
+    //       {
+    //         list.Add(true);
+    //       }
 
-          for (var i = 0; i < ConfigManager.EclipsedToNoneBaseWeight.Value; i++)
-          {
-            list.Add(false);
-          }
-          break;
-      }
+    //       for (var i = 0; i < ConfigManager.EclipsedToNoneBaseWeight.Value; i++)
+    //       {
+    //         list.Add(false);
+    //       }
+    //       break;
+    //   }
 
-      return list;
-    }
+    //   return list;
+    // }
   }
 }

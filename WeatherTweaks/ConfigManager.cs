@@ -18,47 +18,53 @@ namespace WeatherTweaks
 
     // base weights: none->weather; weather->none and so on
 
-    public static ConfigEntry<int> NoneToWeatherBaseWeight { get; private set; }
-    public static ConfigEntry<int> NoneToNoneBaseWeight { get; private set; }
+    // public static ConfigEntry<int> NoneToWeatherBaseWeight { get; private set; }
+    // public static ConfigEntry<int> NoneToNoneBaseWeight { get; private set; }
 
-    public static ConfigEntry<int> WeatherToNoneBaseWeight { get; private set; }
-    public static ConfigEntry<int> WeatherToWeatherBaseWeight { get; private set; }
+    // public static ConfigEntry<int> WeatherToNoneBaseWeight { get; private set; }
+    // public static ConfigEntry<int> WeatherToWeatherBaseWeight { get; private set; }
 
-    public static ConfigEntry<int> EclipsedToNoneBaseWeight { get; private set; }
-    public static ConfigEntry<int> EclipsedToWeatherBaseWeight { get; private set; }
+    // public static ConfigEntry<int> EclipsedToNoneBaseWeight { get; private set; }
+    // public static ConfigEntry<int> EclipsedToWeatherBaseWeight { get; private set; }
 
     // per-weather weights
 
+    public static ConfigEntry<int> NoneToNoneWeight { get; private set; }
     public static ConfigEntry<int> NoneToRainyWeight { get; private set; }
     public static ConfigEntry<int> NoneToStormyWeight { get; private set; }
     public static ConfigEntry<int> NoneToFloodedWeight { get; private set; }
     public static ConfigEntry<int> NoneToFoggyWeight { get; private set; }
     public static ConfigEntry<int> NoneToEclipsedWeight { get; private set; }
 
+    public static ConfigEntry<int> RainyToNoneWeight { get; private set; }
     public static ConfigEntry<int> RainyToRainyWeight { get; private set; }
     public static ConfigEntry<int> RainyToStormyWeight { get; private set; }
     public static ConfigEntry<int> RainyToFloodedWeight { get; private set; }
     public static ConfigEntry<int> RainyToFoggyWeight { get; private set; }
     public static ConfigEntry<int> RainyToEclipsedWeight { get; private set; }
 
+    public static ConfigEntry<int> StormyToNoneWeight { get; private set; }
     public static ConfigEntry<int> StormyToRainyWeight { get; private set; }
     public static ConfigEntry<int> StormyToStormyWeight { get; private set; }
     public static ConfigEntry<int> StormyToFloodedWeight { get; private set; }
     public static ConfigEntry<int> StormyToFoggyWeight { get; private set; }
     public static ConfigEntry<int> StormyToEclipsedWeight { get; private set; }
 
+    public static ConfigEntry<int> FloodedToNoneWeight { get; private set; }
     public static ConfigEntry<int> FloodedToRainyWeight { get; private set; }
     public static ConfigEntry<int> FloodedToStormyWeight { get; private set; }
     public static ConfigEntry<int> FloodedToFloodedWeight { get; private set; }
     public static ConfigEntry<int> FloodedToFoggyWeight { get; private set; }
     public static ConfigEntry<int> FloodedToEclipsedWeight { get; private set; }
 
+    public static ConfigEntry<int> FoggyToNoneWeight { get; private set; }
     public static ConfigEntry<int> FoggyToRainyWeight { get; private set; }
     public static ConfigEntry<int> FoggyToStormyWeight { get; private set; }
     public static ConfigEntry<int> FoggyToFloodedWeight { get; private set; }
     public static ConfigEntry<int> FoggyToFoggyWeight { get; private set; }
     public static ConfigEntry<int> FoggyToEclipsedWeight { get; private set; }
 
+    public static ConfigEntry<int> EclipsedToNoneWeight { get; private set; }
     public static ConfigEntry<int> EclipsedToRainyWeight { get; private set; }
     public static ConfigEntry<int> EclipsedToStormyWeight { get; private set; }
     public static ConfigEntry<int> EclipsedToFloodedWeight { get; private set; }
@@ -67,9 +73,9 @@ namespace WeatherTweaks
 
     // weight sums for easy calculations
 
-    public static int SumNoneBaseWeights { get; private set; }
-    public static int SumWeatherBaseWeights { get; private set; }
-    public static int SumEclipsedBaseWeights { get; private set; }
+    // public static int SumNoneBaseWeights { get; private set; }
+    // public static int SumWeatherBaseWeights { get; private set; }
+    // public static int SumEclipsedBaseWeights { get; private set; }
 
     public static int NoneWeightSum { get; private set; }
     public static int RainyWeightSum { get; private set; }
@@ -94,70 +100,42 @@ namespace WeatherTweaks
       // god forgive me for this
       configFile = config;
 
-      NoneToWeatherBaseWeight = configFile.Bind(
-        "0> Base Weights",
-        "NoneToWeatherBaseWeight",
-        5,
-        "Base weight for changing from none to weather"
-      );
-      NoneToNoneBaseWeight = configFile.Bind("0> Base Weights", "NoneToNoneBaseWeight", 5, "Base weight for changing from none to none");
-
-      WeatherToNoneBaseWeight = configFile.Bind(
-        "0> Base Weights",
-        "WeatherToNoneBaseWeight",
-        5,
-        "Base weight for changing from weather to none"
-      );
-      WeatherToWeatherBaseWeight = configFile.Bind(
-        "0> Base Weights",
-        "WeatherToWeatherBaseWeight",
-        4,
-        "Base weight for changing from weather to weather"
-      );
-
-      EclipsedToNoneBaseWeight = configFile.Bind(
-        "0> Base Weights",
-        "EclipsedToNoneBaseWeight",
-        6,
-        "Base weight for changing from eclipsed to none"
-      );
-      EclipsedToWeatherBaseWeight = configFile.Bind(
-        "0> Base Weights",
-        "EclipsedToWeatherBaseWeight",
-        1,
-        "Base weight for changing from eclipsed to weather"
-      );
-
+      NoneToNoneWeight = configFile.Bind("1> No weather", "NoneToNoneWeight", 15, "Weight for changing from none to none");
       NoneToRainyWeight = configFile.Bind("1> No weather", "NoneToRainyWeight", 40, "Weight for changing from none to rainy");
       NoneToStormyWeight = configFile.Bind("1> No weather", "NoneToStormyWeight", 30, "Weight for changing from none to stormy");
       NoneToFloodedWeight = configFile.Bind("1> No weather", "NoneToFloodedWeight", 15, "Weight for changing from none to flooded");
       NoneToFoggyWeight = configFile.Bind("1> No weather", "NoneToFoggyWeight", 20, "Weight for changing from none to foggy");
       NoneToEclipsedWeight = configFile.Bind("1> No weather", "NoneToEclipsedWeight", 10, "Weight for changing from none to eclipsed");
 
+      RainyToNoneWeight = configFile.Bind("2> Rainy", "RainyToNoneWeight", 30, "Weight for changing from rainy to none");
       RainyToRainyWeight = configFile.Bind("2> Rainy", "RainyToRainyWeight", 1, "Weight for changing from rainy to rainy");
       RainyToStormyWeight = configFile.Bind("2> Rainy", "RainyToStormyWeight", 20, "Weight for changing from rainy to stormy");
       RainyToFloodedWeight = configFile.Bind("2> Rainy", "RainyToFloodedWeight", 40, "Weight for changing from rainy to flooded");
       RainyToFoggyWeight = configFile.Bind("2> Rainy", "RainyToFoggyWeight", 25, "Weight for changing from rainy to foggy");
       RainyToEclipsedWeight = configFile.Bind("2> Rainy", "RainyToEclipsedWeight", 15, "Weight for changing from rainy to eclipsed");
 
+      StormyToNoneWeight = configFile.Bind("3> Stormy", "StormyToNoneWeight", 30, "Weight for changing from stormy to none");
       StormyToRainyWeight = configFile.Bind("3> Stormy", "StormyToRainyWeight", 40, "Weight for changing from stormy to rainy");
       StormyToStormyWeight = configFile.Bind("3> Stormy", "StormyToStormyWeight", 1, "Weight for changing from stormy to stormy");
       StormyToFloodedWeight = configFile.Bind("3> Stormy", "StormyToFloodedWeight", 20, "Weight for changing from stormy to flooded");
       StormyToFoggyWeight = configFile.Bind("3> Stormy", "StormyToFoggyWeight", 15, "Weight for changing from stormy to foggy");
       StormyToEclipsedWeight = configFile.Bind("3> Stormy", "StormyToEclipsedWeight", 5, "Weight for changing from stormy to eclipsed");
 
+      FloodedToNoneWeight = configFile.Bind("4> Flooded", "FloodedToNoneWeight", 35, "Weight for changing from flooded to none");
       FloodedToRainyWeight = configFile.Bind("4> Flooded", "FloodedToRainyWeight", 15, "Weight for changing from flooded to rainy");
       FloodedToStormyWeight = configFile.Bind("4> Flooded", "FloodedToStormyWeight", 25, "Weight for changing from flooded to stormy");
       FloodedToFloodedWeight = configFile.Bind("4> Flooded", "FloodedToFloodedWeight", 1, "Weight for changing from flooded to flooded");
       FloodedToFoggyWeight = configFile.Bind("4> Flooded", "FloodedToFoggyWeight", 20, "Weight for changing from flooded to foggy");
       FloodedToEclipsedWeight = configFile.Bind("4> Flooded", "FloodedToEclipsedWeight", 25, "Weight for changing from flooded to eclipsed");
 
+      FoggyToNoneWeight = configFile.Bind("5> Foggy", "FoggyToNoneWeight", 30, "Weight for changing from foggy to none");
       FoggyToRainyWeight = configFile.Bind("5> Foggy", "FoggyToRainyWeight", 25, "Weight for changing from foggy to rainy");
       FoggyToStormyWeight = configFile.Bind("5> Foggy", "FoggyToStormyWeight", 10, "Weight for changing from foggy to stormy");
       FoggyToFloodedWeight = configFile.Bind("5> Foggy", "FoggyToFloodedWeight", 20, "Weight for changing from foggy to flooded");
       FoggyToFoggyWeight = configFile.Bind("5> Foggy", "FoggyToFoggyWeight", 1, "Weight for changing from foggy to foggy");
       FoggyToEclipsedWeight = configFile.Bind("5> Foggy", "FoggyToEclipsedWeight", 15, "Weight for changing from foggy to eclipsed");
 
+      EclipsedToNoneWeight = configFile.Bind("6> Eclipsed", "EclipsedToNoneWeight", 25, "Weight for changing from eclipsed to none");
       EclipsedToRainyWeight = configFile.Bind("6> Eclipsed", "EclipsedToRainyWeight", 15, "Weight for changing from eclipsed to rainy");
       EclipsedToStormyWeight = configFile.Bind("6> Eclipsed", "EclipsedToStormyWeight", 25, "Weight for changing from eclipsed to stormy");
       EclipsedToFloodedWeight = configFile.Bind("6> Eclipsed", "EclipsedToFloodedWeight", 25, "Weight for changing from eclipsed to flooded");
@@ -166,38 +144,48 @@ namespace WeatherTweaks
 
       // calculate sums
 
-      SumNoneBaseWeights = NoneToWeatherBaseWeight.Value + NoneToNoneBaseWeight.Value;
-      SumWeatherBaseWeights = WeatherToNoneBaseWeight.Value + WeatherToWeatherBaseWeight.Value;
-      SumEclipsedBaseWeights = EclipsedToNoneBaseWeight.Value + EclipsedToWeatherBaseWeight.Value;
+      // SumNoneBaseWeights = NoneToWeatherBaseWeight.Value + NoneToNoneBaseWeight.Value;
+      // SumWeatherBaseWeights = WeatherToNoneBaseWeight.Value + WeatherToWeatherBaseWeight.Value;
+      // SumEclipsedBaseWeights = EclipsedToNoneBaseWeight.Value + EclipsedToWeatherBaseWeight.Value;
 
       NoneWeightSum =
-        NoneToRainyWeight.Value + NoneToStormyWeight.Value + NoneToFloodedWeight.Value + NoneToFoggyWeight.Value + NoneToEclipsedWeight.Value;
+        NoneToNoneWeight.Value
+        + NoneToRainyWeight.Value
+        + NoneToStormyWeight.Value
+        + NoneToFloodedWeight.Value
+        + NoneToFoggyWeight.Value
+        + NoneToEclipsedWeight.Value;
       RainyWeightSum =
-        RainyToRainyWeight.Value
+        RainyToNoneWeight.Value
+        + RainyToRainyWeight.Value
         + RainyToStormyWeight.Value
         + RainyToFloodedWeight.Value
         + RainyToFoggyWeight.Value
         + RainyToEclipsedWeight.Value;
       StormyWeightSum =
-        StormyToRainyWeight.Value
+        StormyToNoneWeight.Value
+        + StormyToRainyWeight.Value
         + StormyToStormyWeight.Value
         + StormyToFloodedWeight.Value
         + StormyToFoggyWeight.Value
         + StormyToEclipsedWeight.Value;
       FloodedWeightSum =
-        FloodedToRainyWeight.Value
+        FloodedToNoneWeight.Value
+        + FloodedToRainyWeight.Value
         + FloodedToStormyWeight.Value
         + FloodedToFloodedWeight.Value
         + FloodedToFoggyWeight.Value
         + FloodedToEclipsedWeight.Value;
       FoggyWeightSum =
-        FoggyToRainyWeight.Value
+        FoggyToNoneWeight.Value
+        + FoggyToRainyWeight.Value
         + FoggyToStormyWeight.Value
         + FoggyToFloodedWeight.Value
         + FoggyToFoggyWeight.Value
         + FoggyToEclipsedWeight.Value;
       EclipsedWeightSum =
-        EclipsedToRainyWeight.Value
+        EclipsedToNoneWeight.Value
+        + EclipsedToRainyWeight.Value
         + EclipsedToStormyWeight.Value
         + EclipsedToFloodedWeight.Value
         + EclipsedToFoggyWeight.Value
@@ -207,6 +195,7 @@ namespace WeatherTweaks
 
       NoneWeights = new Dictionary<LevelWeatherType, int>
       {
+        { LevelWeatherType.None, NoneToNoneWeight.Value },
         { LevelWeatherType.Rainy, NoneToRainyWeight.Value },
         { LevelWeatherType.Stormy, NoneToStormyWeight.Value },
         { LevelWeatherType.Flooded, NoneToFloodedWeight.Value },
@@ -216,6 +205,7 @@ namespace WeatherTweaks
 
       RainyWeights = new Dictionary<LevelWeatherType, int>
       {
+        { LevelWeatherType.None, RainyToNoneWeight.Value },
         { LevelWeatherType.Rainy, RainyToRainyWeight.Value },
         { LevelWeatherType.Stormy, RainyToStormyWeight.Value },
         { LevelWeatherType.Flooded, RainyToFloodedWeight.Value },
@@ -225,6 +215,7 @@ namespace WeatherTweaks
 
       StormyWeights = new Dictionary<LevelWeatherType, int>
       {
+        { LevelWeatherType.None, StormyToNoneWeight.Value },
         { LevelWeatherType.Rainy, StormyToRainyWeight.Value },
         { LevelWeatherType.Stormy, StormyToStormyWeight.Value },
         { LevelWeatherType.Flooded, StormyToFloodedWeight.Value },
@@ -234,6 +225,7 @@ namespace WeatherTweaks
 
       FloodedWeights = new Dictionary<LevelWeatherType, int>
       {
+        { LevelWeatherType.None, FloodedToNoneWeight.Value },
         { LevelWeatherType.Rainy, FloodedToRainyWeight.Value },
         { LevelWeatherType.Stormy, FloodedToStormyWeight.Value },
         { LevelWeatherType.Flooded, FloodedToFloodedWeight.Value },
@@ -243,6 +235,7 @@ namespace WeatherTweaks
 
       FoggyWeights = new Dictionary<LevelWeatherType, int>
       {
+        { LevelWeatherType.None, FoggyToNoneWeight.Value },
         { LevelWeatherType.Rainy, FoggyToRainyWeight.Value },
         { LevelWeatherType.Stormy, FoggyToStormyWeight.Value },
         { LevelWeatherType.Flooded, FoggyToFloodedWeight.Value },
@@ -252,6 +245,7 @@ namespace WeatherTweaks
 
       EclipsedWeights = new Dictionary<LevelWeatherType, int>
       {
+        { LevelWeatherType.None, EclipsedToNoneWeight.Value },
         { LevelWeatherType.Rainy, EclipsedToRainyWeight.Value },
         { LevelWeatherType.Stormy, EclipsedToStormyWeight.Value },
         { LevelWeatherType.Flooded, EclipsedToFloodedWeight.Value },

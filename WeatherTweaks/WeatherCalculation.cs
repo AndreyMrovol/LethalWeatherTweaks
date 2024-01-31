@@ -85,101 +85,31 @@ namespace WeatherTweaks
 
         // rework mechanic to use weighted lists
 
-        // if weather was clear, 50% chance for weather next day
-        if (previousDayWeather[level.PlanetName] == LevelWeatherType.None)
+        var possibleWeathers = level
+          .randomWeathers.Where(randomWeather =>
+            randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
+          )
+          .ToList();
+
+        possibleWeathers.Do(x => Plugin.logger.LogDebug($"possibleWeathers: {x.weatherType}"));
+
+        if (possibleWeathers.Count == 0)
         {
-          // get all possible outcomes and pick random one
-          var weights = Variables.GetConditionsWeightedList("none");
-          var shouldBeWeather = weights[random.Next(0, weights.Count)];
-
-          Plugin.logger.LogDebug("Weather was clear");
-          if (!shouldBeWeather)
-          {
-            Plugin.logger.LogDebug($"{ConfigManager.NoneToNoneBaseWeight.Value}/{ConfigManager.SumNoneBaseWeights} chance for no weather");
-            currentWeather[level.PlanetName] = LevelWeatherType.None;
-          }
-          else
-          {
-            Plugin.logger.LogDebug($"{ConfigManager.NoneToWeatherBaseWeight.Value}/{ConfigManager.SumNoneBaseWeights} chance for weather");
-            if (level.randomWeathers.Length == 0 || level.randomWeathers == null)
-            {
-              Plugin.logger.LogDebug("No random weathers, setting to None");
-              currentWeather[level.PlanetName] = LevelWeatherType.None;
-              continue;
-            }
-
-            var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.NoneWeights);
-            var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
-
-            currentWeather[level.PlanetName] = weather;
-          }
+          Plugin.logger.LogDebug("No possible weathers, setting to None");
+          currentWeather[level.PlanetName] = LevelWeatherType.None;
+          continue;
         }
-        else
-        // if weather was not clear, weather cannot repeat (weight-customizable)
-        // 45% chance for weather next day
-        // if eclipsed, 85% chance for no weather next day (15% chance for weather - not eclipsed)
-        {
-          Plugin.logger.LogDebug("Weather was not clear");
 
-          var possibleWeathers = level
-            .randomWeathers.Where(randomWeather =>
-              randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
-            )
-            .ToList();
+        List<LevelWeatherType> weathersToChooseFrom = possibleWeathers
+          .ToList()
+          .Select(x => x.weatherType)
+          .Append(LevelWeatherType.None)
+          .ToList();
 
-          // get all possible outcomes and pick random one
-          var weights = Variables.GetConditionsWeightedList("weather");
-          var shouldBeWeather = weights[random.Next(0, weights.Count)];
+        var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.Weights[previousDayWeather[level.PlanetName]]);
+        var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 
-          // 45% chance for weather next day
-          if (!shouldBeWeather)
-          {
-            Plugin.logger.LogDebug($"{ConfigManager.WeatherToNoneBaseWeight.Value}/{ConfigManager.SumWeatherBaseWeights} chance for no weather");
-            currentWeather[level.PlanetName] = LevelWeatherType.None;
-            continue;
-          }
-
-          if (possibleWeathers.Count == 0)
-          {
-            Plugin.logger.LogDebug("No possible weathers, setting to None");
-            currentWeather[level.PlanetName] = LevelWeatherType.None;
-            continue;
-          }
-
-          if (previousDayWeather[level.PlanetName] == LevelWeatherType.Eclipsed)
-          {
-            // get all possible outcomes and pick random one
-            var eclipsedWeights = Variables.GetConditionsWeightedList("eclipse");
-            var eclipsedShouldBeWeather = eclipsedWeights[random.Next(0, eclipsedWeights.Count)];
-
-            Plugin.logger.LogDebug("Weather was eclipsed");
-            if (!eclipsedShouldBeWeather)
-            {
-              Plugin.logger.LogDebug(
-                $"{ConfigManager.EclipsedToNoneBaseWeight.Value}/{ConfigManager.SumEclipsedBaseWeights} chance for no weather"
-              );
-              currentWeather[level.PlanetName] = LevelWeatherType.None;
-            }
-            else
-            {
-              Plugin.logger.LogDebug(
-                $"{ConfigManager.EclipsedToWeatherBaseWeight.Value}/{ConfigManager.SumEclipsedBaseWeights} chance for weather"
-              );
-
-              var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.EclipsedWeights);
-              var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
-
-              currentWeather[level.PlanetName] = weather;
-            }
-          }
-          else
-          {
-            var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.Weights[previousDayWeather[level.PlanetName]]);
-            var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
-
-            currentWeather[level.PlanetName] = weather;
-          }
-        }
+        currentWeather[level.PlanetName] = weather;
 
         Plugin.logger.LogDebug($"currentWeather: {currentWeather[level.PlanetName]}");
         currentWeather[level.PlanetName] = currentWeather[level.PlanetName];
