@@ -17,6 +17,7 @@ namespace WeatherTweaks
       harmony.PatchAll();
 
       NetworkedConfig.Init();
+      ConfigManager.Init(Config);
 
       // Plugin startup logic
       Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
