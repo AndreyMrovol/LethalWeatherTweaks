@@ -74,6 +74,8 @@ namespace WeatherTweaks
           )
           .ToList();
 
+        bool canBeDustClouds = level.randomWeathers.Any(randomWeather => randomWeather.weatherType == LevelWeatherType.DustClouds);
+
         var stringifiedPossibleWeathers = JsonConvert.SerializeObject(possibleWeathers.Select(x => x.weatherType.ToString()).ToList());
         Plugin.logger.LogDebug($"possibleWeathers: {stringifiedPossibleWeathers}");
 
@@ -99,6 +101,15 @@ namespace WeatherTweaks
 
         var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.Weights[previousDayWeather[level.PlanetName]]);
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
+
+        if (weather == LevelWeatherType.None && canBeDustClouds)
+        {
+          // flat 25% chance for dust clouds (replacing None as closest non-weather weather)
+          if (random.Next(0, 100) < 25)
+          {
+            weather = LevelWeatherType.DustClouds;
+          }
+        }
 
         currentWeather[level.PlanetName] = weather;
 
