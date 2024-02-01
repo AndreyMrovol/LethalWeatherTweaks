@@ -35,6 +35,7 @@ namespace WeatherTweaks
       if (day == 0)
       {
         List<string> noWeatherOnStartPlanets = ["41 Experimentation", "56 Vow"];
+        List<SelectableLevel> planetsToPickFrom = levels.Where(level => !noWeatherOnStartPlanets.Contains(level.PlanetName)).ToList();
 
         if (levels.Count > 9)
         {
@@ -42,7 +43,7 @@ namespace WeatherTweaks
           noWeatherOnStartPlanets.Add(levels[random.Next(0, levels.Count)].PlanetName);
         }
 
-        return FirstDayWeathers(startOfRound, noWeatherOnStartPlanets, random);
+        return FirstDayWeathers(planetsToPickFrom, noWeatherOnStartPlanets, random);
       }
 
       foreach (SelectableLevel level in levels)
