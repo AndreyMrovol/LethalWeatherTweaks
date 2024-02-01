@@ -6,24 +6,15 @@ Currently, vanilla weather system is completely random - it means that weather c
 
 ## Features
 
-- Weather condition cannot repeat
-- Eclipse cannot happen more than once in a row
+- More advanced weather picking system
+- Fully synchronized weather between host and clients
+- Config file with weighted system
+- Fully configurable
 - Weathers on a new save try to mimic default vanilla behavior, which didn't happen with any modded moons present
 
 ## Conditions
 
-Weather calculation operates with parameters:
-
-- If weather was clear:
-  - 50% chance for weather condition next day
-- If weather was not clear:
-  - 55% chance for weather to be clear next day
-  - 45% chance for weather condition next day
-    - **weather condition cannot repeat**
-  - if there was an eclipse:
-    - 85% chance for no weather next day
-    - 15% chance for weather condition next day
-      - as before, weather cannot be eclipsed again
+Weather calculation operates with weights defined in the config file.
 
 ## To-do
 
