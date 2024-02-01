@@ -114,7 +114,7 @@ namespace WeatherTweaks
     }
 
     private static Dictionary<string, LevelWeatherType> FirstDayWeathers(
-      StartOfRound startOfRound,
+      List<SelectableLevel> levels,
       List<string> planetsWithoutWeather,
       System.Random random
     )
@@ -128,7 +128,6 @@ namespace WeatherTweaks
 
       Dictionary<string, LevelWeatherType> selectedWeathers = new Dictionary<string, LevelWeatherType>();
 
-      SelectableLevel[] levels = startOfRound.levels;
       foreach (SelectableLevel level in levels)
       {
         string planetName = level.PlanetName;
