@@ -47,11 +47,6 @@ namespace WeatherTweaks
 
       foreach (SelectableLevel level in levels)
       {
-        if (level.PlanetName == "71 Gordion")
-        {
-          continue;
-        }
-
         previousDayWeather[level.PlanetName] = level.currentWeather;
 
         LevelWeatherType vanillaWeather = vanillaSelectedWeather.ContainsKey(level.PlanetName)
@@ -59,11 +54,6 @@ namespace WeatherTweaks
           : LevelWeatherType.None;
 
         // the weather should be more random by making it less random:
-
-        // if weather was clear, 50% chance for weather next day
-        // if weather was not clear, weather cannot repeat
-        // 45% chance for weather next day
-        // if eclipsed, 85% chance for no weather next day (15% chance for weather - not eclipsed)
 
         // possible weathers taken from level.randomWeathers
         // use random for seeded randomness
