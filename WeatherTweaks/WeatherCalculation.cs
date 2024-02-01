@@ -144,11 +144,11 @@ namespace WeatherTweaks
         randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
+        possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
 
         if (randomWeathers.Count == 0 || randomWeathers == null)
         {
           Plugin.logger.LogDebug($"No random weathers for {planetName}, skipping");
-          possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
           continue;
         }
 
@@ -170,7 +170,6 @@ namespace WeatherTweaks
           if (!randomWeathers.Any(x => x.weatherType == LevelWeatherType.Eclipsed))
           {
             Plugin.logger.LogDebug($"Eclipsed not possible for {planetName}, skipping");
-            possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
             continue;
           }
           else
@@ -181,8 +180,6 @@ namespace WeatherTweaks
 
         Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedRandom.weatherType}");
         selectedWeathers[planetName] = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
-
-        possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
       }
 
       Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
