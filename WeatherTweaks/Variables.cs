@@ -10,9 +10,9 @@ namespace WeatherTweaks
   {
     public static List<SelectableLevel> GameLevels = [];
 
-    internal static List<SelectableLevel> GetGameLevels(StartOfRound __instance)
+    internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound)
     {
-      GameLevels = __instance.levels.Where(level => level.PlanetName != "71 Gordion").ToList();
+      GameLevels = startOfRound.levels.Where(level => level.PlanetName != "71 Gordion").ToList();
       return GameLevels;
     }
 
