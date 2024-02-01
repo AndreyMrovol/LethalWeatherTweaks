@@ -38,7 +38,7 @@ namespace WeatherTweaks
       {
         var weatherType = weather;
         var weatherWeight = weights[weatherType];
-        Plugin.logger.LogDebug($"weather: {weatherType} has weight {weatherWeight}");
+        Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
 
         for (var i = 0; i < weatherWeight; i++)
         {
