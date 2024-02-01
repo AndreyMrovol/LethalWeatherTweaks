@@ -39,6 +39,21 @@ namespace WeatherTweaks
 
         if (levels.Count > 9)
         {
+          // for every 4 levels above 9 (vanilla amount), add another planet without weather
+          int planetsWithoutWeather = (levels.Count - 9) / 4;
+
+          for (int i = 0; i < planetsWithoutWeather; i++)
+          {
+            // pick a random planet
+            string planetName = planetsToPickFrom[random.Next(0, planetsToPickFrom.Count)].PlanetName;
+
+            // add it to the list of planets without weather
+            noWeatherOnStartPlanets.Add(planetName);
+
+            // remove it from the list of planets to pick from
+            planetsToPickFrom.RemoveAll(level => level.PlanetName == planetName);
+          }
+
           // pick another random planet
           noWeatherOnStartPlanets.Add(planetsToPickFrom[random.Next(0, planetsToPickFrom.Count)].PlanetName);
         }
