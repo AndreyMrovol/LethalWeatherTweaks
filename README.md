@@ -18,11 +18,11 @@ Weather calculation operates with weights defined in the config file.
 
 ## To-do
 
-- config file
 - ability to work with vanilla clients
 - additional parameters:
   - chance for eclipse based on game's length
   - crew daysInRow
+- modded weathers support
 
 ## Credits
 
@@ -31,3 +31,5 @@ This project uses [LethalCompanyTemplate](https://github.com/LethalCompany/Letha
 This project uses [ConsoleTables](https://github.com/khalidabuhakmeh/ConsoleTables), licensed under [MIT License](https://github.com/khalidabuhakmeh/ConsoleTables/blob/main/LICENSE).
 
 This project uses [Xilophor's LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI).
+
+Massive thanks to Electric131 and Easyidle123 for their feedback and support.
