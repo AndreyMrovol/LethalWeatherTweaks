@@ -40,10 +40,10 @@ namespace WeatherTweaks
         if (levels.Count > 9)
         {
           // pick another random planet
-          noWeatherOnStartPlanets.Add(levels[random.Next(0, levels.Count)].PlanetName);
+          noWeatherOnStartPlanets.Add(planetsToPickFrom[random.Next(0, planetsToPickFrom.Count)].PlanetName);
         }
 
-        return FirstDayWeathers(planetsToPickFrom, noWeatherOnStartPlanets, random);
+        return FirstDayWeathers(levels, noWeatherOnStartPlanets, random);
       }
 
       foreach (SelectableLevel level in levels)
