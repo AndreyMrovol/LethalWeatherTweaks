@@ -8,7 +8,7 @@ namespace WeatherTweaks
   {
     internal static void SetWeather(Dictionary<string, LevelWeatherType> weatherData)
     {
-      SelectableLevel[] levels = StartOfRound.Instance.levels;
+      List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
       foreach (SelectableLevel level in levels)
       {
         string levelName = level.PlanetName;
@@ -23,7 +23,6 @@ namespace WeatherTweaks
         }
       }
 
-      DisplayTable.DisplayWeathersTable();
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
   }
