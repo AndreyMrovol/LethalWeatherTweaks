@@ -102,7 +102,10 @@ namespace WeatherTweaks
 
         currentWeather[level.PlanetName] = weather;
 
-        Plugin.logger.LogDebug($"currentWeather: {currentWeather[level.PlanetName]}");
+        Plugin.logger.LogDebug($"Selected weather: {currentWeather[level.PlanetName]}");
+        Plugin.logger.LogDebug(
+          $"Chance for that was {ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather]} / {weatherWeights.Count} ({(float)ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather] / weatherWeights.Count * 100}%)"
+        );
         currentWeather[level.PlanetName] = currentWeather[level.PlanetName];
       }
       Plugin.logger.LogDebug("-------------");
