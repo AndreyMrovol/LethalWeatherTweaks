@@ -63,6 +63,11 @@ namespace WeatherTweaks
         Plugin.logger.LogDebug($"{level.PlanetName}");
         Plugin.logger.LogDebug($"previousDayWeather: {previousDayWeather[level.PlanetName]}");
 
+        if (previousDayWeather[level.PlanetName] == LevelWeatherType.DustClouds)
+        {
+          previousDayWeather[level.PlanetName] = LevelWeatherType.None;
+        }
+
         currentWeather[level.PlanetName] = LevelWeatherType.None;
 
         // and now the fun part
@@ -114,9 +119,14 @@ namespace WeatherTweaks
         currentWeather[level.PlanetName] = weather;
 
         Plugin.logger.LogDebug($"Selected weather: {currentWeather[level.PlanetName]}");
-        Plugin.logger.LogDebug(
-          $"Chance for that was {ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather]} / {weatherWeights.Count} ({(float)ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather] / weatherWeights.Count * 100}%)"
-        );
+        try
+        {
+          Plugin.logger.LogDebug(
+            $"Chance for that was {ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather]} / {weatherWeights.Count} ({(float)ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather] / weatherWeights.Count * 100}%)"
+          );
+        }
+        catch { }
+
         currentWeather[level.PlanetName] = currentWeather[level.PlanetName];
       }
       Plugin.logger.LogDebug("-------------");
