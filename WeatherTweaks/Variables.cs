@@ -48,51 +48,5 @@ namespace WeatherTweaks
 
       return weatherList;
     }
-
-    // internal static List<bool> GetConditionsWeightedList(string condition)
-    // {
-    //   var list = new List<bool>();
-
-    //   // switch: based on condition (none/weather/eclipse) get corresponding weights from ConfigManager
-    //   // then add to list
-    //   switch (condition)
-    //   {
-    //     case "none":
-    //       for (var i = 0; i < ConfigManager.NoneToWeatherBaseWeight.Value; i++)
-    //       {
-    //         list.Add(true);
-    //       }
-
-    //       for (var i = 0; i < ConfigManager.NoneToNoneBaseWeight.Value; i++)
-    //       {
-    //         list.Add(false);
-    //       }
-    //       break;
-    //     case "weather":
-    //       for (var i = 0; i < ConfigManager.WeatherToWeatherBaseWeight.Value; i++)
-    //       {
-    //         list.Add(true);
-    //       }
-
-    //       for (var i = 0; i < ConfigManager.WeatherToNoneBaseWeight.Value; i++)
-    //       {
-    //         list.Add(false);
-    //       }
-    //       break;
-    //     case "eclipse":
-    //       for (var i = 0; i < ConfigManager.EclipsedToWeatherBaseWeight.Value; i++)
-    //       {
-    //         list.Add(true);
-    //       }
-
-    //       for (var i = 0; i < ConfigManager.EclipsedToNoneBaseWeight.Value; i++)
-    //       {
-    //         list.Add(false);
-    //       }
-    //       break;
-    //   }
-
-    //   return list;
-    // }
   }
 }
