@@ -65,15 +65,7 @@ namespace WeatherTweaks
 
         currentWeather[level.PlanetName] = LevelWeatherType.None;
 
-        if (level.overrideWeather)
-        {
-          Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
-          currentWeather[level.PlanetName] = level.overrideWeatherType;
-          continue;
-        }
-
         // and now the fun part
-
         // rework mechanic to use weighted lists
 
         var possibleWeathers = level
@@ -82,12 +74,20 @@ namespace WeatherTweaks
           )
           .ToList();
 
-        possibleWeathers.Do(x => Plugin.logger.LogDebug($"possibleWeathers: {x.weatherType}"));
+        var stringifiedPossibleWeathers = JsonConvert.SerializeObject(possibleWeathers.Select(x => x.weatherType.ToString()).ToList());
+        Plugin.logger.LogDebug($"possibleWeathers: {stringifiedPossibleWeathers}");
 
         if (possibleWeathers.Count == 0)
         {
           Plugin.logger.LogDebug("No possible weathers, setting to None");
           currentWeather[level.PlanetName] = LevelWeatherType.None;
+          continue;
+        }
+
+        if (level.overrideWeather)
+        {
+          Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
+          currentWeather[level.PlanetName] = level.overrideWeatherType;
           continue;
         }
 
