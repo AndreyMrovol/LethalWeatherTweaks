@@ -183,6 +183,7 @@ namespace WeatherTweaks
         // var randomWeathers = level.randomWeathers.ToList();
         Plugin.logger.LogDebug($"randomWeathers count: {randomWeathers.Count}");
         randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
+        randomWeathers.RemoveAll(x => x.weatherType == LevelWeatherType.Eclipsed);
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
         possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
@@ -215,7 +216,7 @@ namespace WeatherTweaks
           }
           else
           {
-            selectedRandom = randomWeathers.First(x => x.weatherType == LevelWeatherType.Eclipsed);
+            selectedRandom = level.randomWeathers.First(x => x.weatherType == LevelWeatherType.Eclipsed);
           }
         }
 
