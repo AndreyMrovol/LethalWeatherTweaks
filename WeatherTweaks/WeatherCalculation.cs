@@ -37,6 +37,9 @@ namespace WeatherTweaks
 
       if (day == 0)
       {
+        seed = ConfigManager.FirstDaySeed.Value;
+        random = new System.Random(seed);
+
         List<string> noWeatherOnStartPlanets = ["41 Experimentation", "56 Vow"];
         List<SelectableLevel> planetsToPickFrom = levels.Where(level => !noWeatherOnStartPlanets.Contains(level.PlanetName)).ToList();
 

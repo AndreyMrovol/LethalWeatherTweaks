@@ -19,6 +19,8 @@ namespace WeatherTweaks
     public static ConfigEntry<bool> TerminalPatchEnabled { get; private set; }
     public static ConfigEntry<bool> MapScreenPatch { get; private set; }
 
+    public static ConfigEntry<int> FirstDaySeed { get; private set; }
+
     public static ConfigEntry<bool> UncertainWeatherEnabled { get; private set; }
     public static ConfigEntry<bool> AlwaysUncertain { get; private set; }
 
@@ -104,6 +106,8 @@ namespace WeatherTweaks
         "Enable terminal patch - disabling will disable uncertain weathers"
       );
       MapScreenPatch = configFile.Bind("0> General", "MapScreenPatch", true, "Enable map screen patch (weather in top row)");
+
+      FirstDaySeed = configFile.Bind("0> General", "FirstDaySeed", 0, "Seed for the first day's weather");
 
       UncertainWeatherEnabled = configFile.Bind("0> General", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
       AlwaysUncertain = configFile.Bind("0> General", "AlwaysUncertain", false, "Always make weather uncertain");
