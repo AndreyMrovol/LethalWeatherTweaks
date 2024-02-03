@@ -14,6 +14,12 @@ namespace WeatherTweaks
     {
       uncertainWeathers.Clear();
 
+      if (!ConfigManager.UncertainWeatherEnabled.Value)
+      {
+        Plugin.logger.LogInfo("Uncertain weathers are disabled.");
+        return uncertainWeathers;
+      }
+
       Plugin.logger.LogInfo("GenerateUncertainty called.");
       StartOfRound startOfRound = StartOfRound.Instance;
       System.Random random = new(startOfRound.randomMapSeed + 31);
@@ -36,6 +42,11 @@ namespace WeatherTweaks
         0,
         Variables.GameLevels.Count - 2
       );
+
+      if (ConfigManager.AlwaysUncertain.Value)
+      {
+        howManyPlanetsUncertain = Variables.GameLevels.Count;
+      }
 
       Plugin.logger.LogDebug($"howManyPlanetsUncertain: {howManyPlanetsUncertain}");
 
@@ -65,20 +76,28 @@ namespace WeatherTweaks
         switch (uncertainType)
         {
           case 1:
-            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is uncertain.");
-            uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, false));
+            if (ConfigManager.UncertainUncertain.Value)
+            {
+              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is uncertain.");
+              uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, false));
+            }
             break;
           case 2:
-            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is probable.");
-            uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, true));
+            if (ConfigManager.Uncertain5050.Value)
+            {
+              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is probable.");
+              uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, true));
+            }
             break;
           case 3:
-            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is unknown.");
-            uncertainWeather.Add(uncertainLevel.PlanetName, "[UNKNOWN]");
+            if (ConfigManager.UncertainUnknown.Value)
+            {
+              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is unknown.");
+              uncertainWeather.Add(uncertainLevel.PlanetName, "[UNKNOWN]");
+            }
             break;
           default:
             Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is certain.");
-            uncertainWeather.Add(uncertainLevel.PlanetName, uncertainLevel.currentWeather.ToString());
             break;
         }
       }

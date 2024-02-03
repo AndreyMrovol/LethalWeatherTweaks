@@ -16,6 +16,15 @@ namespace WeatherTweaks
 
     // i love creating config hell
 
+    public static ConfigEntry<bool> TerminalPatchEnabled { get; private set; }
+    public static ConfigEntry<bool> MapScreenPatch { get; private set; }
+
+    public static ConfigEntry<bool> UncertainWeatherEnabled { get; private set; }
+    public static ConfigEntry<bool> AlwaysUncertain { get; private set; }
+
+    public static ConfigEntry<bool> UncertainUncertain { get; private set; }
+    public static ConfigEntry<bool> Uncertain5050 { get; private set; }
+    public static ConfigEntry<bool> UncertainUnknown { get; private set; }
 
     // per-weather weights
 
@@ -85,6 +94,23 @@ namespace WeatherTweaks
     {
       // god forgive me for this
       configFile = config;
+
+      // create config entries
+
+      TerminalPatchEnabled = configFile.Bind(
+        "0> General",
+        "TerminalPatchEnabled",
+        true,
+        "Enable terminal patch - disabling will disable uncertain weathers"
+      );
+      MapScreenPatch = configFile.Bind("0> General", "MapScreenPatch", true, "Enable map screen patch (weather in top row)");
+
+      UncertainWeatherEnabled = configFile.Bind("0> General", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
+      AlwaysUncertain = configFile.Bind("0> General", "AlwaysUncertain", false, "Always make weather uncertain");
+
+      UncertainUncertain = configFile.Bind("0> Uncertain", "UncertainUncertain", true, "Enable displaying uncertain weather (e.g. Eclipsed?)");
+      Uncertain5050 = configFile.Bind("0> Uncertain", "Uncertain5050", true, "Enable displaying 50/50 weather (e.g. Rainy/Flooded)");
+      UncertainUnknown = configFile.Bind("0> Uncertain", "UncertainUnknown", true, "Enable displaying unknown weather (e.g. [UNKNOWN])");
 
       NoneToNoneWeight = configFile.Bind("1> No weather", "NoneToNoneWeight", 80, "Weight for changing from none to none");
       NoneToRainyWeight = configFile.Bind("1> No weather", "NoneToRainyWeight", 50, "Weight for changing from none to rainy");

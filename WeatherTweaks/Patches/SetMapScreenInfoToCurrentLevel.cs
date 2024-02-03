@@ -15,6 +15,11 @@ namespace WeatherTweaks
     [HarmonyPostfix]
     internal static void GameMethodPatch(ref TextMeshProUGUI ___screenLevelDescription, ref SelectableLevel ___currentLevel)
     {
+      if (!ConfigManager.MapScreenPatch.Value)
+      {
+        return;
+      }
+
       bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(___currentLevel.PlanetName);
       Plugin.logger.LogDebug($"Is uncertain weather: {isUncertainWeather}");
       string weatherCondition;

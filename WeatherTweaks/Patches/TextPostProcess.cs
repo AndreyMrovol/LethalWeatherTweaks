@@ -17,6 +17,11 @@ namespace WeatherTweaks
     [HarmonyPostfix]
     private static string GameMethodPatch(string __result)
     {
+      if (!ConfigManager.TerminalPatchEnabled.Value)
+      {
+        return __result;
+      }
+
       if (!__result.Contains("Experimentation"))
       {
         return __result;
