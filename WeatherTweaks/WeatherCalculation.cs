@@ -221,8 +221,7 @@ namespace WeatherTweaks
           // check if eclipsed is possible in randomWeathers
           if (!randomWeathers.Any(x => x.weatherType == LevelWeatherType.Eclipsed))
           {
-            Plugin.logger.LogDebug($"Eclipsed not possible for {planetName}, skipping");
-            continue;
+            Plugin.logger.LogDebug($"Eclipsed not possible for {planetName}, setting random weather");
           }
           else
           {
