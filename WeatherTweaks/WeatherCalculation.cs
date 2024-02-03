@@ -45,8 +45,8 @@ namespace WeatherTweaks
 
         if (levels.Count > 9)
         {
-          // for every 4 levels above 9 (vanilla amount), add another planet without weather
-          int planetsWithoutWeather = (levels.Count - 9) / 4;
+          // for every 3 levels above 9 (vanilla amount), add another planet without weather
+          int planetsWithoutWeather = (levels.Count - 9) / 3;
 
           for (int i = 0; i < planetsWithoutWeather; i++)
           {
