@@ -17,8 +17,6 @@ namespace WeatherTweaks
     [HarmonyPostfix]
     private static string GameMethodPatch(string __result)
     {
-      Plugin.logger.LogWarning(__result);
-
       if (!__result.Contains("Experimentation"))
       {
         return __result;
