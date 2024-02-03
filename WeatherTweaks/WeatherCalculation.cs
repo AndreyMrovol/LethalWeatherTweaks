@@ -78,6 +78,7 @@ namespace WeatherTweaks
         Plugin.logger.LogDebug($"{level.PlanetName}");
         Plugin.logger.LogDebug($"previousDayWeather: {previousDayWeather[level.PlanetName]}");
 
+        // change dust clouds to none (not defined in config)
         if (previousDayWeather[level.PlanetName] == LevelWeatherType.DustClouds)
         {
           previousDayWeather[level.PlanetName] = LevelWeatherType.None;
@@ -87,6 +88,8 @@ namespace WeatherTweaks
 
         // and now the fun part
         // rework mechanic to use weighted lists
+
+        // get all possible random weathers
 
         var possibleWeathers = level
           .randomWeathers.Where(randomWeather =>
@@ -113,18 +116,20 @@ namespace WeatherTweaks
           continue;
         }
 
+        // add None to the list of possible weathers
         List<LevelWeatherType> weathersToChooseFrom = possibleWeathers
           .ToList()
           .Select(x => x.weatherType)
           .Append(LevelWeatherType.None)
           .ToList();
 
+        // get the weighted list of weathers from config
         var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.Weights[previousDayWeather[level.PlanetName]]);
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 
         if (weather == LevelWeatherType.None && canBeDustClouds)
         {
-          // flat 25% chance for dust clouds (replacing None as closest non-weather weather)
+          // fixed 25% chance for dust clouds (replacing None as closest non-weather weather)
           if (random.Next(0, 100) < 25)
           {
             weather = LevelWeatherType.DustClouds;
