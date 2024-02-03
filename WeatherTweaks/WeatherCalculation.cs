@@ -30,7 +30,10 @@ namespace WeatherTweaks
 
       List<SelectableLevel> levels = Variables.GetGameLevels(startOfRound);
       int day = startOfRound.gameStats.daysSpent;
+      int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
+
+      float weatherDifficultyMultiplier = quota * 0.05f;
 
       if (day == 0)
       {
@@ -124,7 +127,11 @@ namespace WeatherTweaks
           .ToList();
 
         // get the weighted list of weathers from config
-        var weatherWeights = Variables.GetPlanetWeightedList(level, ConfigManager.Weights[previousDayWeather[level.PlanetName]]);
+        var weatherWeights = Variables.GetPlanetWeightedList(
+          level,
+          ConfigManager.Weights[previousDayWeather[level.PlanetName]],
+          weatherDifficultyMultiplier
+        );
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 
         if (weather == LevelWeatherType.None && canBeDustClouds)

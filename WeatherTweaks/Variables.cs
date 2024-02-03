@@ -57,7 +57,11 @@ namespace WeatherTweaks
       return weathersToChooseFrom;
     }
 
-    internal static List<LevelWeatherType> GetPlanetWeightedList(SelectableLevel level, Dictionary<LevelWeatherType, int> weights)
+    internal static List<LevelWeatherType> GetPlanetWeightedList(
+      SelectableLevel level,
+      Dictionary<LevelWeatherType, int> weights,
+      float difficulty = 0
+    )
     {
       var weatherList = new List<LevelWeatherType>();
 
@@ -66,6 +70,11 @@ namespace WeatherTweaks
         var weatherType = weather;
         var weatherWeight = weights[weatherType];
         Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
+
+        if (difficulty != 0 && weatherType == LevelWeatherType.None)
+        {
+          weatherWeight = (int)(weatherWeight * difficulty);
+        }
 
         for (var i = 0; i < weatherWeight; i++)
         {
