@@ -30,7 +30,7 @@ namespace WeatherTweaks
 
       int howManyPlanetsUncertain = Mathf.Clamp(
         (int)(
-          (double)Mathf.Clamp(startOfRound.planetsWeatherRandomCurve.Evaluate((float)random.NextDouble()) * 10f, 0.0f, 1f)
+          (double)Mathf.Clamp(startOfRound.planetsWeatherRandomCurve.Evaluate((float)random.NextDouble()) * 0.4f, 0.0f, 1f)
           * (double)Variables.GameLevels.Count
         ),
         0,
@@ -60,7 +60,7 @@ namespace WeatherTweaks
 
       foreach (SelectableLevel uncertainLevel in whereWeatherUncertain)
       {
-        int uncertainType = random.Next(0, 4);
+        int uncertainType = random.Next(0, 5);
 
         switch (uncertainType)
         {
