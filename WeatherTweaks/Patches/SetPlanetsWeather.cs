@@ -37,6 +37,9 @@ namespace WeatherTweaks
         Dictionary<string, LevelWeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
         GameInteraction.SetWeather(newWeathers);
         NetworkedConfig.SetWeather(newWeathers);
+        UncertainWeather.GenerateUncertainty();
+
+        __instance.SetMapScreenInfoToCurrentLevel();
 
         if (isLobby)
         {

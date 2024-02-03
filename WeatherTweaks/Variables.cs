@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -9,10 +10,36 @@ namespace WeatherTweaks
   internal class Variables
   {
     public static List<SelectableLevel> GameLevels = [];
+    public static Dictionary<string, SelectableLevel> PlanetNames = [];
 
     internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound)
     {
       GameLevels = startOfRound.levels.Where(level => level.PlanetName != "71 Gordion").ToList();
+
+      GameLevels.ForEach(level =>
+      {
+        if (!PlanetNames.ContainsKey(level.PlanetName))
+        {
+          string replacedPlanetName = Regex.Replace(level.PlanetName, @"\d", "").Trim();
+          string splitPlanetName = replacedPlanetName.Split(' ')[0];
+
+          PlanetNames.Add(level.PlanetName, level);
+          Plugin.logger.LogDebug($"Added {level.PlanetName} to PlanetNames");
+
+          if (level.PlanetName != replacedPlanetName)
+          {
+            PlanetNames.Add(replacedPlanetName, level);
+            Plugin.logger.LogDebug($"Added {replacedPlanetName} to PlanetNames");
+          }
+
+          if (splitPlanetName != replacedPlanetName)
+          {
+            PlanetNames.Add(splitPlanetName, level);
+            Plugin.logger.LogDebug($"Added {splitPlanetName} to PlanetNames");
+          }
+        }
+      });
+
       return GameLevels;
     }
 
