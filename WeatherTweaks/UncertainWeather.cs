@@ -14,7 +14,7 @@ namespace WeatherTweaks
     {
       uncertainWeathers.Clear();
 
-      if (!ConfigManager.UncertainWeatherEnabled.Value)
+      if (!ConfigManager.UncertainWeatherEnabled.Value || !ConfigManager.TerminalPatchEnabled.Value || !ConfigManager.MapScreenPatch.Value)
       {
         Plugin.logger.LogInfo("Uncertain weathers are disabled.");
         return uncertainWeathers;
