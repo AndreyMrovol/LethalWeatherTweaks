@@ -97,7 +97,15 @@ namespace WeatherTweaks
             }
             break;
           default:
-            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is certain.");
+            if (ConfigManager.AlwaysUncertain.Value)
+            {
+              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is uncertain.");
+              uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, false));
+            }
+            else
+            {
+              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is certain.");
+            }
             break;
         }
       }
