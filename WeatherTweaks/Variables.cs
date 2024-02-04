@@ -69,12 +69,13 @@ namespace WeatherTweaks
       {
         var weatherType = weather;
         var weatherWeight = weights[weatherType];
-        Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
 
         if (difficulty != 0 && weatherType == LevelWeatherType.None)
         {
-          weatherWeight = (int)(weatherWeight * difficulty);
+          weatherWeight = (int)(weatherWeight * (1 - difficulty));
         }
+
+        Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
 
         for (var i = 0; i < weatherWeight; i++)
         {

@@ -35,6 +35,8 @@ namespace WeatherTweaks
 
       float weatherDifficultyMultiplier = quota * 0.05f;
 
+      Plugin.logger.LogDebug($"Difficulty multiplier: {weatherDifficultyMultiplier}");
+
       if (day == 0)
       {
         seed = ConfigManager.FirstDaySeed.Value;
