@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BepInEx.Logging;
 using HarmonyLib;
-using Newtonsoft.Json;
-using TMPro;
 using UnityEngine;
 
 namespace WeatherTweaks
@@ -13,65 +9,75 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(Terminal))]
   public static class TextPostProcessPatch
   {
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks Terminal");
+
     [HarmonyPatch("TextPostProcess")]
-    [HarmonyPostfix]
-    private static string GameMethodPatch(string __result)
+    [HarmonyPrefix]
+    private static bool PatchGameMethod(ref string modifiedDisplayText, TerminalNode node)
     {
-      if (!ConfigManager.TerminalPatchEnabled.Value)
+      if (node.buyRerouteToMoon == -2)
       {
-        return __result;
-      }
+        // Re-route dialog
 
-      if (!__result.Contains("Experimentation"))
-      {
-        return __result;
-      }
+        logger.LogDebug("buyRerouteToMoon == -2");
+        Regex regex = new Regex(@"\ It is (\n)*currently.+\[currentPlanetTime].+");
 
-      // split string by new line
-      string[] lines = __result.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-      // line format example : "* Assurance (Rainy)", "* EGypt (Eclipsed)", * March (Eclipsed)
-      // we need to remove the weather type from the string, but add it's uncertain version (if available)
-
-      for (int i = 0; i < lines.Length; i++)
-      {
-        string line = lines[i];
-        string[] parts = line.Split(' ');
-
-        if (parts.Length > 1)
+        if (regex.IsMatch(modifiedDisplayText))
         {
-          string planetName = parts[1];
-          // check which planet has the same name
-
-          if (!Variables.PlanetNames.ContainsKey(planetName))
-          {
-            Plugin.logger.LogDebug($"Planet name {planetName} not found in the list of planets");
-            continue;
-          }
-
-          Plugin.logger.LogDebug($"Checking weather type for {planetName}");
-          var level = StartOfRound.Instance.levels.FirstOrDefault(l => l.PlanetName.Contains(parts[1]));
-
-          Plugin.logger.LogDebug($"Checking weather type for {level.PlanetName}");
-
-          if (UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName))
-          {
-            Plugin.logger.LogDebug($"Replacing weather type for {level.PlanetName} with {UncertainWeather.uncertainWeathers[level.PlanetName]}");
-            string uncertainWeather = UncertainWeather.uncertainWeathers[level.PlanetName];
-
-            // check if uncertainweather has [ or ] or < or > in it
-            if (!Regex.IsMatch(uncertainWeather, @"\[|\]|\<|\>"))
-            {
-              uncertainWeather = $"({uncertainWeather})";
-            }
-
-            lines[i] = $"{parts[0]} {Regex.Replace(level.PlanetName, @"\d", "").Trim()} {uncertainWeather}";
-          }
+          modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
         }
       }
-      __result = string.Join("\n", lines);
 
-      return __result;
+      if (node.name == "MoonsCatalogue")
+      {
+        // Moon catalogue
+
+        logger.LogDebug("Moon catalogue");
+        Regex regex = new Regex(@"(?:\[companyBuyingPercent\]\.)(.|\n)*$");
+        Regex planetnameRegex = new Regex(@"\d+\ *");
+
+        if (regex.IsMatch(modifiedDisplayText))
+        {
+          modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
+        }
+        else
+        {
+          return true;
+        }
+
+        StringBuilder stringBuilder = new();
+        stringBuilder.Append(modifiedDisplayText);
+        stringBuilder.Append($"{Mathf.RoundToInt(StartOfRound.Instance.companyBuyingRate * 100f)}%");
+        stringBuilder.Append("\n\n");
+
+        var levels = Variables.GameLevels;
+        foreach (var level in levels)
+        {
+          string currentWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName)
+            ? UncertainWeather.uncertainWeathers[level.PlanetName]
+            : level.currentWeather.ToString();
+
+          if (currentWeather == "None")
+          {
+            currentWeather = "";
+          }
+          else if (currentWeather.Contains("[") || currentWeather.Contains("]"))
+          {
+            //
+          }
+          else
+          {
+            currentWeather = $"({currentWeather})";
+          }
+
+          stringBuilder.Append($"* {planetnameRegex.Replace(level.PlanetName, "")} {currentWeather}");
+          stringBuilder.Append("\r\n");
+        }
+
+        modifiedDisplayText = stringBuilder.ToString();
+      }
+
+      return true;
     }
   }
 }
