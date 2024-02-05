@@ -117,8 +117,8 @@ namespace WeatherTweaks
       Uncertain5050 = configFile.Bind("0> Uncertain", "Uncertain5050", true, "Enable displaying 50/50 weather (e.g. Rainy/Flooded)");
       UncertainUnknown = configFile.Bind("0> Uncertain", "UncertainUnknown", true, "Enable displaying unknown weather (e.g. [UNKNOWN])");
 
-      AlwaysUncertain = configFile.Bind("0> Mode: Always", "AlwaysUncertain", false, "Always make weather uncertain");
-      AlwaysUnknown = configFile.Bind("0> Mode: Always", "AlwaysUnknown", false, "Always make weather unknown");
+      AlwaysUncertain = configFile.Bind("0a> Mode: Always", "AlwaysUncertain", false, "Always make weather uncertain");
+      AlwaysUnknown = configFile.Bind("0a> Mode: Always", "AlwaysUnknown", false, "Always make weather unknown");
 
       NoneToNoneWeight = configFile.Bind("1> No weather", "NoneToNoneWeight", 80, "Weight for changing from none to none");
       NoneToRainyWeight = configFile.Bind("1> No weather", "NoneToRainyWeight", 50, "Weight for changing from none to rainy");
