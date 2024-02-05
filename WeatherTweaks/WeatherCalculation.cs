@@ -52,6 +52,7 @@ namespace WeatherTweaks
         {
           // for every 3 levels above 9 (vanilla amount), add another planet without weather
           int planetsWithoutWeather = (levels.Count - 9) / 3;
+          Plugin.logger.LogDebug($"Planets without weather: {planetsWithoutWeather}");
 
           for (int i = 0; i < planetsWithoutWeather; i++)
           {
@@ -198,10 +199,11 @@ namespace WeatherTweaks
         // var randomWeathers = level.randomWeathers.ToList();
         Plugin.logger.LogDebug($"randomWeathers count: {randomWeathers.Count}");
         randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
-        randomWeathers.RemoveAll(x => x.weatherType == LevelWeatherType.Eclipsed);
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
         possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
+
+        randomWeathers.RemoveAll(x => x.weatherType == LevelWeatherType.Eclipsed);
 
         if (randomWeathers.Count == 0 || randomWeathers == null)
         {
