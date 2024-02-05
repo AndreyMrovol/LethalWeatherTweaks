@@ -19,6 +19,10 @@
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
 
         <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.1.0" />
+
+        <Reference Include="LethalLevelLoader" PrivateAssets="All">
+            <HintPath>../lib/LethalLevelLoader.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

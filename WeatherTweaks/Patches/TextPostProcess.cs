@@ -28,55 +28,6 @@ namespace WeatherTweaks
         }
       }
 
-      if (node.name == "MoonsCatalogue")
-      {
-        // Moon catalogue
-
-        logger.LogDebug("Moon catalogue");
-        Regex regex = new Regex(@"(?:\[companyBuyingPercent\]\.)(.|\n)*$");
-        Regex planetnameRegex = new Regex(@"\d+\ *");
-
-        if (regex.IsMatch(modifiedDisplayText))
-        {
-          modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
-        }
-        else
-        {
-          return true;
-        }
-
-        StringBuilder stringBuilder = new();
-        stringBuilder.Append(modifiedDisplayText);
-        stringBuilder.Append($"{Mathf.RoundToInt(StartOfRound.Instance.companyBuyingRate * 100f)}%");
-        stringBuilder.Append("\n\n");
-
-        var levels = Variables.GameLevels;
-        foreach (var level in levels)
-        {
-          string currentWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName)
-            ? UncertainWeather.uncertainWeathers[level.PlanetName]
-            : level.currentWeather.ToString();
-
-          if (currentWeather == "None")
-          {
-            currentWeather = "";
-          }
-          else if (currentWeather.Contains("[") || currentWeather.Contains("]"))
-          {
-            //
-          }
-          else
-          {
-            currentWeather = $"({currentWeather})";
-          }
-
-          stringBuilder.Append($"* {planetnameRegex.Replace(level.PlanetName, "")} {currentWeather}");
-          stringBuilder.Append("\r\n");
-        }
-
-        modifiedDisplayText = stringBuilder.ToString();
-      }
-
       return true;
     }
   }
