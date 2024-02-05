@@ -66,6 +66,8 @@ namespace WeatherTweaks
     {
       var weatherList = new List<LevelWeatherType>();
 
+      difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
+
       foreach (var weather in GetPlanetPossibleWeathers(level))
       {
         var weatherType = weather;

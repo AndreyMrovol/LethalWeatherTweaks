@@ -32,6 +32,7 @@ namespace WeatherTweaks
 
     public static ConfigEntry<float> GameLengthMultiplier { get; private set; }
     public static ConfigEntry<float> GamePlayersMultiplier { get; private set; }
+    public static ConfigEntry<float> MaxMultiplier { get; private set; }
 
     // per-weather weights
 
@@ -125,6 +126,7 @@ namespace WeatherTweaks
 
       GameLengthMultiplier = configFile.Bind("0b> Multipliers", "GameLengthMultiplier", 0.05f, "Multiplier for game length (quotas done)");
       GamePlayersMultiplier = configFile.Bind("0b> Multipliers", "GamePlayersMultiplier", 0.01f, "Multiplier for players amount");
+      MaxMultiplier = configFile.Bind("0b> Multipliers", "MaxMultiplier", 0.8f, "Maximum total multiplier");
 
       NoneToNoneWeight = configFile.Bind("1> No weather", "NoneToNoneWeight", 80, "Weight for changing from none to none");
       NoneToRainyWeight = configFile.Bind("1> No weather", "NoneToRainyWeight", 50, "Weight for changing from none to rainy");
