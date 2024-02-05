@@ -73,7 +73,7 @@ namespace WeatherTweaks
 
         if (difficulty != 0 && weatherType == LevelWeatherType.None)
         {
-          weatherWeight = Math.Clamp((int)(weatherWeight * (1 - difficulty)), 0, 1);
+          weatherWeight = (int)(weatherWeight * (1 - difficulty));
         }
 
         Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
