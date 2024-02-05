@@ -12,6 +12,7 @@ namespace WeatherTweaks
     public static void Init()
     {
       currentWeatherSynced.OnValueChanged += WeatherDataReceived;
+      currentWeatherStringsSynced.OnValueChanged += WeatherDisplayDataReceived;
     }
 
     public static void WeatherDataReceived(string weatherData)
