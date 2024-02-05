@@ -10,6 +10,14 @@ namespace WeatherTweaks
   {
     public static Dictionary<string, string> uncertainWeathers = new();
 
+    public enum UncertainWeatherType
+    {
+      Certain = 0,
+      Uncertain = 1,
+      Uncertain5050 = 2,
+      Unknown = 3
+    }
+
     public static Dictionary<string, string> GenerateUncertainty()
     {
       uncertainWeathers.Clear();
@@ -43,7 +51,7 @@ namespace WeatherTweaks
         Variables.GameLevels.Count - 2
       );
 
-      if (ConfigManager.AlwaysUncertain.Value)
+      if (ConfigManager.AlwaysUncertain.Value || ConfigManager.AlwaysUnknown.Value)
       {
         howManyPlanetsUncertain = Variables.GameLevels.Count;
       }
@@ -67,51 +75,71 @@ namespace WeatherTweaks
       }
 
       // create uncertainty strings
-      Dictionary<string, string> uncertainWeather = new();
+      Dictionary<string, string> uncertainWeathersRolled = [];
+      List<UncertainWeatherType> uncertainTypes = [];
+
+      if (!ConfigManager.AlwaysUncertain.Value && !ConfigManager.AlwaysUnknown.Value)
+      {
+        Plugin.logger.LogDebug("Adding certain type.");
+        uncertainTypes.Add(UncertainWeatherType.Uncertain);
+      }
+
+      if (ConfigManager.UncertainUncertain.Value)
+      {
+        Plugin.logger.LogDebug("Adding uncertain type.");
+        uncertainTypes.Add(UncertainWeatherType.Uncertain);
+      }
+
+      if (ConfigManager.Uncertain5050.Value)
+      {
+        Plugin.logger.LogDebug("Adding uncertain 50/50 type.");
+        uncertainTypes.Add(UncertainWeatherType.Uncertain5050);
+      }
+
+      if (ConfigManager.UncertainUnknown.Value)
+      {
+        Plugin.logger.LogDebug("Adding unknown type.");
+        uncertainTypes.Add(UncertainWeatherType.Unknown);
+      }
+
+      if (ConfigManager.AlwaysUnknown.Value)
+      {
+        Plugin.logger.LogDebug("Setting possible types to only unknown.");
+        uncertainTypes.Clear();
+        uncertainTypes.Add(UncertainWeatherType.Unknown);
+      }
+
+      Plugin.logger.LogDebug($"uncertainTypes: {uncertainTypes.Count}");
 
       foreach (SelectableLevel uncertainLevel in whereWeatherUncertain)
       {
-        int uncertainType = random.Next(0, 5);
+        int rolledType = random.Next(uncertainTypes.Count);
+        // roll for uncertain type from uncertainTypes list, resolve it, log and add to dictionary
 
-        switch (uncertainType)
+        // convert rolledType to UncertainWeatherType
+
+        switch (uncertainTypes[rolledType])
         {
-          case 1:
-            if (ConfigManager.UncertainUncertain.Value)
-            {
-              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is uncertain.");
-              uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, false));
-            }
+          case UncertainWeatherType.Uncertain:
+            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is uncertain.");
+            uncertainWeathersRolled.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random));
             break;
-          case 2:
-            if (ConfigManager.Uncertain5050.Value)
-            {
-              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is probable.");
-              uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, true));
-            }
+          case UncertainWeatherType.Uncertain5050:
+            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is probable.");
+            uncertainWeathersRolled.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, true));
             break;
-          case 3:
-            if (ConfigManager.UncertainUnknown.Value)
-            {
-              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is unknown.");
-              uncertainWeather.Add(uncertainLevel.PlanetName, "[UNKNOWN]");
-            }
+          case UncertainWeatherType.Unknown:
+            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is unknown.");
+            uncertainWeathersRolled.Add(uncertainLevel.PlanetName, "[UNKNOWN]");
             break;
-          default:
-            if (ConfigManager.AlwaysUncertain.Value)
-            {
-              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is uncertain.");
-              uncertainWeather.Add(uncertainLevel.PlanetName, GetUncertainString(uncertainLevel, random, false));
-            }
-            else
-            {
-              Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is certain.");
-            }
+          case UncertainWeatherType.Certain:
+            Plugin.logger.LogDebug($"Weather on {uncertainLevel.PlanetName} is certain.");
             break;
         }
       }
 
-      uncertainWeathers = uncertainWeather;
-      return uncertainWeather;
+      uncertainWeathers = uncertainWeathersRolled;
+      return uncertainWeathersRolled;
     }
 
     private static string GetUncertainString(SelectableLevel level, System.Random random, bool pickTwo = false)
