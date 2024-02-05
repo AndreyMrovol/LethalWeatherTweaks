@@ -33,9 +33,12 @@ namespace WeatherTweaks
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
 
-      float weatherDifficultyMultiplier = quota * 0.05f;
+      float lengthMultiplier = quota * ConfigManager.GameLengthMultiplier.Value;
+      float playerMultiplier = StartOfRound.Instance.livingPlayers * ConfigManager.GamePlayersMultiplier.Value;
 
-      Plugin.logger.LogDebug($"Difficulty multiplier: {weatherDifficultyMultiplier}");
+      float difficultyMultiplier = lengthMultiplier + playerMultiplier;
+
+      Plugin.logger.LogDebug($"Difficulty multiplier: {difficultyMultiplier}");
 
       if (day == 0)
       {
@@ -135,7 +138,7 @@ namespace WeatherTweaks
         var weatherWeights = Variables.GetPlanetWeightedList(
           level,
           ConfigManager.Weights[previousDayWeather[level.PlanetName]],
-          weatherDifficultyMultiplier
+          difficultyMultiplier
         );
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 

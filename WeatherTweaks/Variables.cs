@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -72,7 +73,7 @@ namespace WeatherTweaks
 
         if (difficulty != 0 && weatherType == LevelWeatherType.None)
         {
-          weatherWeight = (int)(weatherWeight * (1 - difficulty));
+          weatherWeight = Math.Clamp((int)(weatherWeight * (1 - difficulty)), 0, 1);
         }
 
         Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
