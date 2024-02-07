@@ -13,6 +13,7 @@ namespace WeatherTweaks
   {
     [HarmonyPatch("SetMapScreenInfoToCurrentLevel")]
     [HarmonyPostfix]
+    [HarmonyPriority(Priority.Last)]
     internal static void GameMethodPatch(ref TextMeshProUGUI ___screenLevelDescription, ref SelectableLevel ___currentLevel)
     {
       if (!ConfigManager.MapScreenPatch.Value)
