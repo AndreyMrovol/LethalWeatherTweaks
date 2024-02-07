@@ -13,6 +13,7 @@ namespace WeatherTweaks
 
     [HarmonyPatch("TextPostProcess")]
     [HarmonyPrefix]
+    [HarmonyPriority(Priority.VeryHigh)]
     private static bool PatchGameMethod(ref string modifiedDisplayText, TerminalNode node)
     {
       if (node.buyRerouteToMoon == -2)
@@ -20,12 +21,18 @@ namespace WeatherTweaks
         // Re-route dialog
 
         logger.LogDebug("buyRerouteToMoon == -2");
-        Regex regex = new Regex(@"\ It is (\n)*currently.+\[currentPlanetTime].+");
+        Regex regex = new(@"\ It is (\n)*currently.+\[currentPlanetTime].+");
 
         if (regex.IsMatch(modifiedDisplayText))
         {
           modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
         }
+      }
+
+      if (node.name == "MoonsCatalogue")
+      {
+        Regex regex = new(@"\[planetTime\]");
+        modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
       }
 
       return true;
