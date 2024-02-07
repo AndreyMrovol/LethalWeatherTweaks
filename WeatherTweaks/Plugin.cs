@@ -14,6 +14,10 @@ namespace WeatherTweaks
       logger = Logger;
 
       var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+
+      var MapScreenInfo = typeof(StartOfRound).GetMethod("SetMapScreenInfoToCurrentLevel");
+      harmony.Unpatch(MapScreenInfo, HarmonyPatchType.All);
+
       harmony.PatchAll();
 
       NetworkedConfig.Init();
