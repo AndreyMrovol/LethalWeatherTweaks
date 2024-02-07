@@ -81,6 +81,13 @@ namespace WeatherTweaks
           ? vanillaSelectedWeather[level.PlanetName]
           : LevelWeatherType.None;
 
+        if (ConfigManager.AlwaysClear.Value)
+        {
+          Plugin.logger.LogDebug("AlwaysClear is true, setting weather to None");
+          currentWeather[level.PlanetName] = LevelWeatherType.None;
+          continue;
+        }
+
         // the weather should be more random by making it less random:
 
         // possible weathers taken from level.randomWeathers
@@ -189,6 +196,13 @@ namespace WeatherTweaks
       {
         string planetName = level.PlanetName;
         Plugin.logger.LogDebug($"planet: {planetName}");
+
+        if (ConfigManager.AlwaysClear.Value)
+        {
+          Plugin.logger.LogDebug("AlwaysClear is true, setting weather to None");
+          selectedWeathers[level.PlanetName] = LevelWeatherType.None;
+          continue;
+        }
 
         var randomWeathers = level
           .randomWeathers.Where(randomWeather =>

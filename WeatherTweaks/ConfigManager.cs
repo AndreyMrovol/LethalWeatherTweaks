@@ -25,6 +25,7 @@ namespace WeatherTweaks
 
     public static ConfigEntry<bool> AlwaysUncertain { get; private set; }
     public static ConfigEntry<bool> AlwaysUnknown { get; private set; }
+    public static ConfigEntry<bool> AlwaysClear { get; private set; }
 
     public static ConfigEntry<bool> UncertainUncertain { get; private set; }
     public static ConfigEntry<bool> Uncertain5050 { get; private set; }
@@ -123,6 +124,7 @@ namespace WeatherTweaks
 
       AlwaysUncertain = configFile.Bind("0a> Mode: Always", "AlwaysUncertain", false, "Always make weather uncertain");
       AlwaysUnknown = configFile.Bind("0a> Mode: Always", "AlwaysUnknown", false, "Always make weather unknown");
+      AlwaysClear = configFile.Bind("0a> Mode: Always", "AlwaysClear", false, "Always make weather clear - for when you hate fun");
 
       GameLengthMultiplier = configFile.Bind("0b> Multipliers", "GameLengthMultiplier", 0.05f, "Multiplier for game length (quotas done)");
       GamePlayersMultiplier = configFile.Bind("0b> Multipliers", "GamePlayersMultiplier", 0.01f, "Multiplier for players amount");
