@@ -158,7 +158,7 @@ namespace WeatherTweaks
         try
         {
           Plugin.logger.LogDebug(
-            $"Chance for that was {ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather]} / {weatherWeights.Count} ({(float)ConfigManager.Weights[previousDayWeather[level.PlanetName]][weather] / weatherWeights.Count * 100}%)"
+            $"Chance for that was {weatherWeights.Where(x => x == weather).Count()} / {weatherWeights.Count} ({(float)weatherWeights.Where(x => x == weather).Count() / weatherWeights.Count * 100}%)"
           );
         }
         catch { }
