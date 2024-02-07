@@ -28,6 +28,12 @@ namespace WeatherTweaks
         return uncertainWeathers;
       }
 
+      if (StartOfRound.Instance.gameStats.daysSpent == 0)
+      {
+        Plugin.logger.LogInfo("It's the first day, no uncertainty will be generated.");
+        return uncertainWeathers;
+      }
+
       Plugin.logger.LogInfo("GenerateUncertainty called.");
       StartOfRound startOfRound = StartOfRound.Instance;
       System.Random random = new(startOfRound.randomMapSeed + 31);
