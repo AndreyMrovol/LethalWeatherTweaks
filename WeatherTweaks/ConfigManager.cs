@@ -16,8 +16,8 @@ namespace WeatherTweaks
 
     // i love creating config hell
 
-    public static ConfigEntry<bool> TerminalPatchEnabled { get; private set; }
     public static ConfigEntry<bool> MapScreenPatch { get; private set; }
+    public static ConfigEntry<bool> TerminalForcePatch { get; private set; }
 
     public static ConfigEntry<int> FirstDaySeed { get; private set; }
 
@@ -106,71 +106,107 @@ namespace WeatherTweaks
 
       // create config entries
 
-      TerminalPatchEnabled = configFile.Bind(
-        "0> General",
-        "TerminalPatchEnabled",
-        true,
-        "Enable terminal patch - disabling will disable uncertain weathers"
-      );
       MapScreenPatch = configFile.Bind("0> General", "MapScreenPatch", true, "Enable map screen patch (weather in top row)");
+      TerminalForcePatch = configFile.Bind(
+        "0> General",
+        "TerminalForcePatch",
+        false,
+        "Forcefully patch terminal weathers (will break things, use only if you know what you're doing)"
+      );
 
-      FirstDaySeed = configFile.Bind("0> General", "FirstDaySeed", 0, "Seed for the first day's weather");
+      UncertainWeatherEnabled = configFile.Bind("1> Uncertain weather", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
 
-      UncertainWeatherEnabled = configFile.Bind("0> General", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
+      UncertainUncertain = configFile.Bind(
+        "1a> Uncertain mechanics",
+        "UncertainUncertain",
+        true,
+        "Enable displaying uncertain weather (e.g. Eclipsed?)"
+      );
+      Uncertain5050 = configFile.Bind("1a> Uncertain mechanics", "Uncertain5050", true, "Enable displaying 50/50 weather (e.g. Rainy/Flooded)");
+      UncertainUnknown = configFile.Bind(
+        "1a> Uncertain mechanics",
+        "UncertainUnknown",
+        true,
+        "Enable displaying unknown weather (e.g. [UNKNOWN])"
+      );
 
-      UncertainUncertain = configFile.Bind("0> Uncertain", "UncertainUncertain", true, "Enable displaying uncertain weather (e.g. Eclipsed?)");
-      Uncertain5050 = configFile.Bind("0> Uncertain", "Uncertain5050", true, "Enable displaying 50/50 weather (e.g. Rainy/Flooded)");
-      UncertainUnknown = configFile.Bind("0> Uncertain", "UncertainUnknown", true, "Enable displaying unknown weather (e.g. [UNKNOWN])");
+      MaxMultiplier = configFile.Bind("2> Multipliers", "MaxMultiplier", 0.8f, "Maximum difficulty multiplier (between 0 and 1)");
 
-      AlwaysUncertain = configFile.Bind("0a> Mode: Always", "AlwaysUncertain", false, "Always make weather uncertain");
-      AlwaysUnknown = configFile.Bind("0a> Mode: Always", "AlwaysUnknown", false, "Always make weather unknown");
-      AlwaysClear = configFile.Bind("0a> Mode: Always", "AlwaysClear", false, "Always make weather clear - for when you hate fun");
+      GameLengthMultiplier = configFile.Bind(
+        "2a> Difficulty multipliers",
+        "GameLengthMultiplier",
+        0.05f,
+        "Difficulty multiplier - game length (quotas done)"
+      );
+      GamePlayersMultiplier = configFile.Bind(
+        "2a> Difficulty multipliers",
+        "GamePlayersMultiplier",
+        0.01f,
+        "Difficulty multiplier - players amount"
+      );
 
-      GameLengthMultiplier = configFile.Bind("0b> Multipliers", "GameLengthMultiplier", 0.05f, "Multiplier for game length (quotas done)");
-      GamePlayersMultiplier = configFile.Bind("0b> Multipliers", "GamePlayersMultiplier", 0.01f, "Multiplier for players amount");
-      MaxMultiplier = configFile.Bind("0b> Multipliers", "MaxMultiplier", 0.8f, "Maximum total multiplier");
+      FirstDaySeed = configFile.Bind("3> First day", "FirstDaySeed", 0, "Seed for the first day's weather");
 
-      NoneToNoneWeight = configFile.Bind("1> No weather", "NoneToNoneWeight", 80, "Weight for changing from none to none");
-      NoneToRainyWeight = configFile.Bind("1> No weather", "NoneToRainyWeight", 50, "Weight for changing from none to rainy");
-      NoneToStormyWeight = configFile.Bind("1> No weather", "NoneToStormyWeight", 35, "Weight for changing from none to stormy");
-      NoneToFloodedWeight = configFile.Bind("1> No weather", "NoneToFloodedWeight", 10, "Weight for changing from none to flooded");
-      NoneToFoggyWeight = configFile.Bind("1> No weather", "NoneToFoggyWeight", 20, "Weight for changing from none to foggy");
-      NoneToEclipsedWeight = configFile.Bind("1> No weather", "NoneToEclipsedWeight", 5, "Weight for changing from none to eclipsed");
+      AlwaysUncertain = configFile.Bind("4> Special modes", "AlwaysUncertain", false, "Always make weather uncertain");
+      AlwaysUnknown = configFile.Bind("4> Special modes", "AlwaysUnknown", false, "Always make weather unknown");
+      AlwaysClear = configFile.Bind("4> Special modes", "AlwaysClear", false, "Always make weather clear - good for testing");
 
-      RainyToNoneWeight = configFile.Bind("2> Rainy", "RainyToNoneWeight", 50, "Weight for changing from rainy to none");
-      RainyToRainyWeight = configFile.Bind("2> Rainy", "RainyToRainyWeight", 30, "Weight for changing from rainy to rainy");
-      RainyToStormyWeight = configFile.Bind("2> Rainy", "RainyToStormyWeight", 20, "Weight for changing from rainy to stormy");
-      RainyToFloodedWeight = configFile.Bind("2> Rainy", "RainyToFloodedWeight", 15, "Weight for changing from rainy to flooded");
-      RainyToFoggyWeight = configFile.Bind("2> Rainy", "RainyToFoggyWeight", 25, "Weight for changing from rainy to foggy");
-      RainyToEclipsedWeight = configFile.Bind("2> Rainy", "RainyToEclipsedWeight", 10, "Weight for changing from rainy to eclipsed");
+      NoneToNoneWeight = configFile.Bind("Weights > Clear", "NoneToNoneWeight", 80, "Weight for changing from none to none");
+      NoneToRainyWeight = configFile.Bind("Weights > Clear", "NoneToRainyWeight", 50, "Weight for changing from none to rainy");
+      NoneToStormyWeight = configFile.Bind("Weights > Clear", "NoneToStormyWeight", 35, "Weight for changing from none to stormy");
+      NoneToFloodedWeight = configFile.Bind("Weights > Clear", "NoneToFloodedWeight", 10, "Weight for changing from none to flooded");
+      NoneToFoggyWeight = configFile.Bind("Weights > Clear", "NoneToFoggyWeight", 20, "Weight for changing from none to foggy");
+      NoneToEclipsedWeight = configFile.Bind("Weights > Clear", "NoneToEclipsedWeight", 5, "Weight for changing from none to eclipsed");
 
-      StormyToNoneWeight = configFile.Bind("3> Stormy", "StormyToNoneWeight", 80, "Weight for changing from stormy to none");
-      StormyToRainyWeight = configFile.Bind("3> Stormy", "StormyToRainyWeight", 55, "Weight for changing from stormy to rainy");
-      StormyToStormyWeight = configFile.Bind("3> Stormy", "StormyToStormyWeight", 5, "Weight for changing from stormy to stormy");
-      StormyToFloodedWeight = configFile.Bind("3> Stormy", "StormyToFloodedWeight", 60, "Weight for changing from stormy to flooded");
-      StormyToFoggyWeight = configFile.Bind("3> Stormy", "StormyToFoggyWeight", 10, "Weight for changing from stormy to foggy");
-      StormyToEclipsedWeight = configFile.Bind("3> Stormy", "StormyToEclipsedWeight", 40, "Weight for changing from stormy to eclipsed");
+      RainyToNoneWeight = configFile.Bind("Weights > Rainy", "RainyToNoneWeight", 50, "Weight for changing from rainy to none");
+      RainyToRainyWeight = configFile.Bind("Weights > Rainy", "RainyToRainyWeight", 30, "Weight for changing from rainy to rainy");
+      RainyToStormyWeight = configFile.Bind("Weights > Rainy", "RainyToStormyWeight", 20, "Weight for changing from rainy to stormy");
+      RainyToFloodedWeight = configFile.Bind("Weights > Rainy", "RainyToFloodedWeight", 15, "Weight for changing from rainy to flooded");
+      RainyToFoggyWeight = configFile.Bind("Weights > Rainy", "RainyToFoggyWeight", 25, "Weight for changing from rainy to foggy");
+      RainyToEclipsedWeight = configFile.Bind("Weights > Rainy", "RainyToEclipsedWeight", 10, "Weight for changing from rainy to eclipsed");
 
-      FloodedToNoneWeight = configFile.Bind("4> Flooded", "FloodedToNoneWeight", 80, "Weight for changing from flooded to none");
-      FloodedToRainyWeight = configFile.Bind("4> Flooded", "FloodedToRainyWeight", 30, "Weight for changing from flooded to rainy");
-      FloodedToStormyWeight = configFile.Bind("4> Flooded", "FloodedToStormyWeight", 25, "Weight for changing from flooded to stormy");
-      FloodedToFloodedWeight = configFile.Bind("4> Flooded", "FloodedToFloodedWeight", 5, "Weight for changing from flooded to flooded");
-      FloodedToFoggyWeight = configFile.Bind("4> Flooded", "FloodedToFoggyWeight", 30, "Weight for changing from flooded to foggy");
-      FloodedToEclipsedWeight = configFile.Bind("4> Flooded", "FloodedToEclipsedWeight", 20, "Weight for changing from flooded to eclipsed");
+      StormyToNoneWeight = configFile.Bind("Weights > Stormy", "StormyToNoneWeight", 80, "Weight for changing from stormy to none");
+      StormyToRainyWeight = configFile.Bind("Weights > Stormy", "StormyToRainyWeight", 55, "Weight for changing from stormy to rainy");
+      StormyToStormyWeight = configFile.Bind("Weights > Stormy", "StormyToStormyWeight", 5, "Weight for changing from stormy to stormy");
+      StormyToFloodedWeight = configFile.Bind("Weights > Stormy", "StormyToFloodedWeight", 60, "Weight for changing from stormy to flooded");
+      StormyToFoggyWeight = configFile.Bind("Weights > Stormy", "StormyToFoggyWeight", 10, "Weight for changing from stormy to foggy");
+      StormyToEclipsedWeight = configFile.Bind("Weights > Stormy", "StormyToEclipsedWeight", 40, "Weight for changing from stormy to eclipsed");
 
-      FoggyToNoneWeight = configFile.Bind("5> Foggy", "FoggyToNoneWeight", 100, "Weight for changing from foggy to none");
-      FoggyToRainyWeight = configFile.Bind("5> Foggy", "FoggyToRainyWeight", 30, "Weight for changing from foggy to rainy");
-      FoggyToStormyWeight = configFile.Bind("5> Foggy", "FoggyToStormyWeight", 25, "Weight for changing from foggy to stormy");
-      FoggyToFloodedWeight = configFile.Bind("5> Foggy", "FoggyToFloodedWeight", 5, "Weight for changing from foggy to flooded");
-      FoggyToFoggyWeight = configFile.Bind("5> Foggy", "FoggyToFoggyWeight", 15, "Weight for changing from foggy to foggy");
-      FoggyToEclipsedWeight = configFile.Bind("5> Foggy", "FoggyToEclipsedWeight", 10, "Weight for changing from foggy to eclipsed");
+      FloodedToNoneWeight = configFile.Bind("Weights > Flooded", "FloodedToNoneWeight", 80, "Weight for changing from flooded to none");
+      FloodedToRainyWeight = configFile.Bind("Weights > Flooded", "FloodedToRainyWeight", 30, "Weight for changing from flooded to rainy");
+      FloodedToStormyWeight = configFile.Bind("Weights > Flooded", "FloodedToStormyWeight", 25, "Weight for changing from flooded to stormy");
+      FloodedToFloodedWeight = configFile.Bind("Weights > Flooded", "FloodedToFloodedWeight", 5, "Weight for changing from flooded to flooded");
+      FloodedToFoggyWeight = configFile.Bind("Weights > Flooded", "FloodedToFoggyWeight", 30, "Weight for changing from flooded to foggy");
+      FloodedToEclipsedWeight = configFile.Bind(
+        "Weights > Flooded",
+        "FloodedToEclipsedWeight",
+        20,
+        "Weight for changing from flooded to eclipsed"
+      );
 
-      EclipsedToNoneWeight = configFile.Bind("6> Eclipsed", "EclipsedToNoneWeight", 150, "Weight for changing from eclipsed to none");
-      EclipsedToRainyWeight = configFile.Bind("6> Eclipsed", "EclipsedToRainyWeight", 20, "Weight for changing from eclipsed to rainy");
-      EclipsedToStormyWeight = configFile.Bind("6> Eclipsed", "EclipsedToStormyWeight", 8, "Weight for changing from eclipsed to stormy");
-      EclipsedToFloodedWeight = configFile.Bind("6> Eclipsed", "EclipsedToFloodedWeight", 10, "Weight for changing from eclipsed to flooded");
-      EclipsedToFoggyWeight = configFile.Bind("6> Eclipsed", "EclipsedToFoggyWeight", 30, "Weight for changing from eclipsed to foggy");
-      EclipsedToEclipsedWeight = configFile.Bind("6> Eclipsed", "EclipsedToEclipsedWeight", 5, "Weight for changing from eclipsed to eclipsed");
+      FoggyToNoneWeight = configFile.Bind("Weights > Foggy", "FoggyToNoneWeight", 100, "Weight for changing from foggy to none");
+      FoggyToRainyWeight = configFile.Bind("Weights > Foggy", "FoggyToRainyWeight", 30, "Weight for changing from foggy to rainy");
+      FoggyToStormyWeight = configFile.Bind("Weights > Foggy", "FoggyToStormyWeight", 25, "Weight for changing from foggy to stormy");
+      FoggyToFloodedWeight = configFile.Bind("Weights > Foggy", "FoggyToFloodedWeight", 5, "Weight for changing from foggy to flooded");
+      FoggyToFoggyWeight = configFile.Bind("Weights > Foggy", "FoggyToFoggyWeight", 15, "Weight for changing from foggy to foggy");
+      FoggyToEclipsedWeight = configFile.Bind("Weights > Foggy", "FoggyToEclipsedWeight", 10, "Weight for changing from foggy to eclipsed");
+
+      EclipsedToNoneWeight = configFile.Bind("Weights > Eclipsed", "EclipsedToNoneWeight", 150, "Weight for changing from eclipsed to none");
+      EclipsedToRainyWeight = configFile.Bind("Weights > Eclipsed", "EclipsedToRainyWeight", 20, "Weight for changing from eclipsed to rainy");
+      EclipsedToStormyWeight = configFile.Bind("Weights > Eclipsed", "EclipsedToStormyWeight", 8, "Weight for changing from eclipsed to stormy");
+      EclipsedToFloodedWeight = configFile.Bind(
+        "Weights > Eclipsed",
+        "EclipsedToFloodedWeight",
+        10,
+        "Weight for changing from eclipsed to flooded"
+      );
+      EclipsedToFoggyWeight = configFile.Bind("Weights > Eclipsed", "EclipsedToFoggyWeight", 30, "Weight for changing from eclipsed to foggy");
+      EclipsedToEclipsedWeight = configFile.Bind(
+        "Weights > Eclipsed",
+        "EclipsedToEclipsedWeight",
+        5,
+        "Weight for changing from eclipsed to eclipsed"
+      );
 
       // calculate sums
 
