@@ -50,9 +50,9 @@ namespace WeatherTweaks
 
         if (levels.Count > 9)
         {
-          // for every 3 levels above 9 (vanilla amount), add another planet without weather
-          int planetsWithoutWeather = (levels.Count - 9) / 3;
-          Plugin.logger.LogDebug($"Planets without weather: {planetsWithoutWeather}");
+          // make 1/2 (default) of them have no weather
+          int planetsWithoutWeather = (int)(levels.Count * 0.5);
+          Plugin.logger.LogDebug($"Planets without weather: {planetsWithoutWeather + 2}");
 
           for (int i = 0; i < planetsWithoutWeather; i++)
           {
@@ -65,9 +65,6 @@ namespace WeatherTweaks
             // remove it from the list of planets to pick from
             planetsToPickFrom.RemoveAll(level => level.PlanetName == planetName);
           }
-
-          // pick another random planet
-          noWeatherOnStartPlanets.Add(planetsToPickFrom[random.Next(0, planetsToPickFrom.Count)].PlanetName);
         }
 
         return FirstDayWeathers(levels, noWeatherOnStartPlanets, random);
