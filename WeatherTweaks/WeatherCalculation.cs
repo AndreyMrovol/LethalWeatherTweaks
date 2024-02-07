@@ -33,13 +33,6 @@ namespace WeatherTweaks
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
 
-      float lengthMultiplier = quota * ConfigManager.GameLengthMultiplier.Value;
-      float playerMultiplier = StartOfRound.Instance.livingPlayers * ConfigManager.GamePlayersMultiplier.Value;
-
-      float difficultyMultiplier = lengthMultiplier + playerMultiplier;
-
-      Plugin.logger.LogDebug($"Difficulty multiplier: {difficultyMultiplier}");
-
       if (day == 0)
       {
         seed = ConfigManager.FirstDaySeed.Value;
@@ -69,6 +62,12 @@ namespace WeatherTweaks
 
         return FirstDayWeathers(levels, noWeatherOnStartPlanets, random);
       }
+
+      float lengthMultiplier = quota * ConfigManager.GameLengthMultiplier.Value;
+      float playerMultiplier = StartOfRound.Instance.livingPlayers * ConfigManager.GamePlayersMultiplier.Value;
+
+      float difficultyMultiplier = lengthMultiplier + playerMultiplier;
+      Plugin.logger.LogDebug($"Difficulty multiplier: {difficultyMultiplier}");
 
       foreach (SelectableLevel level in levels)
       {
