@@ -28,7 +28,7 @@ namespace WeatherTweaks
         return uncertainWeathers;
       }
 
-      if (StartOfRound.Instance.gameStats.daysSpent == 0)
+      if (StartOfRound.Instance.gameStats.daysSpent == 0 && !(ConfigManager.AlwaysUncertain.Value || ConfigManager.AlwaysUnknown.Value))
       {
         Plugin.logger.LogInfo("It's the first day, no uncertainty will be generated.");
         return uncertainWeathers;
