@@ -73,6 +73,29 @@ namespace WeatherTweaks
         var weatherType = weather;
         var weatherWeight = weights[weatherType];
 
+        if (ConfigManager.ScaleDownClearWeather.Value && weatherType == LevelWeatherType.None)
+        {
+          int clearWeatherWeight = weights[LevelWeatherType.None];
+          int fullWeightSum = weights.Sum(x => x.Value);
+
+          int possibleWeathersWeightSum = 0;
+          level
+            .randomWeathers.ToList()
+            .Where(randomWeather => randomWeather.weatherType != LevelWeatherType.DustClouds)
+            .ToList()
+            .ForEach(randomWeather =>
+            {
+              possibleWeathersWeightSum = possibleWeathersWeightSum + weights[randomWeather.weatherType];
+            });
+          // proportion from clearWeatherWeight / fullWeightsSum
+
+          double noWetherFinalWeight = (double)(clearWeatherWeight * possibleWeathersWeightSum / fullWeightSum);
+          weatherWeight = Convert.ToInt32(noWetherFinalWeight);
+
+          Plugin.logger.LogDebug($"{clearWeatherWeight} * {possibleWeathersWeightSum} / {fullWeightSum} == {weatherWeight}");
+          Plugin.logger.LogDebug($"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight}");
+        }
+
         if (difficulty != 0 && weatherType == LevelWeatherType.None)
         {
           weatherWeight = (int)(weatherWeight * (1 - difficulty));

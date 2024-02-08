@@ -33,7 +33,9 @@ namespace WeatherTweaks
 
     public static ConfigEntry<float> GameLengthMultiplier { get; private set; }
     public static ConfigEntry<float> GamePlayersMultiplier { get; private set; }
+
     public static ConfigEntry<float> MaxMultiplier { get; private set; }
+    public static ConfigEntry<bool> ScaleDownClearWeather { get; private set; }
 
     // per-weather weights
 
@@ -131,6 +133,12 @@ namespace WeatherTweaks
       );
 
       MaxMultiplier = configFile.Bind("2> Multipliers", "MaxMultiplier", 0.8f, "Maximum difficulty multiplier (between 0 and 1)");
+      ScaleDownClearWeather = configFile.Bind(
+        "2> Multipliers",
+        "ScaleDownClearWeather",
+        true,
+        "Scale down clear weather's weight based on planet's available random weathers to match % chance "
+      );
 
       GameLengthMultiplier = configFile.Bind(
         "2a> Difficulty multipliers",
