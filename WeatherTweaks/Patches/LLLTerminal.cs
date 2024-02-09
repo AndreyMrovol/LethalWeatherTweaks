@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace WeatherTweaks
 {
-  [HarmonyPatch(typeof(LethalLevelLoader.Terminal_Patch))]
+  [HarmonyPatch(typeof(TerminalManager))]
   public static class LLLTerminalPatch
   {
     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks Terminal");
 
-    [HarmonyPatch("GetMoonConditions")]
+    [HarmonyPatch("GetWeatherConditions")]
     [HarmonyPostfix]
     private static void PatchLLL(SelectableLevel selectableLevel, ref string __result)
     {
