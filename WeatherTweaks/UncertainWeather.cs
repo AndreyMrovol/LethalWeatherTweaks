@@ -154,6 +154,15 @@ namespace WeatherTweaks
 
       // get random weather from list of random weathers without the current weather
       var randomWeathers = level.randomWeathers.Where(w => w.weatherType != weather).ToList();
+
+      if (randomWeathers.Count == 0)
+      {
+        Plugin.logger.LogDebug($"No random weathers for {level.PlanetName}.");
+        return weather.ToString();
+      }
+
+      randomWeathers.Do(w => Plugin.logger.LogDebug($"Random weather: {w.weatherType}"));
+
       var randomWeather = randomWeathers[random.Next(randomWeathers.Count)];
 
       if (!pickTwo)
