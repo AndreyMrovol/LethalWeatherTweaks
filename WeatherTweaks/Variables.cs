@@ -13,33 +13,15 @@ namespace WeatherTweaks
     public static List<SelectableLevel> GameLevels = [];
     public static Dictionary<string, SelectableLevel> PlanetNames = [];
 
+    internal static Dictionary<int, LevelWeatherType> GetWeatherData(string weatherData)
+    {
+      Dictionary<int, LevelWeatherType> weatherDataDict = JsonConvert.DeserializeObject<Dictionary<int, LevelWeatherType>>(weatherData);
+      return weatherDataDict;
+    }
+
     internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound)
     {
-      GameLevels = startOfRound.levels.Where(level => level.PlanetName != "71 Gordion").ToList();
-
-      GameLevels.ForEach(level =>
-      {
-        if (!PlanetNames.ContainsKey(level.PlanetName))
-        {
-          string replacedPlanetName = Regex.Replace(level.PlanetName, @"\d", "").Trim();
-          string splitPlanetName = replacedPlanetName.Split(' ')[0];
-
-          PlanetNames.Add(level.PlanetName, level);
-          Plugin.logger.LogDebug($"Added {level.PlanetName} to PlanetNames");
-
-          if (level.PlanetName != replacedPlanetName)
-          {
-            PlanetNames.Add(replacedPlanetName, level);
-            Plugin.logger.LogDebug($"Added {replacedPlanetName} to PlanetNames");
-          }
-
-          if (splitPlanetName != replacedPlanetName)
-          {
-            PlanetNames.Add(splitPlanetName, level);
-            Plugin.logger.LogDebug($"Added {splitPlanetName} to PlanetNames");
-          }
-        }
-      });
+      GameLevels = LethalLevelLoader.PatchedContent.SeletectableLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
 
       return GameLevels;
     }
