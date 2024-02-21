@@ -12,7 +12,7 @@ namespace WeatherTweaks
       Instance = new ConfigManager(config);
     }
 
-    private readonly ConfigFile configFile;
+    internal readonly ConfigFile configFile;
 
     // i love creating config hell
 
@@ -26,10 +26,6 @@ namespace WeatherTweaks
     public static ConfigEntry<bool> AlwaysUncertain { get; private set; }
     public static ConfigEntry<bool> AlwaysUnknown { get; private set; }
     public static ConfigEntry<bool> AlwaysClear { get; private set; }
-
-    public static ConfigEntry<bool> UncertainUncertain { get; private set; }
-    public static ConfigEntry<bool> Uncertain5050 { get; private set; }
-    public static ConfigEntry<bool> UncertainUnknown { get; private set; }
 
     public static ConfigEntry<float> GameLengthMultiplier { get; private set; }
     public static ConfigEntry<float> GamePlayersMultiplier { get; private set; }
@@ -117,20 +113,6 @@ namespace WeatherTweaks
       );
 
       UncertainWeatherEnabled = configFile.Bind("1> Uncertain weather", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
-
-      UncertainUncertain = configFile.Bind(
-        "1a> Uncertain mechanics",
-        "UncertainUncertain",
-        true,
-        "Enable displaying uncertain weather (e.g. Eclipsed?)"
-      );
-      Uncertain5050 = configFile.Bind("1a> Uncertain mechanics", "Uncertain5050", true, "Enable displaying 50/50 weather (e.g. Rainy/Flooded)");
-      UncertainUnknown = configFile.Bind(
-        "1a> Uncertain mechanics",
-        "UncertainUnknown",
-        true,
-        "Enable displaying unknown weather (e.g. [UNKNOWN])"
-      );
 
       MaxMultiplier = configFile.Bind("2> Multipliers", "MaxMultiplier", 0.8f, "Maximum difficulty multiplier (between 0 and 1)");
       ScaleDownClearWeather = configFile.Bind(

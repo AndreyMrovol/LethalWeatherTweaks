@@ -19,6 +19,7 @@ namespace WeatherTweaks
 
       NetworkedConfig.Init();
       ConfigManager.Init(Config);
+      UncertainWeather.Init();
 
       // Plugin startup logic
       Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
