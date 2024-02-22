@@ -19,11 +19,6 @@ namespace WeatherTweaks
       var pluginsLoaded = Chainloader.PluginInfos;
       bool isGeneralImprovementsLoaded = pluginsLoaded.ContainsKey("ShaosilGaming.GeneralImprovements");
 
-      pluginsLoaded.Do(plugin =>
-      {
-        Plugin.logger.LogWarning(plugin.Key);
-      });
-
       if (!isGeneralImprovementsLoaded)
       {
         return;
@@ -32,8 +27,6 @@ namespace WeatherTweaks
       string nspace = "GeneralImprovements.Utilities";
       string className = "MonitorsHelper";
       string assemblyName = "GeneralImprovements"; // Replace with the actual assembly name
-
-      Plugin.logger.LogWarning(nspace);
 
       // Get the assembly that contains the class
       var assembly = Assembly.Load(assemblyName);
@@ -72,6 +65,11 @@ namespace WeatherTweaks
 
       textList.Do(monitor =>
       {
+        if (monitor == null)
+        {
+          return;
+        }
+
         if (monitor.name.Contains("WeatherText"))
         {
           isWeatherMonitor = true;
@@ -86,8 +84,8 @@ namespace WeatherTweaks
         if (text.Contains("WEATHER:\n"))
         {
           // weather monitor
-          Plugin.logger.LogWarning("Intercepted!");
           var weatherText = $"WEATHER:\n{weather}";
+          Plugin.logger.LogDebug($"Changing {text.Replace("\n", " ")} to {weatherText.Replace("\n", " ")}");
 
           text = weatherText;
         }
