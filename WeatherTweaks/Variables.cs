@@ -12,6 +12,7 @@ namespace WeatherTweaks
   {
     public static List<SelectableLevel> GameLevels = [];
     public static Dictionary<string, SelectableLevel> PlanetNames = [];
+    public static Dictionary<SelectableLevel, string> CurrentWeathers = [];
 
     internal static Dictionary<int, LevelWeatherType> GetWeatherData(string weatherData)
     {
@@ -38,6 +39,20 @@ namespace WeatherTweaks
         .ToList();
 
       return weathersToChooseFrom;
+    }
+
+    internal static string GetPlanetCurrentWeather(SelectableLevel level)
+    {
+      bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
+
+      if (isUncertainWeather)
+      {
+        return UncertainWeather.uncertainWeathers[level.PlanetName];
+      }
+      else
+      {
+        return level.currentWeather.ToString();
+      }
     }
 
     internal static List<LevelWeatherType> GetPlanetWeightedList(

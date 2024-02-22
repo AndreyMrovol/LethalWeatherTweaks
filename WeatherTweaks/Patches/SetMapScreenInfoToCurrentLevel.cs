@@ -21,18 +21,7 @@ namespace WeatherTweaks
         return;
       }
 
-      bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(___currentLevel.PlanetName);
-      Plugin.logger.LogDebug($"Is uncertain weather: {isUncertainWeather}");
-      string weatherCondition;
-
-      if (isUncertainWeather)
-      {
-        weatherCondition = UncertainWeather.uncertainWeathers[___currentLevel.PlanetName];
-      }
-      else
-      {
-        weatherCondition = ___currentLevel.currentWeather.ToString();
-      }
+      string weatherCondition = Variables.GetPlanetCurrentWeather(___currentLevel);
 
       Plugin.logger.LogDebug($"Weather condition: {weatherCondition}");
 
@@ -49,7 +38,6 @@ namespace WeatherTweaks
       // This needs to account for uncertain weather mechanic (e.g foggy/eclipsed as weather string)
       // in that case pick the most severe weather type for color to be correct
       // eclipse > flooded > stormy > foggy > rainy > dustclouds > none
-      // do it in switch, but using Contains
 
       if (inputWeather.Contains("Eclipsed"))
       {

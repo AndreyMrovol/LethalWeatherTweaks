@@ -16,9 +16,7 @@ namespace WeatherTweaks
     [HarmonyPostfix]
     private static void PatchLLL(SelectableLevel selectableLevel, ref string __result)
     {
-      string currentWeather = UncertainWeather.uncertainWeathers.ContainsKey(selectableLevel.PlanetName)
-        ? UncertainWeather.uncertainWeathers[selectableLevel.PlanetName]
-        : selectableLevel.currentWeather.ToString();
+      string currentWeather = Variables.GetPlanetCurrentWeather(selectableLevel);
 
       logger.LogDebug($"GetMoonConditions {selectableLevel.PlanetName}::{currentWeather}");
 
