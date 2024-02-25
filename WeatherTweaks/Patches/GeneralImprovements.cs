@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
 using HarmonyLib;
 using TMPro;
 
@@ -13,6 +15,13 @@ namespace WeatherTweaks
   public class GeneralImprovementsWeather
   {
     static Type type;
+
+    static FieldInfo weatherMonitorsField;
+    static FieldInfo fancyMonitorsField;
+
+    static int frame = 0;
+
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks GI");
 
     public static void Init()
     {
@@ -42,6 +51,9 @@ namespace WeatherTweaks
         // Get the method to patch
         var method = type.GetMethod("UpdateGenericTextList", BindingFlags.Static | BindingFlags.NonPublic);
 
+        weatherMonitorsField = type.GetField("_weatherMonitorTexts", BindingFlags.Static | BindingFlags.NonPublic);
+        fancyMonitorsField = type.GetField("_fancyWeatherMonitorTexts", BindingFlags.Static | BindingFlags.NonPublic);
+
         // Create a Harmony instance
         var harmony = new Harmony("Weathertweaks.GIPatch");
 
@@ -63,6 +75,9 @@ namespace WeatherTweaks
     {
       bool isWeatherMonitor = false;
 
+      var weathermonitors = weatherMonitorsField.GetValue(null) as List<TextMeshProUGUI>;
+      var fancymonitors = fancyMonitorsField.GetValue(null) as List<TextMeshProUGUI>;
+
       textList.Do(monitor =>
       {
         if (monitor == null)
@@ -70,7 +85,7 @@ namespace WeatherTweaks
           return;
         }
 
-        if (monitor.name.Contains("WeatherText"))
+        if (weathermonitors.Contains(monitor) || fancymonitors.Contains(monitor))
         {
           isWeatherMonitor = true;
         }
@@ -85,7 +100,7 @@ namespace WeatherTweaks
         {
           // weather monitor
           var weatherText = $"WEATHER:\n{weather}";
-          Plugin.logger.LogDebug($"Changing {text.Replace("\n", " ")} to {weatherText.Replace("\n", " ")}");
+          logger.LogDebug($"Changing {text.Replace("\n", " ")} to {weatherText.Replace("\n", " ")}");
 
           text = weatherText;
         }
@@ -95,7 +110,24 @@ namespace WeatherTweaks
 
           if (isWeatherStringDifferentThanType)
           {
-            text = "???";
+            text = "???????????????????????????????????";
+
+            // replace every nth question mark with empty string
+            text = Regex.Replace(text, @"[?]", m => (frame++ % 20 == 0) ? " " : m.Value);
+
+            // after every 8 characters add \n
+            text = Regex.Replace(text, ".{8}", "$0\n");
+
+            // remove all text after 4 lines
+            text = Regex.Replace(text, @"(?<=\n.*\n.*\n.*\n).+", "");
+
+            frame++;
+
+            // if frame is 20, reset it to 0
+            if (frame == 20)
+            {
+              frame = 0;
+            }
           }
         }
       }
