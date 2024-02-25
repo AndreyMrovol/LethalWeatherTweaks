@@ -95,7 +95,7 @@ namespace WeatherTweaks
 
           if (isWeatherStringDifferentThanType)
           {
-            text = String.Empty;
+            text = "???";
           }
         }
       }
