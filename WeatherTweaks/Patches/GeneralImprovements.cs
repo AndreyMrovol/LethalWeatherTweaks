@@ -25,8 +25,10 @@ namespace WeatherTweaks
 
     public static void Init()
     {
+      var assemblyName = "ShaosilGaming.GeneralImprovements";
+
       var pluginsLoaded = Chainloader.PluginInfos;
-      bool isGeneralImprovementsLoaded = pluginsLoaded.ContainsKey("ShaosilGaming.GeneralImprovements");
+      bool isGeneralImprovementsLoaded = pluginsLoaded.ContainsKey(assemblyName);
 
       if (!isGeneralImprovementsLoaded)
       {
@@ -35,10 +37,9 @@ namespace WeatherTweaks
 
       string nspace = "GeneralImprovements.Utilities";
       string className = "MonitorsHelper";
-      string assemblyName = "GeneralImprovements"; // Replace with the actual assembly name
 
       // Get the assembly that contains the class
-      var assembly = Assembly.Load(assemblyName);
+      var assembly = Chainloader.PluginInfos[assemblyName].Instance.GetType().Assembly;
 
       // Get the Type object for the class
       type = assembly.GetType($"{nspace}.{className}");
