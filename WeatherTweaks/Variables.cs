@@ -5,14 +5,22 @@ using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
 {
   internal class Variables
   {
     public static List<SelectableLevel> GameLevels = [];
-    public static Dictionary<string, SelectableLevel> PlanetNames = [];
-    public static Dictionary<SelectableLevel, string> CurrentWeathers = [];
+
+    // public static Dictionary<string, SelectableLevel> PlanetNames = [];
+
+    public static List<WeatherType> WeatherTypes = [];
+    public static WeatherType NoneWeather;
+    public static List<CombinedWeatherType> CombinedWeatherTypes = [];
+
+    public static Dictionary<SelectableLevel, WeatherType> CurrentWeathers = [];
+    public static List<WeatherEffect> CurrentEffects = [];
 
     internal static Dictionary<int, LevelWeatherType> GetWeatherData(string weatherData)
     {
@@ -41,6 +49,71 @@ namespace WeatherTweaks
       return weathersToChooseFrom;
     }
 
+    internal static List<WeatherType> GetPlanetWeatherTypes(SelectableLevel level)
+    {
+      List<LevelWeatherType> randomWeathers = GetPlanetPossibleWeathers(level);
+
+      List<WeatherType> possibleTypes = new();
+
+      foreach (WeatherType weather in WeatherTypes)
+      {
+        if (randomWeathers.Contains(weather.weatherType))
+        {
+          possibleTypes.Add(weather);
+        }
+      }
+
+      // Plugin.logger.LogDebug($"Possible types: {string.Join("; ", possibleTypes.Select(x => x.Name))}");
+      return possibleTypes;
+    }
+
+    internal static void PopulateWeathers(StartOfRound startOfRound)
+    {
+      WeatherEffect[] effects = TimeOfDay.Instance.effects;
+
+      if (effects == null || effects.Count() == 0)
+      {
+        Plugin.logger.LogWarning("Effects are null");
+      }
+
+      for (int i = 0; i < effects.Length; i++)
+      {
+        WeatherEffect effect = effects[i];
+
+        LevelWeatherType weatherType = (LevelWeatherType)i;
+        WeatherType newWeather =
+          new()
+          {
+            Name = weatherType.ToString(),
+            Effects = [effect],
+            weatherType = weatherType,
+          };
+
+        if (weatherType == LevelWeatherType.None)
+        {
+          NoneWeather = newWeather;
+        }
+
+        WeatherTypes.Add(newWeather);
+      }
+
+      CombinedWeatherTypes.ForEach(combinedWeather =>
+      {
+        Plugin.logger.LogDebug($"Adding combined weather: {combinedWeather.Name}");
+
+        combinedWeather.Effects.Clear();
+        combinedWeather.Weathers.ForEach(weather =>
+        {
+          Plugin.logger.LogWarning($"Adding weather effect: {weather}");
+          combinedWeather.Effects.Add(TimeOfDay.Instance.effects[(int)weather]);
+        });
+        combinedWeather.WeatherType.Effects = combinedWeather.Effects;
+        combinedWeather.WeatherType.Weathers = combinedWeather.Weathers;
+
+        WeatherTypes.Add(combinedWeather.WeatherType);
+      });
+    }
+
     internal static string GetPlanetCurrentWeather(SelectableLevel level)
     {
       bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
@@ -51,26 +124,43 @@ namespace WeatherTweaks
       }
       else
       {
-        return level.currentWeather.ToString();
+        if (CurrentWeathers.ContainsKey(level) == false)
+        {
+          Plugin.logger.LogWarning($"CurrentWeathers doesn't contain key {level.PlanetName}");
+
+          Plugin.logger.LogDebug("CurrentWeathers count: " + CurrentWeathers.Count);
+
+          CurrentWeathers.Do(x =>
+          {
+            Plugin.logger.LogDebug($"Key: {x.Key.PlanetName}");
+            Plugin.logger.LogDebug($"Value: {(x.Value == null ? "null" : x.Value.Name)}");
+          });
+
+          return level.currentWeather.ToString();
+        }
+
+        return CurrentWeathers[level].Name;
       }
     }
 
-    internal static List<LevelWeatherType> GetPlanetWeightedList(
+    internal static List<WeatherType> GetPlanetWeightedList(
       SelectableLevel level,
       Dictionary<LevelWeatherType, int> weights,
       float difficulty = 0
     )
     {
-      var weatherList = new List<LevelWeatherType>();
+      var weatherList = new List<WeatherType>();
 
       difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
 
-      foreach (var weather in GetPlanetPossibleWeathers(level))
+      foreach (var weather in GetPlanetWeatherTypes(level))
       {
         var weatherType = weather;
-        var weatherWeight = weights[weatherType];
+        var weatherWeight = weights[weather.weatherType];
 
-        if (ConfigManager.ScaleDownClearWeather.Value && weatherType == LevelWeatherType.None)
+        // Plugin.logger.LogDebug($"Weather: {weatherType.Name} has weight {weatherWeight}");
+
+        if (ConfigManager.ScaleDownClearWeather.Value && weather.weatherType == LevelWeatherType.None)
         {
           int clearWeatherWeight = weights[LevelWeatherType.None];
           int fullWeightSum = weights.Sum(x => x.Value);
@@ -93,16 +183,31 @@ namespace WeatherTweaks
           Plugin.logger.LogDebug($"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight}");
         }
 
-        if (difficulty != 0 && weatherType == LevelWeatherType.None)
+        if (weatherType.Type == CustomWeatherType.Combined)
+        {
+          var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weatherType.Name);
+
+          if (combinedWeather.CanCombinedWeatherBeApplied(level))
+          {
+            weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * combinedWeather.weightModify);
+          }
+          else
+          {
+            Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} can't be applied");
+            weatherWeight = 0;
+          }
+        }
+
+        if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)
         {
           weatherWeight = (int)(weatherWeight * (1 - difficulty));
         }
 
-        Plugin.logger.LogDebug($"{weatherType} has weight {weatherWeight}");
+        Plugin.logger.LogDebug($"{weatherType.Name} has weight {weatherWeight}");
 
         for (var i = 0; i < weatherWeight; i++)
         {
-          weatherList.Add(weatherType);
+          weatherList.Add(weather);
         }
       }
 
