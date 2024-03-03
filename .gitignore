@@ -547,4 +547,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-lib/LethalLevelLoader.dll
+
+lib/*
