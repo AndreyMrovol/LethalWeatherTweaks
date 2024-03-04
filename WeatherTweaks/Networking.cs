@@ -19,14 +19,6 @@ namespace WeatherTweaks
       weatherEffectsSynced.OnValueChanged += WeatherEffectsReceived;
     }
 
-    public static void LogListToConsole<T>(List<T> list)
-    {
-      foreach (T item in list)
-      {
-        Plugin.logger.LogWarning(item.ToString());
-      }
-    }
-
     public static void WeatherDataReceived(string weatherData)
     {
       Dictionary<string, WeatherType> currentWeather = JsonConvert.DeserializeObject<Dictionary<string, WeatherType>>(weatherData);
@@ -43,11 +35,7 @@ namespace WeatherTweaks
         return;
       }
 
-      LogListToConsole(currentWeather.Keys.ToList());
-      LogListToConsole(currentWeather.Values.ToList());
-
-      Plugin.logger.LogInfo("Received weather data from server, applying");
-      Plugin.logger.LogDebug($"Received data: {weatherData}");
+      Plugin.logger.LogInfo($"Received weather data {weatherData} from server, applying");
 
       GameInteraction.SetWeather(currentWeather);
       DisplayTable.DisplayWeathersTable();
@@ -55,35 +43,20 @@ namespace WeatherTweaks
 
       Dictionary<SelectableLevel, WeatherType> newWeathers = [];
       List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
+
       // for every planet, find weather type and add it to newWeathers
-
-      // log debug info about levels
-      Plugin.logger.LogDebug($"Levels: {levels}");
-      LogListToConsole(levels);
-
       Variables.CurrentWeathers = [];
       levels
         .ToList()
         .ForEach(level =>
         {
-          Plugin.logger.LogDebug($"Level: {level.PlanetName}");
-
           KeyValuePair<string, WeatherType> entry = currentWeather.FirstOrDefault(x => x.Key == level.PlanetName);
-          Plugin.logger.LogDebug($"Entry: {entry}");
 
           if (entry.Key != null)
           {
             Variables.CurrentWeathers.Add(level, entry.Value);
           }
         });
-
-      // make it work
-      // Variables.CurrentWeathers = newWeathers;
-      // check if it's applied correctly
-      Plugin.logger.LogInfo($"Current weathers: {Variables.CurrentWeathers}");
-
-      LogListToConsole(Variables.CurrentWeathers.Keys.ToList());
-      LogListToConsole(Variables.CurrentWeathers.Values.ToList());
     }
 
     public static void WeatherDisplayDataReceived(string weatherData)
@@ -100,11 +73,7 @@ namespace WeatherTweaks
         return;
       }
 
-      Plugin.logger.LogInfo("Received weather display data from server, applying");
-      Plugin.logger.LogDebug($"Received data: {weatherData}");
-
-      LogListToConsole(weatherDisplayData.Keys.ToList());
-      LogListToConsole(weatherDisplayData.Values.ToList());
+      Plugin.logger.LogInfo($"Received weather display data {weatherData} from server, applying");
 
       UncertainWeather.uncertainWeathers = weatherDisplayData;
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
@@ -126,12 +95,8 @@ namespace WeatherTweaks
         return;
       }
 
-      // Plugin.logger.LogInfo("Received weather effects from server, applying");
-      // Plugin.logger.LogDebug($"Received data: {weatherEffects}");
+      Plugin.logger.LogInfo($"Received weather effects data {weatherTypes} from server, applying");
 
-      LogListToConsole(currentEffects);
-
-      // Variables.CurrentEffects = weatherEffects;
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentEffects);
     }
 
@@ -161,11 +126,15 @@ namespace WeatherTweaks
 
     public static void SetWeatherEffects(List<LevelWeatherType> weatherEffectsIndexes)
     {
-      // string serialized = JsonConvert.SerializeObject(
-      //   weatherEffects,
-      //   Formatting.None,
-      //   new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
-      // );
+      if (weatherEffectsIndexes == null)
+      {
+        return;
+      }
+
+      if (weatherEffectsIndexes == weatherEffectsSynced.Value)
+      {
+        return;
+      }
 
       weatherEffectsSynced.Value = weatherEffectsIndexes;
       Plugin.logger.LogInfo($"Set weather effects on server: {weatherEffectsIndexes}");
