@@ -57,7 +57,7 @@ namespace WeatherTweaks.Modules
 
         Plugin.logger.LogDebug($"Creating CombinedWeatherType: {Name}");
 
-        Weathers = weathers;
+        Weathers = weathers.Append(baseWeather).Distinct().ToList();
         // Weathers.ForEach(weather =>
         // {
         //   Plugin.logger.LogWarning($"Adding weather effect: {weather}");
