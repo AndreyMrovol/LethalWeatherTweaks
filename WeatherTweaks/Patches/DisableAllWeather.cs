@@ -8,28 +8,36 @@ namespace WeatherTweaks
   {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(TimeOfDay), "DisableAllWeather")]
-    private static void PostfixDisableAllWeather(TimeOfDay __instance, ref bool deactivateObjects)
+    private static void DisableAllWeatherPatch(TimeOfDay __instance, bool deactivateObjects)
     {
-      deactivateObjects = true;
       logger.LogDebug("Disabling all weather");
 
-      foreach (WeatherEffect effect in __instance.effects)
+      if (!deactivateObjects)
+      {
+        return;
+      }
+
+      logger.LogDebug("DecativateObjects is true");
+
+      foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
       {
         effect.effectEnabled = false;
-        if (effect.effectPermanentObject != null)
-        {
-          effect.effectPermanentObject.SetActive(false);
-        }
 
         if (effect.effectObject != null)
         {
           effect.effectObject.SetActive(false);
         }
+
+        if (effect.effectPermanentObject != null)
+        {
+          effect.effectPermanentObject.SetActive(false);
+        }
       }
 
       if (StartOfRound.Instance.IsHost)
       {
-        NetworkedConfig.weatherEffectsSynced.Value = [];
+        logger.LogDebug("IsHost is true");
+        NetworkedConfig.SetWeatherEffects([]);
       }
     }
   }

@@ -17,6 +17,7 @@ namespace WeatherTweaks
 
       Variables.GetGameLevels(__instance);
       Variables.PopulateWeathers(__instance);
+      // NetworkedConfig.SetWeatherEffects([]);
       // Variables.CurrentWeathers = [];
 
       // there are 3 possible cases:
