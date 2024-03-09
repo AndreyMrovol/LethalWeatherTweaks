@@ -64,14 +64,7 @@ namespace WeatherTweaks.Modules
         //   Effects.Add(TimeOfDay.Instance.effects[(int)weather]);
         // });
 
-        WeatherType = new()
-        {
-          Name = Name,
-          Effects = [],
-          Weathers = Weathers,
-          weatherType = (LevelWeatherType)baseWeather,
-          Type = CustomWeatherType.Combined
-        };
+        WeatherType = new(Name, (LevelWeatherType)baseWeather, Weathers, CustomWeatherType.Combined) { Effects = [], };
 
         // TODO
         // create configFile bindings

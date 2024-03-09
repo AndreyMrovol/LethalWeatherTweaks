@@ -77,26 +77,14 @@ namespace WeatherTweaks
         Plugin.logger.LogWarning("Effects are null");
       }
 
-      NoneWeather = new()
-      {
-        Name = "None",
-        Effects = [],
-        weatherType = LevelWeatherType.None,
-        Type = CustomWeatherType.Vanilla
-      };
+      NoneWeather = new("None", LevelWeatherType.None, [LevelWeatherType.None], CustomWeatherType.Vanilla) { Effects = [] };
 
       for (int i = 0; i < effects.Length; i++)
       {
         WeatherEffect effect = effects[i];
 
         LevelWeatherType weatherType = (LevelWeatherType)i;
-        WeatherType newWeather =
-          new()
-          {
-            Name = weatherType.ToString(),
-            Effects = [effect],
-            weatherType = weatherType,
-          };
+        WeatherType newWeather = new(weatherType.ToString(), weatherType, [weatherType], CustomWeatherType.Vanilla) { Effects = [effect] };
 
         WeatherTypes.Add(newWeather);
       }
