@@ -56,7 +56,11 @@ namespace WeatherTweaks
 
     internal static void SetWeatherEffects()
     {
-      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, Variables.CurrentWeathers[TimeOfDay.Instance.currentLevel].Effects);
+      if (StartOfRound.Instance.IsHost)
+      {
+        NetworkedConfig.SetWeatherEffects(Variables.CurrentWeathers[TimeOfDay.Instance.currentLevel].Weathers);
+      }
+
       GameInteraction.SetWeatherEffects(
         TimeOfDay.Instance,
         Variables.GetFullWeatherType(Variables.CurrentWeathers[TimeOfDay.Instance.currentLevel]).Effects
