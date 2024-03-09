@@ -32,7 +32,7 @@ namespace WeatherTweaks
 
         if (__instance.enableCurrentLevelWeather && TimeOfDay.Instance.currentLevelWeather != LevelWeatherType.None)
         {
-          List<WeatherEffect> weatherEffects = Variables.CurrentWeathers[TimeOfDay.Instance.currentLevel].Effects;
+          List<WeatherEffect> weatherEffects = Variables.GetFullWeatherType(Variables.CurrentWeathers[TimeOfDay.Instance.currentLevel]).Effects;
 
           foreach (WeatherEffect timeOfDayEffect in TimeOfDay.Instance.effects)
           {

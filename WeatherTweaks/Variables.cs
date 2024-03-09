@@ -147,6 +147,11 @@ namespace WeatherTweaks
       }
     }
 
+    internal static WeatherType GetFullWeatherType(WeatherType weatherType)
+    {
+      return WeatherTypes.Find(x => x.Name == weatherType.Name);
+    }
+
     internal static List<WeatherType> GetPlanetWeightedList(
       SelectableLevel level,
       Dictionary<LevelWeatherType, int> weights,
