@@ -23,6 +23,7 @@ namespace WeatherTweaks
         if (weatherData.ContainsKey(levelName))
         {
           level.currentWeather = weatherData[levelName].weatherType;
+          Variables.CurrentWeathers[level] = Variables.GetFullWeatherType(weatherData[levelName]);
           logger.LogDebug($"Setting weather for {levelName} to {level.currentWeather}");
         }
         else
@@ -39,6 +40,11 @@ namespace WeatherTweaks
       // timeOfDay.globalTimeSpeedMultiplier = 0.001f;
 
       logger.LogDebug($"Setting weather effects for {timeOfDay.currentLevel.PlanetName}");
+      if (weatherEffects == null || weatherEffects.Count == 0)
+      {
+        logger.LogDebug("No weather effects to set");
+        return;
+      }
 
       // timeOfDay.Instance.DisableAllWeather();
       foreach (WeatherEffect timeOfDayEffect in timeOfDay.effects)
