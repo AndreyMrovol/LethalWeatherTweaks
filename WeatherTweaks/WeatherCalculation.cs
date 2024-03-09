@@ -187,7 +187,6 @@ namespace WeatherTweaks
       // from all levels, 2 cannot have a weather condition (41 Experimentation and 56 Vow)
       // if there are more than 9 levels (vanilla amount), make it 3 without weather
 
-      Dictionary<string, LevelWeatherType> selectedWeathers = new Dictionary<string, LevelWeatherType>();
       Dictionary<string, WeatherType> selectedWeathers = new Dictionary<string, WeatherType>();
 
       foreach (SelectableLevel level in levels)
@@ -198,7 +197,6 @@ namespace WeatherTweaks
         if (ConfigManager.AlwaysClear.Value)
         {
           Plugin.logger.LogDebug("AlwaysClear is true, setting weather to None");
-          selectedWeathers[level.PlanetName] = LevelWeatherType.None;
           selectedWeathers[level.PlanetName] = Variables.NoneWeather;
           continue;
         }
