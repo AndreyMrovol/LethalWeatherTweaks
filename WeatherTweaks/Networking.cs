@@ -10,7 +10,7 @@ namespace WeatherTweaks
   {
     public static LethalNetworkVariable<string> currentWeatherSynced = new("previousWeather");
     public static LethalNetworkVariable<string> currentWeatherStringsSynced = new("previousWeatherStrings");
-    public static LethalNetworkVariable<List<LevelWeatherType>> weatherEffectsSynced = new("weatherEffects");
+    public static LethalNetworkVariable<string> weatherEffectsSynced = new("weatherEffects");
 
     public static void Init()
     {
@@ -79,11 +79,35 @@ namespace WeatherTweaks
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
 
-    public static void WeatherEffectsReceived(List<LevelWeatherType> weatherTypes)
+    public static void WeatherEffectsReceived(string weatherEffects)
     {
+      Plugin.logger.LogWarning("Weather effects received");
       // List<WeatherEffect> currentEffects = JsonConvert.DeserializeObject<List<WeatherEffect>>(serializedWeatherEffects);
 
-      List<WeatherEffect> currentEffects = weatherTypes.Select(x => TimeOfDay.Instance.effects[(int)x]).ToList();
+      List<LevelWeatherType> effectsDeserialized = JsonConvert.DeserializeObject<List<LevelWeatherType>>(weatherEffects);
+      List<WeatherEffect> currentEffects = [];
+
+      foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
+      {
+        Plugin.logger.LogDebug($"Checking effect {effect.name}");
+
+        /// if indexof effect in effects matches the effectsDeserialized index
+        ///
+
+        Plugin.logger.LogDebug($"Index of effect: {TimeOfDay.Instance.effects.ToList().IndexOf(effect)}");
+
+        if (effectsDeserialized.Contains((LevelWeatherType)TimeOfDay.Instance.effects.ToList().IndexOf(effect)))
+        {
+          currentEffects.Add(effect);
+
+          Plugin.logger.LogDebug($"Adding effect {effect.name}");
+        }
+      }
+
+      foreach (WeatherEffect effect in currentEffects)
+      {
+        Plugin.logger.LogDebug($"Effect: {effect.name}");
+      }
 
       if (currentEffects == null)
       {
@@ -95,7 +119,7 @@ namespace WeatherTweaks
         return;
       }
 
-      Plugin.logger.LogInfo($"Received weather effects data {weatherTypes} from server, applying");
+      Plugin.logger.LogInfo($"Received weather effects data {weatherEffects} from server, applying");
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentEffects);
     }
@@ -131,13 +155,19 @@ namespace WeatherTweaks
         return;
       }
 
-      if (weatherEffectsIndexes == weatherEffectsSynced.Value)
+      string serialized = JsonConvert.SerializeObject(
+        weatherEffectsIndexes,
+        Formatting.None,
+        new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
+      );
+
+      if (serialized == weatherEffectsSynced.Value)
       {
         return;
       }
 
-      weatherEffectsSynced.Value = weatherEffectsIndexes;
-      Plugin.logger.LogInfo($"Set weather effects on server: {weatherEffectsIndexes}");
+      weatherEffectsSynced.Value = serialized;
+      Plugin.logger.LogInfo($"Set weather effects on server: {serialized}");
     }
   }
 }
