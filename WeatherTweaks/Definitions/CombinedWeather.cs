@@ -15,7 +15,7 @@ namespace WeatherTweaks.Modules
       public List<WeatherEffect> Effects = [];
       public WeatherType WeatherType;
 
-      public float weightModify = 0.65f;
+      public float weightModify = 0.3f;
 
       public List<RandomWeatherWithVariables> GetWeatherVariables(SelectableLevel level)
       {

@@ -64,17 +64,26 @@ namespace WeatherTweaks
       }
 
       // Plugin.logger.LogDebug($"Possible types: {string.Join("; ", possibleTypes.Select(x => x.Name))}");
-      return possibleTypes;
+      return possibleTypes.Distinct().ToList();
     }
 
     internal static void PopulateWeathers(StartOfRound startOfRound)
     {
+      Plugin.logger.LogDebug("Populating weathers");
       WeatherEffect[] effects = TimeOfDay.Instance.effects;
 
       if (effects == null || effects.Count() == 0)
       {
         Plugin.logger.LogWarning("Effects are null");
       }
+
+      NoneWeather = new()
+      {
+        Name = "None",
+        Effects = [],
+        weatherType = LevelWeatherType.None,
+        Type = CustomWeatherType.Vanilla
+      };
 
       for (int i = 0; i < effects.Length; i++)
       {
@@ -88,11 +97,6 @@ namespace WeatherTweaks
             Effects = [effect],
             weatherType = weatherType,
           };
-
-        if (weatherType == LevelWeatherType.None)
-        {
-          NoneWeather = newWeather;
-        }
 
         WeatherTypes.Add(newWeather);
       }

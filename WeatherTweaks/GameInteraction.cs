@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Logging;
+using HarmonyLib;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
 
@@ -12,6 +13,8 @@ namespace WeatherTweaks
 
     internal static void SetWeather(Dictionary<string, WeatherType> weatherData)
     {
+      Plugin.logger.LogMessage("Setting weather");
+
       List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
       foreach (SelectableLevel level in levels)
       {
@@ -19,7 +22,7 @@ namespace WeatherTweaks
 
         if (weatherData.ContainsKey(levelName))
         {
-          level.currentWeather = weatherData[level.PlanetName].weatherType;
+          level.currentWeather = weatherData[levelName].weatherType;
           logger.LogDebug($"Setting weather for {levelName} to {level.currentWeather}");
         }
         else

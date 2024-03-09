@@ -33,35 +33,35 @@ namespace WeatherTweaks
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
 
-      // if (day == 0)
-      // {
-      //   seed = ConfigManager.FirstDaySeed.Value;
-      //   random = new System.Random(seed);
+      if (day == 0)
+      {
+        seed = ConfigManager.FirstDaySeed.Value;
+        random = new System.Random(seed);
 
-      //   List<string> noWeatherOnStartPlanets = ["41 Experimentation", "56 Vow"];
-      //   List<SelectableLevel> planetsToPickFrom = levels.Where(level => !noWeatherOnStartPlanets.Contains(level.PlanetName)).ToList();
+        List<string> noWeatherOnStartPlanets = ["41 Experimentation", "56 Vow"];
+        List<SelectableLevel> planetsToPickFrom = levels.Where(level => !noWeatherOnStartPlanets.Contains(level.PlanetName)).ToList();
 
-      //   if (levels.Count > 9)
-      //   {
-      //     // make 1/2 (default) of them have no weather
-      //     int planetsWithoutWeather = (int)(levels.Count * 0.5);
-      //     Plugin.logger.LogDebug($"Planets without weather: {planetsWithoutWeather + 2}");
+        if (levels.Count > 9)
+        {
+          // make 1/2 (default) of them have no weather
+          int planetsWithoutWeather = (int)(levels.Count * 0.5);
+          Plugin.logger.LogDebug($"Planets without weather: {planetsWithoutWeather + 2}");
 
-      //     for (int i = 0; i < planetsWithoutWeather; i++)
-      //     {
-      //       // pick a random planet
-      //       string planetName = planetsToPickFrom[random.Next(0, planetsToPickFrom.Count)].PlanetName;
+          for (int i = 0; i < planetsWithoutWeather; i++)
+          {
+            // pick a random planet
+            string planetName = planetsToPickFrom[random.Next(0, planetsToPickFrom.Count)].PlanetName;
 
-      //       // add it to the list of planets without weather
-      //       noWeatherOnStartPlanets.Add(planetName);
+            // add it to the list of planets without weather
+            noWeatherOnStartPlanets.Add(planetName);
 
-      //       // remove it from the list of planets to pick from
-      //       planetsToPickFrom.RemoveAll(level => level.PlanetName == planetName);
-      //     }
-      //   }
+            // remove it from the list of planets to pick from
+            planetsToPickFrom.RemoveAll(level => level.PlanetName == planetName);
+          }
+        }
 
-      //   return FirstDayWeathers(levels, noWeatherOnStartPlanets, random);
-      // }
+        return FirstDayWeathers(levels, noWeatherOnStartPlanets, random);
+      }
 
       float lengthMultiplier = quota * ConfigManager.GameLengthMultiplier.Value;
       float playerMultiplier = StartOfRound.Instance.livingPlayers * ConfigManager.GamePlayersMultiplier.Value;
@@ -174,7 +174,7 @@ namespace WeatherTweaks
       return currentWeather;
     }
 
-    private static Dictionary<string, LevelWeatherType> FirstDayWeathers(
+    private static Dictionary<string, WeatherType> FirstDayWeathers(
       List<SelectableLevel> levels,
       List<string> planetsWithoutWeather,
       System.Random random
@@ -188,6 +188,7 @@ namespace WeatherTweaks
       // if there are more than 9 levels (vanilla amount), make it 3 without weather
 
       Dictionary<string, LevelWeatherType> selectedWeathers = new Dictionary<string, LevelWeatherType>();
+      Dictionary<string, WeatherType> selectedWeathers = new Dictionary<string, WeatherType>();
 
       foreach (SelectableLevel level in levels)
       {
@@ -198,18 +199,22 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug("AlwaysClear is true, setting weather to None");
           selectedWeathers[level.PlanetName] = LevelWeatherType.None;
+          selectedWeathers[level.PlanetName] = Variables.NoneWeather;
           continue;
         }
 
-        var randomWeathers = level
-          .randomWeathers.Where(randomWeather =>
-            randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
+        var randomWeathers = Variables
+          .GetPlanetWeatherTypes(level)
+          .Where(randomWeather =>
+            randomWeather.weatherType != LevelWeatherType.None
+            && randomWeather.weatherType != LevelWeatherType.DustClouds
+            && randomWeather.Type == CustomWeatherType.Vanilla
           )
           .ToList();
 
         // var randomWeathers = level.randomWeathers.ToList();
         Plugin.logger.LogDebug($"randomWeathers count: {randomWeathers.Count}");
-        randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
+        randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.Name}"));
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
         possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
@@ -224,7 +229,7 @@ namespace WeatherTweaks
 
         if (planetsWithoutWeather.Contains(planetName))
         {
-          selectedWeathers[planetName] = LevelWeatherType.None;
+          selectedWeathers[planetName] = Variables.NoneWeather;
           Plugin.logger.LogDebug($"Skipping {planetName} (predefined)");
           continue;
         }
@@ -243,12 +248,12 @@ namespace WeatherTweaks
           }
           else
           {
-            selectedRandom = level.randomWeathers.First(x => x.weatherType == LevelWeatherType.Eclipsed);
+            selectedRandom = randomWeathers.First(x => x.weatherType == LevelWeatherType.Eclipsed);
           }
         }
 
         Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedRandom.weatherType}");
-        selectedWeathers[planetName] = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
+        selectedWeathers[planetName] = randomWeathers[random.Next(0, randomWeathers.Count)];
       }
 
       Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());

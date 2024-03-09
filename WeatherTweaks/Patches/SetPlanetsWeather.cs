@@ -40,6 +40,12 @@ namespace WeatherTweaks
         Variables.CurrentWeathers = [];
 
         Dictionary<string, WeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+
+        // newWeathers.Do(entry =>
+        // {
+        //   Plugin.logger.LogDebug($"{entry.Key} :: {entry.Value}");
+        // });
+
         GameInteraction.SetWeather(newWeathers);
         NetworkedConfig.SetWeather(newWeathers);
 
