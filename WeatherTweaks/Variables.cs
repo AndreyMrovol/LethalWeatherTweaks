@@ -106,11 +106,11 @@ namespace WeatherTweaks
       });
     }
 
-    internal static string GetPlanetCurrentWeather(SelectableLevel level)
+    internal static string GetPlanetCurrentWeather(SelectableLevel level, bool uncertain = true)
     {
       bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
 
-      if (isUncertainWeather)
+      if (isUncertainWeather && uncertain)
       {
         return UncertainWeather.uncertainWeathers[level.PlanetName];
       }
@@ -118,16 +118,6 @@ namespace WeatherTweaks
       {
         if (CurrentWeathers.ContainsKey(level) == false)
         {
-          Plugin.logger.LogWarning($"CurrentWeathers doesn't contain key {level.PlanetName}");
-
-          Plugin.logger.LogDebug("CurrentWeathers count: " + CurrentWeathers.Count);
-
-          CurrentWeathers.Do(x =>
-          {
-            Plugin.logger.LogDebug($"Key: {x.Key.PlanetName}");
-            Plugin.logger.LogDebug($"Value: {(x.Value == null ? "null" : x.Value.Name)}");
-          });
-
           return level.currentWeather.ToString();
         }
 
