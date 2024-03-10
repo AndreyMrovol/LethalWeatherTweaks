@@ -250,8 +250,12 @@ namespace WeatherTweaks
           }
         }
 
-        Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedRandom.weatherType}");
-        selectedWeathers[planetName] = randomWeathers[random.Next(0, randomWeathers.Count)];
+        WeatherType selectedWeather = Variables.WeatherTypes.Find(x =>
+          x.weatherType == selectedRandom.weatherType && x.Type == CustomWeatherType.Vanilla
+        );
+        selectedWeathers[planetName] = selectedWeather;
+        Variables.CurrentWeathers[level] = selectedWeather;
+        Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedWeather.Name}");
       }
 
       Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
