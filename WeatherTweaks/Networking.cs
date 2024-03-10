@@ -82,17 +82,22 @@ namespace WeatherTweaks
     public static void WeatherEffectsReceived(string weatherEffects)
     {
       Plugin.logger.LogWarning("Weather effects received");
-      // List<WeatherEffect> currentEffects = JsonConvert.DeserializeObject<List<WeatherEffect>>(serializedWeatherEffects);
 
       List<LevelWeatherType> effectsDeserialized = JsonConvert.DeserializeObject<List<LevelWeatherType>>(weatherEffects);
       List<WeatherEffect> currentEffects = [];
+      if (currentEffects == null)
+      {
+        return;
+      }
+
+      if (StartOfRound.Instance.IsHost)
+      {
+        return;
+      }
 
       foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
       {
         Plugin.logger.LogDebug($"Checking effect {effect.name}");
-
-        /// if indexof effect in effects matches the effectsDeserialized index
-        ///
 
         Plugin.logger.LogDebug($"Index of effect: {TimeOfDay.Instance.effects.ToList().IndexOf(effect)}");
 
@@ -104,30 +109,15 @@ namespace WeatherTweaks
         }
       }
 
-      foreach (WeatherEffect effect in currentEffects)
-      {
-        Plugin.logger.LogDebug($"Effect: {effect.name}");
-      }
-
-      if (currentEffects == null)
-      {
-        return;
-      }
-
-      if (StartOfRound.Instance.IsHost)
-      {
-        return;
-      }
-
       Plugin.logger.LogInfo($"Received weather effects data {weatherEffects} from server, applying");
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentEffects);
     }
 
-    public static void SetWeather(Dictionary<string, WeatherType> previousWeather)
+    public static void SetWeather(Dictionary<string, WeatherType> currentWeathers)
     {
       string serialized = JsonConvert.SerializeObject(
-        previousWeather,
+        currentWeathers,
         Formatting.None,
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
       );
