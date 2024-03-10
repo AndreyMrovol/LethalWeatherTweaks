@@ -57,7 +57,7 @@ namespace WeatherTweaks
 
       foreach (WeatherType weather in WeatherTypes)
       {
-        if (randomWeathers.Contains(weather.weatherType))
+        if (randomWeathers.Contains(weather.weatherType) && weather.weatherType != LevelWeatherType.None)
         {
           possibleTypes.Add(weather);
         }
@@ -78,6 +78,7 @@ namespace WeatherTweaks
       }
 
       NoneWeather = new("None", LevelWeatherType.None, [LevelWeatherType.None], CustomWeatherType.Vanilla) { Effects = [] };
+      WeatherTypes.Add(NoneWeather);
 
       for (int i = 0; i < effects.Length; i++)
       {
