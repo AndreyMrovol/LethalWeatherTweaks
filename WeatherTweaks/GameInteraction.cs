@@ -22,9 +22,12 @@ namespace WeatherTweaks
 
         if (weatherData.ContainsKey(levelName))
         {
-          level.currentWeather = weatherData[levelName].weatherType;
-          Variables.CurrentWeathers[level] = Variables.GetFullWeatherType(weatherData[levelName]);
-          logger.LogDebug($"Setting weather for {levelName} to {level.currentWeather}");
+          WeatherType weatherType = Variables.GetFullWeatherType(weatherData[levelName]);
+
+          level.currentWeather = weatherType.weatherType;
+          Variables.CurrentWeathers[level] = weatherType;
+
+          logger.LogDebug($"Setting weather for {levelName} to {weatherType.Name}");
         }
         else
         {
