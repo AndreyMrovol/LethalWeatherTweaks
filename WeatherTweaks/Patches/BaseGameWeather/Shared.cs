@@ -1,43 +1,56 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using BepInEx.Logging;
+using Enhancer.Extensions;
 using HarmonyLib;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
 
 namespace WeatherTweaks
 {
-  [HarmonyPatch(typeof(FloodWeather))]
   partial class BasegameWeatherPatch
   {
-    internal static void CurrentWeatherVariablePatch(ILContext il, LevelWeatherType weatherType, string wherefrom, bool variable2 = false)
+    // internal static int patchIndex = 1;
+
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks WeatherTranspiler");
+
+    internal static IEnumerable<CodeInstruction> CurrentWeatherVariablePatch(
+      IEnumerable<CodeInstruction> instructions,
+      LevelWeatherType weatherType,
+      string wherefrom
+    )
     {
-      var cursor = new ILCursor(il);
+      logger.LogInfo($"Patching {wherefrom} for {weatherType}");
+      CodeMatcher codeMatcher = new CodeMatcher(instructions);
 
-      if (!cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdfld<TimeOfDay>("currentWeatherVariable")))
-      {
-        Plugin.logger.LogError($"Failed IL hook for {wherefrom}");
-        return;
-      }
-      else
-      {
-        Plugin.logger.LogInfo($"IL hook for {wherefrom}");
-      }
+      codeMatcher = codeMatcher.MatchForward(
+        false,
+        new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(TimeOfDay), "Instance")),
+        new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(TimeOfDay), "currentWeatherVariable"))
+      );
+      logger.LogDebug($"Matched Ldfld for {wherefrom} for {weatherType}");
 
-      // Replace the field load instruction with a call to 'Variables.GetLevelWeatherVariables'
-      cursor.Remove(); // Remove the 'ldfld' instruction
-      cursor.EmitDelegate<Func<float>>(() =>
-      {
-        if (variable2)
-        {
-          return Variables.GetLevelWeatherVariables(weatherType).weatherVariable2;
-        }
+      logger.LogWarning($"Matches found: {codeMatcher.Length}");
+      logger.LogWarning($"Is valid: {codeMatcher.IsValid}");
 
-        return Variables.GetLevelWeatherVariables(weatherType).weatherVariable;
-      });
-      cursor.Emit(OpCodes.Stloc_0); // Store the result in a local variable
+      // Remove original instruction
+      codeMatcher.RemoveInstruction(); // removes  call class TimeOfDay  TimeOfDay::get_Instance()
+      codeMatcher.RemoveInstruction(); // removes  ldfld float32 TimeOfDay::currentWeatherVariable
 
-      // Emit instructions to load the value stored in the local variable onto the evaluation stack
-      cursor.Emit(OpCodes.Ldloc_0);
+      // Get the current weather variable
+      // Variables. method takes 2 arguments: int and bool - set them
+      codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldc_I4, (int)weatherType));
+      codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldc_I4, 0));
+
+      codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Variables), "GetLevelWeatherVariable")));
+
+      logger.LogDebug($"Patched {wherefrom} for {weatherType}");
+
+      logger.LogDebugInstructionsFrom(codeMatcher);
+
+      return codeMatcher.InstructionEnumeration();
     }
   }
 }
