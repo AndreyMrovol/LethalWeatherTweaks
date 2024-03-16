@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx.Logging;
-using Enhancer.Extensions;
 using HarmonyLib;
 
 namespace WeatherTweaks
@@ -51,8 +50,6 @@ namespace WeatherTweaks
         codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Variables), "GetLevelWeatherVariable")));
       });
 
-      logger.LogDebugInstructionsFrom(codeMatcher);
-
       logger.LogDebug($"Patched {wherefrom} for {weatherType}");
       return codeMatcher.InstructionEnumeration();
     }
@@ -91,8 +88,6 @@ namespace WeatherTweaks
 
         codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Variables), "GetLevelWeatherVariable")));
       });
-
-      logger.LogDebugInstructionsFrom(codeMatcher);
 
       logger.LogDebug($"Patched {wherefrom} for {weatherType}");
       return codeMatcher.InstructionEnumeration();
