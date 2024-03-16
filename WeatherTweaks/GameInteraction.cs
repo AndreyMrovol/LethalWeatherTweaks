@@ -77,12 +77,6 @@ namespace WeatherTweaks
           {
             timeOfDay.sunAnimator.SetBool(timeOfDay.effects[index].sunAnimatorBool, true);
           }
-
-          if (timeOfDayEffect.name == "flooded")
-          {
-            timeOfDay.currentWeatherVariable = weatherVariables.weatherVariable;
-            timeOfDay.currentWeatherVariable2 = weatherVariables.weatherVariable2;
-          }
         }
       }
     }
