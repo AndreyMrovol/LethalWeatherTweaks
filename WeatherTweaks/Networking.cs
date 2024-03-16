@@ -145,6 +145,9 @@ namespace WeatherTweaks
         return;
       }
 
+      weatherEffectsIndexes.Remove(LevelWeatherType.None);
+      Variables.CurrentEffects.RemoveAll(effect => effect == null);
+
       string serialized = JsonConvert.SerializeObject(
         weatherEffectsIndexes,
         Formatting.None,
