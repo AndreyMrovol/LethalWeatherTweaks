@@ -11,12 +11,11 @@ namespace WeatherTweaks
 {
   internal class Variables
   {
-    public static List<SelectableLevel> GameLevels = [];
+    internal static List<SelectableLevel> GameLevels = [];
 
-    // public static Dictionary<string, SelectableLevel> PlanetNames = [];
-
+    internal static WeatherType NoneWeather;
     public static List<WeatherType> WeatherTypes = [];
-    public static WeatherType NoneWeather;
+
     public static List<CombinedWeatherType> CombinedWeatherTypes = [];
 
     public static Dictionary<SelectableLevel, WeatherType> CurrentWeathers = [];
@@ -112,7 +111,7 @@ namespace WeatherTweaks
       });
     }
 
-    internal static string GetPlanetCurrentWeather(SelectableLevel level, bool uncertain = true)
+    public static string GetPlanetCurrentWeather(SelectableLevel level, bool uncertain = true)
     {
       bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
 
@@ -129,6 +128,47 @@ namespace WeatherTweaks
 
         return CurrentWeathers[level].Name;
       }
+    }
+
+    public static float GetLevelWeatherVariable(LevelWeatherType weatherType, bool variable2 = false)
+    {
+      if (StartOfRound.Instance == null)
+      {
+        Plugin.logger.LogError("StartOfRound is null");
+        return 0;
+      }
+
+      SelectableLevel level = StartOfRound.Instance.currentLevel;
+      RandomWeatherWithVariables randomWeather = level.randomWeathers.First(x => x.weatherType == weatherType);
+
+      if (randomWeather == null || StartOfRound.Instance == null || level == null)
+      {
+        Plugin.logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
+        return 0;
+      }
+
+      Plugin.logger.LogWarning(
+        $"Got weather variables for {level.PlanetName}:{weatherType} with variables {randomWeather.weatherVariable} {randomWeather.weatherVariable2}"
+      );
+      return randomWeather.weatherVariable;
+    }
+
+    public static LevelWeatherType LevelHasWeather(LevelWeatherType weatherType)
+    {
+      SelectableLevel level = StartOfRound.Instance.currentLevel;
+      if (StartOfRound.Instance == null || level == null)
+      {
+        Plugin.logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
+        return LevelWeatherType.None;
+      }
+
+      if (CurrentWeathers[level].Weathers.Contains(weatherType))
+      {
+        Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
+        return weatherType;
+      }
+
+      return LevelWeatherType.None;
     }
 
     internal static WeatherType GetFullWeatherType(WeatherType weatherType)
