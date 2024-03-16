@@ -42,7 +42,7 @@ namespace WeatherTweaks
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
 
       Dictionary<SelectableLevel, WeatherType> newWeathers = [];
-      List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
+      List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance, true);
 
       // for every planet, find weather type and add it to newWeathers
       Variables.CurrentWeathers = [];

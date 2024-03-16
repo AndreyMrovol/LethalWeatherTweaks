@@ -28,9 +28,14 @@ namespace WeatherTweaks
       return weatherDataDict;
     }
 
-    internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound)
+    internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound, bool includeCompanyMoon = false)
     {
       GameLevels = LethalLevelLoader.PatchedContent.SeletectableLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
+
+      if (includeCompanyMoon)
+      {
+        GameLevels.Add(LethalLevelLoader.PatchedContent.SeletectableLevels.First(level => level.PlanetName == "71 Gordion"));
+      }
 
       return GameLevels;
     }

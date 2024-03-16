@@ -174,6 +174,7 @@ namespace WeatherTweaks
       if (companyMoon != null)
       {
         Variables.CurrentWeathers[companyMoon] = Variables.NoneWeather;
+        currentWeather[companyMoon.PlanetName] = Variables.NoneWeather;
       }
 
       Plugin.logger.LogDebug("-------------");
