@@ -152,7 +152,7 @@ namespace WeatherTweaks
         return 0;
       }
 
-      Plugin.logger.LogWarning(
+      Plugin.logger.LogDebug(
         $"Got weather variables for {level.PlanetName}:{weatherType} with variables {randomWeather.weatherVariable} {randomWeather.weatherVariable2}"
       );
       return randomWeather.weatherVariable;
