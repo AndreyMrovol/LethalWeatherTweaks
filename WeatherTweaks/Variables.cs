@@ -130,6 +130,11 @@ namespace WeatherTweaks
       }
     }
 
+    public static WeatherType GetPlanetCurrentWeatherType(SelectableLevel level)
+    {
+      return CurrentWeathers[level];
+    }
+
     public static float GetLevelWeatherVariable(LevelWeatherType weatherType, bool variable2 = false)
     {
       if (StartOfRound.Instance == null)
