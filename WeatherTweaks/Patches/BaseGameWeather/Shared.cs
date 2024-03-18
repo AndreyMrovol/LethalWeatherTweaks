@@ -13,7 +13,7 @@ namespace WeatherTweaks
   {
     // internal static int patchIndex = 1;
 
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks WeatherTranspiler");
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks BGW");
 
     internal static IEnumerable<CodeInstruction> CurrentWeatherVariablePatch(
       IEnumerable<CodeInstruction> instructions,
