@@ -14,9 +14,13 @@ namespace WeatherTweaks
     [HarmonyPatch(typeof(AudioReverbTrigger), "ChangeAudioReverbForPlayer")]
     private static void ChangeAudioReverbForPlayerPatch(AudioReverbTrigger __instance, PlayerControllerB pScript)
     {
-      logger.LogDebug(
-        $"ChangeAudioReverbForPlayerPatch called with {__instance.weatherEffect}/{__instance.enableCurrentLevelWeather}/{__instance.disableAllWeather}"
-      );
+      if (!__instance.isShipRoom)
+      {
+        logger.LogDebug(
+          $"ChangeAudioReverbForPlayerPatch called with {__instance.weatherEffect}/{__instance.enableCurrentLevelWeather}/{__instance.disableAllWeather}"
+        );
+      }
+
       if (__instance.disableAllWeather)
       {
         TimeOfDay.Instance.DisableAllWeather();
