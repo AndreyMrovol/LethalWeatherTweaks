@@ -17,9 +17,12 @@ namespace WeatherTweaks
     public static List<WeatherType> WeatherTypes = [];
 
     public static List<CombinedWeatherType> CombinedWeatherTypes = [];
+    public static List<ProgressingWeatherType> ProgressingWeatherTypes = [];
 
     public static Dictionary<SelectableLevel, WeatherType> CurrentWeathers = [];
     public static List<WeatherEffect> CurrentEffects = [];
+
+    public static WeatherType CurrentLevelWeather;
 
     internal static Dictionary<int, LevelWeatherType> GetWeatherData(string weatherData)
     {
@@ -61,7 +64,7 @@ namespace WeatherTweaks
 
       foreach (WeatherType weather in WeatherTypes)
       {
-        if (randomWeathers.Contains(weather.weatherType) && weather.weatherType != LevelWeatherType.None)
+        if (randomWeathers.Contains(weather.weatherType) && weather != NoneWeather)
         {
           possibleTypes.Add(weather);
         }
@@ -96,6 +99,11 @@ namespace WeatherTweaks
 
       CombinedWeatherTypes.ForEach(combinedWeather =>
       {
+        if (combinedWeather.Enabled.Value == false)
+        {
+          Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} is disabled");
+          return;
+        }
         Plugin.logger.LogDebug($"Adding combined weather: {combinedWeather.Name}");
 
         combinedWeather.Effects.Clear();
@@ -108,6 +116,19 @@ namespace WeatherTweaks
         combinedWeather.WeatherType.Weathers = combinedWeather.Weathers;
 
         WeatherTypes.Add(combinedWeather.WeatherType);
+      });
+
+      ProgressingWeatherTypes.ForEach(progressingWeather =>
+      {
+        if (progressingWeather.Enabled.Value == false)
+        {
+          Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
+          return;
+        }
+
+        Plugin.logger.LogDebug($"Adding progressing weather: {progressingWeather.Name}");
+
+        WeatherTypes.Add(progressingWeather.WeatherType);
       });
     }
 
@@ -176,6 +197,11 @@ namespace WeatherTweaks
       return LevelWeatherType.None;
     }
 
+    internal static WeatherType GetVanillaWeatherType(LevelWeatherType weatherType)
+    {
+      return WeatherTypes.Find(x => x.weatherType == weatherType && x.Type == CustomWeatherType.Vanilla);
+    }
+
     internal static WeatherType GetFullWeatherType(WeatherType weatherType)
     {
       return WeatherTypes.Find(x => x.Name == weatherType.Name);
@@ -232,8 +258,26 @@ namespace WeatherTweaks
           else
           {
             Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} can't be applied");
-            weatherWeight = 0;
+            continue;
           }
+        }
+
+        if (weatherType.Type == CustomWeatherType.Progressing)
+        {
+          var progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weatherType.Name);
+          if (progressingWeather.Enabled.Value == false)
+          {
+            Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
+            continue;
+          }
+
+          if (progressingWeather.CanWeatherBeApplied(level) == false)
+          {
+            Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} can't be applied");
+            continue;
+          }
+
+          weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * 2);
         }
 
         if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)

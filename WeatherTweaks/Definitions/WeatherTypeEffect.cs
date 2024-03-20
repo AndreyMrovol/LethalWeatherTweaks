@@ -7,8 +7,10 @@ namespace WeatherTweaks
   public enum CustomWeatherType
   {
     Vanilla,
+    Modded,
     Custom,
-    Combined
+    Combined,
+    Progressing
   }
 
   [JsonObject(MemberSerialization.OptIn)]

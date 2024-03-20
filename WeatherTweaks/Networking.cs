@@ -8,15 +8,17 @@ namespace WeatherTweaks
 {
   internal class NetworkedConfig
   {
-    public static LethalNetworkVariable<string> currentWeatherSynced = new("previousWeather");
+    public static LethalNetworkVariable<string> currentWeatherDictionarySynced = new("previousWeather");
     public static LethalNetworkVariable<string> currentWeatherStringsSynced = new("previousWeatherStrings");
     public static LethalNetworkVariable<string> weatherEffectsSynced = new("weatherEffects");
+    public static LethalNetworkVariable<string> weatherTypeSynced = new("weatherType");
 
     public static void Init()
     {
-      currentWeatherSynced.OnValueChanged += WeatherDataReceived;
+      currentWeatherDictionarySynced.OnValueChanged += WeatherDataReceived;
       currentWeatherStringsSynced.OnValueChanged += WeatherDisplayDataReceived;
       weatherEffectsSynced.OnValueChanged += WeatherEffectsReceived;
+      weatherTypeSynced.OnValueChanged += WeatherTypeReceived;
     }
 
     public static void WeatherDataReceived(string weatherData)
@@ -114,6 +116,26 @@ namespace WeatherTweaks
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentEffects);
     }
 
+    public static void WeatherTypeReceived(string weatherType)
+    {
+      WeatherType currentWeather = JsonConvert.DeserializeObject<WeatherType>(weatherType);
+
+      if (currentWeather == null)
+      {
+        return;
+      }
+
+      // if (StartOfRound.Instance.IsHost)
+      // {
+      //   return;
+      // }
+
+      Plugin.logger.LogInfo($"Received weather type data {weatherType} from server, applying");
+
+      Variables.CurrentLevelWeather = Variables.GetFullWeatherType(currentWeather);
+      StartOfRound.Instance.currentLevel.currentWeather = Variables.CurrentLevelWeather.weatherType;
+    }
+
     public static void SetWeather(Dictionary<string, WeatherType> currentWeathers)
     {
       string serialized = JsonConvert.SerializeObject(
@@ -122,7 +144,7 @@ namespace WeatherTweaks
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
       );
 
-      currentWeatherSynced.Value = serialized;
+      currentWeatherDictionarySynced.Value = serialized;
       Plugin.logger.LogInfo($"Set weather data on server: {serialized}");
     }
 
@@ -161,6 +183,18 @@ namespace WeatherTweaks
 
       weatherEffectsSynced.Value = serialized;
       Plugin.logger.LogInfo($"Set weather effects on server: {serialized}");
+    }
+
+    public static void SetWeatherType(WeatherType weatherType)
+    {
+      string serialized = JsonConvert.SerializeObject(
+        weatherType,
+        Formatting.None,
+        new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
+      );
+
+      Plugin.logger.LogInfo($"Set weather type on server: {serialized}");
+      weatherTypeSynced.Value = serialized;
     }
   }
 }

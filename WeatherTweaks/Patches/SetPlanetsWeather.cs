@@ -17,6 +17,9 @@ namespace WeatherTweaks
 
       Variables.GetGameLevels(__instance);
       Variables.PopulateWeathers(__instance);
+      ChangeMidDay.lastCheckedEntry = 0;
+      LLLDungeonExitPatch.isPlayerInside = false;
+
       // NetworkedConfig.SetWeatherEffects([]);
       // Variables.CurrentWeathers = [];
 
@@ -77,7 +80,7 @@ namespace WeatherTweaks
           }
         }
 
-        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherSynced.Value}");
+        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherDictionarySynced.Value}");
       }
 
       return false;

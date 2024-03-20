@@ -37,6 +37,9 @@ namespace WeatherTweaks
         }
       }
 
+      ChangeMidDay.lastCheckedEntry = 0;
+      LLLDungeonExitPatch.RemoveListener();
+
       if (StartOfRound.Instance.IsHost)
       {
         logger.LogDebug("IsHost is true");

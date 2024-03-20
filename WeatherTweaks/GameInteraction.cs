@@ -38,6 +38,16 @@ namespace WeatherTweaks
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
 
+    internal static void SetWeather(WeatherType weatherType)
+    {
+      SelectableLevel level = StartOfRound.Instance.currentLevel;
+
+      level.currentWeather = weatherType.weatherType;
+      Variables.CurrentWeathers[level] = weatherType;
+
+      logger.LogDebug($"Setting weather for {level.PlanetName} to {weatherType.Name}");
+    }
+
     internal static void SetWeatherEffects(TimeOfDay timeOfDay, List<WeatherEffect> weatherEffects)
     {
       // timeOfDay.globalTimeSpeedMultiplier = 0.001f;
@@ -49,7 +59,8 @@ namespace WeatherTweaks
         return;
       }
 
-      // timeOfDay.Instance.DisableAllWeather();
+      Variables.CurrentEffects = weatherEffects;
+
       foreach (WeatherEffect timeOfDayEffect in timeOfDay.effects)
       {
         int index = timeOfDay.effects.ToList().IndexOf(timeOfDayEffect);
@@ -58,25 +69,48 @@ namespace WeatherTweaks
           .Find(x => x.weatherType == (LevelWeatherType)index);
 
         logger.LogDebug($"Effect: {timeOfDayEffect.name}");
+        logger.LogWarning($"Is player inside: {LLLDungeonExitPatch.isPlayerInside}");
 
         if (weatherEffects.Contains(timeOfDayEffect))
         {
-          timeOfDayEffect.effectEnabled = true;
+          logger.LogDebug($"Enabling effect: {timeOfDayEffect.name}");
 
-          if (timeOfDayEffect.effectObject != null)
+          if (!LLLDungeonExitPatch.isPlayerInside)
           {
-            timeOfDayEffect.effectObject.SetActive(true);
+            timeOfDayEffect.effectEnabled = true;
+            if (timeOfDayEffect.effectObject != null)
+            {
+              timeOfDayEffect.effectObject.SetActive(true);
+            }
+
+            if (timeOfDayEffect.effectPermanentObject != null)
+            {
+              timeOfDayEffect.effectPermanentObject.SetActive(true);
+            }
           }
-
-          if (timeOfDayEffect.effectPermanentObject != null)
+          else
           {
-            timeOfDayEffect.effectPermanentObject.SetActive(true);
+            logger.LogWarning($"Player is inside, skipping effect object activation");
+            if (timeOfDayEffect.effectObject != null)
+            {
+              timeOfDayEffect.effectObject.SetActive(false);
+            }
+
+            if (timeOfDayEffect.effectPermanentObject != null)
+            {
+              timeOfDayEffect.effectPermanentObject.SetActive(false);
+            }
           }
 
           if (timeOfDayEffect.sunAnimatorBool == "eclipse")
           {
             timeOfDay.sunAnimator.SetBool(timeOfDay.effects[index].sunAnimatorBool, true);
           }
+        }
+        else
+        {
+          logger.LogDebug($"Disabling effect: {timeOfDayEffect.name}");
+          timeOfDay.DisableWeatherEffect(timeOfDayEffect);
         }
       }
     }
