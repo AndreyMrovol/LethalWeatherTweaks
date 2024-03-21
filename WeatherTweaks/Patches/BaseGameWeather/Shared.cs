@@ -84,7 +84,7 @@ namespace WeatherTweaks
         // Get the current weather variable
         // Variables.GetLevelWeatherVariable method takes 2 arguments: int and bool - set them
         codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldc_I4, (int)weatherType));
-        codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldc_I4, 0));
+        codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Ldc_I4, 1));
 
         codeMatcher.InsertAndAdvance(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Variables), "GetLevelWeatherVariable")));
       });
