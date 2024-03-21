@@ -74,6 +74,20 @@ namespace WeatherTweaks
       return possibleTypes.Distinct().ToList();
     }
 
+    internal static Dictionary<string, WeatherType> GetAllPlanetWeathersDictionary()
+    {
+      Dictionary<string, WeatherType> weathers = new();
+
+      CurrentWeathers
+        .ToList()
+        .ForEach(weather =>
+        {
+          weathers.Add(weather.Key.PlanetName, weather.Value);
+        });
+
+      return weathers;
+    }
+
     internal static void PopulateWeathers(StartOfRound startOfRound)
     {
       Plugin.logger.LogDebug("Populating weathers");

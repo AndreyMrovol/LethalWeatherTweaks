@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
 
@@ -22,6 +24,11 @@ namespace WeatherTweaks
       UncertainWeather.Init();
 
       GeneralImprovementsWeather.Init();
+
+      if (Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades"))
+      {
+        Patches.LateGameUpgrades.Init();
+      }
 
       // Plugin startup logic
       Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
