@@ -1,84 +1,91 @@
-using System.Collections.Generic;
-using BepInEx.Logging;
-using GameNetcodeStuff;
-using HarmonyLib;
-using LethalLevelLoader;
-using UnityEngine;
+// using System.Collections.Generic;
+// using BepInEx.Logging;
+// using GameNetcodeStuff;
+// using HarmonyLib;
+// using LethalLevelLoader;
+// using UnityEngine;
 
-namespace WeatherTweaks
-{
-  internal class LLLDungeonExitPatch
-  {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks LLL Exit");
+// namespace WeatherTweaks
+// {
+//   internal class LLLDungeonExitPatch
+//   {
+//     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks LLL Exit");
 
-    internal static bool isPlayerInside = false;
+//     internal static bool isPlayerInside = false;
 
-    internal static void StartListener()
-    {
-      ExtendedLevel currentExtendedLevel = LethalLevelLoader.LevelManager.CurrentExtendedLevel;
+//     internal static void StartListener()
+//     {
+//       ExtendedLevel currentExtendedLevel = LethalLevelLoader.LevelManager.CurrentExtendedLevel;
 
-      currentExtendedLevel.levelEvents.onPlayerExitDungeon.AddListener(OnPlayerLeftDungeon);
-      currentExtendedLevel.levelEvents.onPlayerEnterDungeon.AddListener(OnPlayerEnteredDungeon);
-    }
+//       currentExtendedLevel.levelEvents.onPlayerExitDungeon.AddListener(OnPlayerLeftDungeon);
+//       currentExtendedLevel.levelEvents.onPlayerEnterDungeon.AddListener(OnPlayerEnteredDungeon);
+//     }
 
-    internal static void RemoveListener()
-    {
-      ExtendedLevel currentExtendedLevel = LethalLevelLoader.LevelManager.CurrentExtendedLevel;
+//     internal static void RemoveListener()
+//     {
+//       ExtendedLevel currentExtendedLevel = LethalLevelLoader.LevelManager.CurrentExtendedLevel;
 
-      currentExtendedLevel.levelEvents.onPlayerExitDungeon.RemoveListener(OnPlayerLeftDungeon);
-      currentExtendedLevel.levelEvents.onPlayerEnterDungeon.RemoveListener(OnPlayerEnteredDungeon);
+//       currentExtendedLevel.levelEvents.onPlayerExitDungeon.RemoveListener(OnPlayerLeftDungeon);
+//       currentExtendedLevel.levelEvents.onPlayerEnterDungeon.RemoveListener(OnPlayerEnteredDungeon);
 
-      isPlayerInside = false;
-    }
+//       isPlayerInside = false;
+//     }
 
-    private static void OnPlayerEnteredDungeon((EntranceTeleport, GameNetcodeStuff.PlayerControllerB) eventData)
-    {
-      // Handle player entered dungeon event
+//     private static void OnPlayerEnteredDungeon((EntranceTeleport, GameNetcodeStuff.PlayerControllerB) eventData)
+//     {
+//       // Handle player entered dungeon event
+//       logger.LogDebug($"Player {eventData.Item2.playerUsername} entered dungeon");
 
-      isPlayerInside = true;
-    }
+//       if (eventData.Item2 != StartOfRound.Instance.localPlayerController)
+//       {
+//         return;
+//       }
 
-    private static void OnPlayerLeftDungeon((EntranceTeleport, GameNetcodeStuff.PlayerControllerB) eventData)
-    {
-      // Handle player left dungeon event
+//       isPlayerInside = true;
+//     }
 
-      isPlayerInside = false;
+//     private static void OnPlayerLeftDungeon((EntranceTeleport, GameNetcodeStuff.PlayerControllerB) eventData)
+//     {
+//       // Handle player left dungeon event
+//       logger.LogDebug($"Player {eventData.Item2.playerUsername} left dungeon");
 
-      if (eventData.Item2 != StartOfRound.Instance.localPlayerController)
-      {
-        return;
-      }
+//       if (eventData.Item2 != StartOfRound.Instance.localPlayerController)
+//       {
+//         return;
+//       }
 
-      List<WeatherEffect> weatherEffects = Variables.CurrentLevelWeather.Effects;
+//       isPlayerInside = false;
 
-      weatherEffects.Do(effect =>
-      {
-        logger.LogDebug($"Effect: {effect.name}");
-        logger.LogDebug($"Effect Enabled: {effect.effectEnabled}");
-      });
+//       List<WeatherEffect> weatherEffects = Variables.CurrentLevelWeather.Effects;
 
-      foreach (WeatherEffect timeOfDayEffect in TimeOfDay.Instance.effects)
-      {
-        logger.LogDebug($"Effect: {timeOfDayEffect.name}");
-        logger.LogDebug($"Effect Enabled: {timeOfDayEffect.effectEnabled}");
-        // logger.LogDebug($"Effect Object Enabled: {timeOfDayEffect.effectObject.activeSelf}");
-        logger.LogInfo($"Contains: {weatherEffects.Contains(timeOfDayEffect)}");
+//       weatherEffects.Do(effect =>
+//       {
+//         logger.LogDebug($"Effect: {effect.name}");
+//         logger.LogDebug($"Effect Enabled: {effect.effectEnabled}");
+//       });
 
-        if (weatherEffects.Contains(timeOfDayEffect))
-        {
-          timeOfDayEffect.effectEnabled = true;
+//       foreach (WeatherEffect timeOfDayEffect in TimeOfDay.Instance.effects)
+//       {
+//         logger.LogDebug($"Effect: {timeOfDayEffect.name}");
+//         logger.LogDebug($"Effect Enabled: {timeOfDayEffect.effectEnabled}");
+//         // logger.LogDebug($"Effect Object Enabled: {timeOfDayEffect.effectObject.activeSelf}");
+//         logger.LogInfo($"Contains: {weatherEffects.Contains(timeOfDayEffect)}");
 
-          if (timeOfDayEffect.effectObject != null)
-          {
-            timeOfDayEffect.effectObject.SetActive(true);
-          }
+//         if (weatherEffects.Contains(timeOfDayEffect))
+//         {
+//           timeOfDayEffect.effectEnabled = true;
 
-          if (timeOfDayEffect.effectPermanentObject != null)
-          {
-            timeOfDayEffect.effectPermanentObject.SetActive(true);
-          }
-        }
-      }
-    }
-  }
-}
+//           if (timeOfDayEffect.effectObject != null)
+//           {
+//             timeOfDayEffect.effectObject.SetActive(true);
+//           }
+
+//           if (timeOfDayEffect.effectPermanentObject != null)
+//           {
+//             timeOfDayEffect.effectPermanentObject.SetActive(true);
+//           }
+//         }
+//       }
+//     }
+//   }
+// }

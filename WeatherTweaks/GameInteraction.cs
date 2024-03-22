@@ -74,14 +74,14 @@ namespace WeatherTweaks
           .Find(x => x.weatherType == (LevelWeatherType)index);
 
         logger.LogDebug($"Effect: {timeOfDayEffect.name}");
-        logger.LogDebug($"Is player inside: {LLLDungeonExitPatch.isPlayerInside}");
+        logger.LogDebug($"Is player inside: {EntranceTeleportPatch.isPlayerInside}");
         logger.LogInfo($"Contains effect: {weatherEffects.Contains(timeOfDayEffect)}");
 
         if (weatherEffects.Contains(timeOfDayEffect))
         {
           logger.LogDebug($"Enabling effect: {timeOfDayEffect.name}");
 
-          if (!LLLDungeonExitPatch.isPlayerInside)
+          if (!EntranceTeleportPatch.isPlayerInside)
           {
             timeOfDayEffect.effectEnabled = true;
             if (timeOfDayEffect.effectObject != null)

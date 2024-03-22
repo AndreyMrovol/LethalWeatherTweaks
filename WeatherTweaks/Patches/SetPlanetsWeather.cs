@@ -18,7 +18,7 @@ namespace WeatherTweaks
       Variables.GetGameLevels(__instance);
       Variables.PopulateWeathers(__instance);
       ChangeMidDay.lastCheckedEntry = 0;
-      LLLDungeonExitPatch.isPlayerInside = false;
+      EntranceTeleportPatch.isPlayerInside = false;
 
       // NetworkedConfig.SetWeatherEffects([]);
       // Variables.CurrentWeathers = [];
