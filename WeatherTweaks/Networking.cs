@@ -125,15 +125,15 @@ namespace WeatherTweaks
         return;
       }
 
-      // if (StartOfRound.Instance.IsHost)
-      // {
-      //   return;
-      // }
+      if (StartOfRound.Instance.IsHost)
+      {
+        return;
+      }
 
       Plugin.logger.LogInfo($"Received weather type data {weatherType} from server, applying");
 
-      Variables.CurrentLevelWeather = Variables.GetFullWeatherType(currentWeather);
-      StartOfRound.Instance.currentLevel.currentWeather = Variables.CurrentLevelWeather.weatherType;
+      GameInteraction.SetWeather(Variables.GetFullWeatherType(currentWeather));
+      // GameInteraction.SetWeatherEffects(TimeOfDay.Instance, Variables.CurrentLevelWeather.Effects.ToList());
     }
 
     public static void SetWeather(Dictionary<string, WeatherType> currentWeathers)
