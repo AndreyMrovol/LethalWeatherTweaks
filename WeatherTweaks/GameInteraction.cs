@@ -45,11 +45,6 @@ namespace WeatherTweaks
       level.currentWeather = weatherType.weatherType;
       Variables.CurrentWeathers[level] = weatherType;
 
-      Variables.CurrentLevelWeather = weatherType;
-      StartOfRound.Instance.currentLevel.currentWeather = weatherType.weatherType;
-
-      SetWeatherEffects(TimeOfDay.Instance, weatherType.Effects.ToList());
-
       logger.LogDebug($"Setting weather for {level.PlanetName} to {weatherType.Name}");
     }
 
@@ -74,8 +69,7 @@ namespace WeatherTweaks
           .Find(x => x.weatherType == (LevelWeatherType)index);
 
         logger.LogDebug($"Effect: {timeOfDayEffect.name}");
-        logger.LogDebug($"Is player inside: {EntranceTeleportPatch.isPlayerInside}");
-        logger.LogInfo($"Contains effect: {weatherEffects.Contains(timeOfDayEffect)}");
+        logger.LogWarning($"Is player inside: {EntranceTeleportPatch.isPlayerInside}");
 
         if (weatherEffects.Contains(timeOfDayEffect))
         {

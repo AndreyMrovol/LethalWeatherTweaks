@@ -42,8 +42,8 @@ namespace WeatherTweaks
 
       if (StartOfRound.Instance.IsHost)
       {
-        logger.LogDebug("IsHost is true");
         NetworkedConfig.SetWeatherEffects([]);
+        NetworkedConfig.SetWeatherType(null);
       }
     }
   }

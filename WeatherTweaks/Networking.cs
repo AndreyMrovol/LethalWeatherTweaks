@@ -99,9 +99,7 @@ namespace WeatherTweaks
 
       foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
       {
-        Plugin.logger.LogDebug($"Checking effect {effect.name}");
-
-        Plugin.logger.LogDebug($"Index of effect: {TimeOfDay.Instance.effects.ToList().IndexOf(effect)}");
+        Plugin.logger.LogDebug($"Checking effect {effect.name} ({TimeOfDay.Instance.effects.ToList().IndexOf(effect)}");
 
         if (effectsDeserialized.Contains((LevelWeatherType)TimeOfDay.Instance.effects.ToList().IndexOf(effect)))
         {
@@ -132,8 +130,8 @@ namespace WeatherTweaks
 
       Plugin.logger.LogInfo($"Received weather type data {weatherType} from server, applying");
 
-      GameInteraction.SetWeather(Variables.GetFullWeatherType(currentWeather));
-      // GameInteraction.SetWeatherEffects(TimeOfDay.Instance, Variables.CurrentLevelWeather.Effects.ToList());
+      Variables.CurrentLevelWeather = Variables.GetFullWeatherType(currentWeather);
+      StartOfRound.Instance.currentLevel.currentWeather = Variables.CurrentLevelWeather.weatherType;
     }
 
     public static void SetWeather(Dictionary<string, WeatherType> currentWeathers)
