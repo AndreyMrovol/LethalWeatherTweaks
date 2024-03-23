@@ -52,7 +52,7 @@ namespace WeatherTweaks
     {
       // timeOfDay.globalTimeSpeedMultiplier = 0.001f;
 
-      logger.LogDebug($"Setting weather effects for {timeOfDay.currentLevel.PlanetName}: {weatherEffects.Count} effects");
+      logger.LogDebug($"Setting weather effects for {timeOfDay.currentLevel.PlanetName}");
       if (weatherEffects == null || weatherEffects.Count == 0)
       {
         logger.LogDebug("No weather effects to set");
