@@ -123,10 +123,10 @@ namespace WeatherTweaks
         return;
       }
 
-      // if (StartOfRound.Instance.IsHost)
-      // {
-      //   return;
-      // }
+      if (StartOfRound.Instance.IsHost)
+      {
+        return;
+      }
 
       Plugin.logger.LogInfo($"Received weather type data {weatherType} from server, applying");
 

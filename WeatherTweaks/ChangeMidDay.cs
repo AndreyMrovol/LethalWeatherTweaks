@@ -16,6 +16,8 @@ namespace WeatherTweaks
     // internal static List<ProgressingWeatherEntry> weatherEntries = [];
     internal static float lastCheckedEntry = 0.0f;
 
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks ChangeMidDay");
+
     [HarmonyPostfix]
     [HarmonyPatch("MoveTimeOfDay")]
     internal static void MoveTimeOfDayPatch(TimeOfDay __instance)
@@ -51,18 +53,22 @@ namespace WeatherTweaks
         if (normalizedTimeOfDay > entry.DayTime && entry.DayTime > lastCheckedEntry)
         // this means we've passed the time of day for this entry and we haven't checked it yet
         {
+          logger.LogInfo($"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}");
+
           NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
           NetworkedConfig.SetWeatherType(entry.GetWeatherType());
 
           Variables.CurrentLevelWeather = entry.GetWeatherType();
 
-          Plugin.logger.LogWarning($"Player inside: {EntranceTeleportPatch.isPlayerInside}");
+          logger.LogWarning($"Player inside: {EntranceTeleportPatch.isPlayerInside}");
 
           GameInteraction.SetWeatherEffects(__instance, entry.GetWeatherType().Effects.ToList());
 
           HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
 
           lastCheckedEntry = entry.DayTime;
+
+          break;
         }
       }
     }
