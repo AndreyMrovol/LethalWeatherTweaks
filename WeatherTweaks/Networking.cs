@@ -99,9 +99,7 @@ namespace WeatherTweaks
 
       foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
       {
-        Plugin.logger.LogDebug($"Checking effect {effect.name}");
-
-        Plugin.logger.LogDebug($"Index of effect: {TimeOfDay.Instance.effects.ToList().IndexOf(effect)}");
+        Plugin.logger.LogDebug($"Checking effect {effect.name} ({TimeOfDay.Instance.effects.ToList().IndexOf(effect)}");
 
         if (effectsDeserialized.Contains((LevelWeatherType)TimeOfDay.Instance.effects.ToList().IndexOf(effect)))
         {

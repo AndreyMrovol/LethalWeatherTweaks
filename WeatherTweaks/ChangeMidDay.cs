@@ -56,7 +56,7 @@ namespace WeatherTweaks
 
           Variables.CurrentLevelWeather = entry.GetWeatherType();
 
-          Plugin.logger.LogWarning($"Player inside: {LLLDungeonExitPatch.isPlayerInside}");
+          Plugin.logger.LogWarning($"Player inside: {EntranceTeleportPatch.isPlayerInside}");
 
           GameInteraction.SetWeatherEffects(__instance, entry.GetWeatherType().Effects.ToList());
 

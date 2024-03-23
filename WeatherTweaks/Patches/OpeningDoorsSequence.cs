@@ -64,7 +64,7 @@ namespace WeatherTweaks
       }
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentWeather.Effects);
-      LLLDungeonExitPatch.StartListener();
+      // LLLDungeonExitPatch.StartListener();
 
       Variables.CurrentLevelWeather = currentWeather;
     }
