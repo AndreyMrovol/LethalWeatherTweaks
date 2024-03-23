@@ -122,7 +122,6 @@ namespace WeatherTweaks
       {
         return;
       }
-
       // if (StartOfRound.Instance.IsHost)
       // {
       //   return;
