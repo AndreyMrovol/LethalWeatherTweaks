@@ -15,6 +15,7 @@ namespace WeatherTweaks
   {
     // internal static List<ProgressingWeatherEntry> weatherEntries = [];
     internal static float lastCheckedEntry = 0.0f;
+    internal static System.Random random;
 
     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks ChangeMidDay");
 
@@ -35,6 +36,10 @@ namespace WeatherTweaks
       }
 
       float normalizedTimeOfDay = __instance.normalizedTimeOfDay;
+      if (random == null)
+      {
+        random = new System.Random(StartOfRound.Instance.randomMapSeed);
+      }
 
       ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather => weather.Name == currentWeather.Name);
       List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries;
@@ -58,8 +63,19 @@ namespace WeatherTweaks
           // NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
           // NetworkedConfig.SetWeatherType(entry.GetWeatherType());
 
-          NetworkedConfig.SetProgressingWeatherEntry(entry);
+          // get a random between 0-1
+          // compare to entry.chance
 
+          double randomRoll = random.NextDouble();
+
+          if (randomRoll < entry.Chance)
+          {
+            logger.LogWarning($"Random roll failed - got {randomRoll}, needed {entry.Chance} or higher");
+            lastCheckedEntry = entry.DayTime;
+            break;
+          }
+
+          NetworkedConfig.SetProgressingWeatherEntry(entry);
           DoMidDayChange(entry);
 
           lastCheckedEntry = entry.DayTime;

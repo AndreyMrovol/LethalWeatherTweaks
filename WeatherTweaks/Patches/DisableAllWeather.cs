@@ -45,6 +45,8 @@ namespace WeatherTweaks
         NetworkedConfig.SetWeatherEffects([]);
         NetworkedConfig.SetWeatherType(null);
         NetworkedConfig.SetProgressingWeatherEntry(null);
+
+        ChangeMidDay.random = null;
       }
     }
   }
