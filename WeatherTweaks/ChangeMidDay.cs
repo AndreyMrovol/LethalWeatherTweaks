@@ -55,22 +55,28 @@ namespace WeatherTweaks
         {
           logger.LogInfo($"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}");
 
-          NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
-          NetworkedConfig.SetWeatherType(entry.GetWeatherType());
+          // NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
+          // NetworkedConfig.SetWeatherType(entry.GetWeatherType());
 
-          Variables.CurrentLevelWeather = entry.GetWeatherType();
+          NetworkedConfig.SetProgressingWeatherEntry(entry);
 
-          logger.LogWarning($"Player inside: {EntranceTeleportPatch.isPlayerInside}");
-
-          GameInteraction.SetWeatherEffects(__instance, entry.GetWeatherType().Effects.ToList());
-
-          HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
+          DoMidDayChange(entry);
 
           lastCheckedEntry = entry.DayTime;
-
           break;
         }
       }
+    }
+
+    internal static void DoMidDayChange(ProgressingWeatherEntry entry)
+    {
+      logger.LogWarning($"Changing weather, is player inside: {EntranceTeleportPatch.isPlayerInside}");
+
+      Variables.CurrentLevelWeather = entry.GetWeatherType();
+
+      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, entry.GetWeatherType().Effects.ToList());
+
+      HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
     }
   }
 }

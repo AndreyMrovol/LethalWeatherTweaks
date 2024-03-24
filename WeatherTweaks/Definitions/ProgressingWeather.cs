@@ -2,15 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using HarmonyLib;
+using Newtonsoft.Json;
 
 namespace WeatherTweaks.Modules
 {
   partial class Types
   {
+    [JsonObject(MemberSerialization.OptIn)]
     public class ProgressingWeatherEntry
     {
+      [JsonProperty]
       public float DayTime;
+
+      [JsonProperty]
       public float Chance;
+
+      [JsonProperty]
       public LevelWeatherType WeatherType;
 
       internal WeatherType GetWeatherType()

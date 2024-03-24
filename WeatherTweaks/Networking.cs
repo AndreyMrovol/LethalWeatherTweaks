@@ -3,6 +3,7 @@ using System.Linq;
 using Dissonance;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
+using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
 {
@@ -13,12 +14,16 @@ namespace WeatherTweaks
     public static LethalNetworkVariable<string> weatherEffectsSynced = new("weatherEffects");
     public static LethalNetworkVariable<string> weatherTypeSynced = new("weatherType");
 
+    public static LethalNetworkVariable<string> currentProgressingWeatherEntry = new("currentProgressingWeatherEntry");
+
     public static void Init()
     {
       currentWeatherDictionarySynced.OnValueChanged += WeatherDataReceived;
       currentWeatherStringsSynced.OnValueChanged += WeatherDisplayDataReceived;
       weatherEffectsSynced.OnValueChanged += WeatherEffectsReceived;
       weatherTypeSynced.OnValueChanged += WeatherTypeReceived;
+
+      currentProgressingWeatherEntry.OnValueChanged += ProgressingWeatherEntryReceived;
     }
 
     public static void WeatherDataReceived(string weatherData)
@@ -83,8 +88,6 @@ namespace WeatherTweaks
 
     public static void WeatherEffectsReceived(string weatherEffects)
     {
-      Plugin.logger.LogWarning("Weather effects received");
-
       List<LevelWeatherType> effectsDeserialized = JsonConvert.DeserializeObject<List<LevelWeatherType>>(weatherEffects);
       List<WeatherEffect> currentEffects = [];
       if (currentEffects == null)
@@ -132,6 +135,25 @@ namespace WeatherTweaks
 
       Variables.CurrentLevelWeather = Variables.GetFullWeatherType(currentWeather);
       StartOfRound.Instance.currentLevel.currentWeather = Variables.CurrentLevelWeather.weatherType;
+    }
+
+    public static void ProgressingWeatherEntryReceived(string progressingWeatherEntry)
+    {
+      ProgressingWeatherEntry entry = JsonConvert.DeserializeObject<ProgressingWeatherEntry>(progressingWeatherEntry);
+
+      if (entry == null)
+      {
+        return;
+      }
+
+      if (StartOfRound.Instance.IsHost)
+      {
+        return;
+      }
+
+      Plugin.logger.LogInfo($"Received progressing weather entry data {progressingWeatherEntry} from server, applying");
+
+      ChangeMidDay.DoMidDayChange(entry);
     }
 
     public static void SetWeather(Dictionary<string, WeatherType> currentWeathers)
@@ -193,6 +215,18 @@ namespace WeatherTweaks
 
       Plugin.logger.LogInfo($"Set weather type on server: {serialized}");
       weatherTypeSynced.Value = serialized;
+    }
+
+    public static void SetProgressingWeatherEntry(ProgressingWeatherEntry entry)
+    {
+      string serialized = JsonConvert.SerializeObject(
+        entry,
+        Formatting.None,
+        new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
+      );
+
+      Plugin.logger.LogInfo($"Set progressing weather entry on server: {serialized}");
+      currentProgressingWeatherEntry.Value = serialized;
     }
   }
 }
