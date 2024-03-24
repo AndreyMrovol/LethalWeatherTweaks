@@ -25,13 +25,8 @@ namespace WeatherTweaks
       );
       logger.LogDebug($"Matched Ldfld for RoundManager.SpawnOutsideHazards");
 
-      logger.LogWarning($"Matches found: {codeMatcher.Length}");
-      logger.LogWarning($"Is valid: {codeMatcher.IsValid}");
-
       codeMatcher.Repeat(match =>
       {
-        logger.LogWarning($"Matched Ldfld");
-
         // Remove original instruction
         codeMatcher.RemoveInstruction(); // removes  call class TimeOfDay  TimeOfDay::get_Instance()
         codeMatcher.RemoveInstruction(); // removes  ldfld float32 TimeOfDay::currentWeatherVariable
