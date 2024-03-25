@@ -76,6 +76,7 @@ namespace WeatherTweaks
           }
 
           NetworkedConfig.SetProgressingWeatherEntry(entry);
+          NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
           DoMidDayChange(entry);
 
           lastCheckedEntry = entry.DayTime;
@@ -88,7 +89,10 @@ namespace WeatherTweaks
     {
       logger.LogWarning($"Changing weather, is player inside: {EntranceTeleportPatch.isPlayerInside}");
 
-      Variables.CurrentLevelWeather = entry.GetWeatherType();
+      WeatherType fullWeatherType = Variables.GetFullWeatherType(entry.GetWeatherType());
+
+      Variables.CurrentLevelWeather = fullWeatherType;
+      StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.weatherType;
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, entry.GetWeatherType().Effects.ToList());
 
