@@ -266,6 +266,13 @@ namespace WeatherTweaks
         Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedWeather.Name}");
       }
 
+      SelectableLevel companyMoon = LethalLevelLoader.PatchedContent.SeletectableLevels.Find(level => level.PlanetName == "71 Gordion");
+      if (companyMoon != null)
+      {
+        Variables.CurrentWeathers[companyMoon] = Variables.NoneWeather;
+        selectedWeathers[companyMoon.PlanetName] = Variables.NoneWeather;
+      }
+
       Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
       return selectedWeathers;
     }
