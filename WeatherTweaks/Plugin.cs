@@ -7,6 +7,7 @@ using HarmonyLib;
 namespace WeatherTweaks
 {
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+  [BepInDependency("com.github.fredolx.meteomultiplier", BepInDependency.DependencyFlags.SoftDependency)]
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
@@ -28,6 +29,11 @@ namespace WeatherTweaks
       if (Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades"))
       {
         Patches.LateGameUpgrades.Init();
+      }
+
+      if (Chainloader.PluginInfos.ContainsKey("com.github.fredolx.meteomultiplier"))
+      {
+        Patches.MeteoMultiplierPatches.Init();
       }
 
       // Plugin startup logic

@@ -9,8 +9,6 @@ using HarmonyLib;
 using MoreShipUpgrades;
 using TMPro;
 
-// using static GeneralImprovements.Utilities.MonitorsHelper;
-
 namespace WeatherTweaks.Patches
 {
   internal class LateGameUpgrades
