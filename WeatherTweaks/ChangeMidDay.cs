@@ -94,7 +94,7 @@ namespace WeatherTweaks
       Variables.CurrentLevelWeather = fullWeatherType;
       StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.weatherType;
 
-      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, entry.GetWeatherType().Effects.ToList());
+      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, fullWeatherType.Effects.ToList());
 
       HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
     }
