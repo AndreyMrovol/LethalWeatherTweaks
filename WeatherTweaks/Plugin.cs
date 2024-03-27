@@ -39,6 +39,24 @@ namespace WeatherTweaks
         Patches.MeteoMultiplierPatches.Init();
       }
 
+      logger.LogInfo(
+        @"
+                  .::.                  
+                  :==:                  
+         :-.      :==:      .-:         
+        .-==-.    .::.    .-===.        
+          .-=-  .:----:.  -==.          
+              -==========-              
+             ==============             
+               .-==========- :-----     
+         :-==-:. .=========- :-----     
+       .========:   .-=====             
+       ============-. :==-              
+       -=============. .  -==.          
+        :-==========:     .-==-.        
+            ......          .-:         "
+      );
+
       // Plugin startup logic
       Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
