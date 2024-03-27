@@ -23,6 +23,34 @@ namespace WeatherTweaks
 
       GeneralImprovementsWeather.Init();
 
+      if (Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades"))
+      {
+        Patches.LateGameUpgrades.Init();
+      }
+
+      if (Chainloader.PluginInfos.ContainsKey("com.github.fredolx.meteomultiplier"))
+      {
+        Patches.MeteoMultiplierPatches.Init();
+      }
+
+      logger.LogInfo(
+        @"
+                  .::.                  
+                  :==:                  
+         :-.      :==:      .-:         
+        .-==-.    .::.    .-===.        
+          .-=-  .:----:.  -==.          
+              -==========-              
+             ==============             
+               .-==========- :-----     
+         :-==-:. .=========- :-----     
+       .========:   .-=====             
+       ============-. :==-              
+       -=============. .  -==.          
+        :-==========:     .-==-.        
+            ......          .-:         "
+      );
+
       // Plugin startup logic
       Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
