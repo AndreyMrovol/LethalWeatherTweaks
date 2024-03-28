@@ -53,7 +53,7 @@ namespace WeatherTweaks
       // timeOfDay.globalTimeSpeedMultiplier = 0.001f;
 
       logger.LogDebug($"Setting weather effects for {timeOfDay.currentLevel.PlanetName}: {weatherEffects.Count} effects");
-      if (weatherEffects == null || weatherEffects.Count == 0)
+      if (weatherEffects == null)
       {
         logger.LogDebug("No weather effects to set");
         return;
@@ -68,8 +68,8 @@ namespace WeatherTweaks
           .Instance.currentLevel.randomWeathers.ToList()
           .Find(x => x.weatherType == (LevelWeatherType)index);
 
-        logger.LogDebug($"Effect: {timeOfDayEffect.name}");
-        logger.LogWarning($"Is player inside: {EntranceTeleportPatch.isPlayerInside}");
+        // logger.LogDebug($"Effect: {timeOfDayEffect.name}");
+        // logger.LogWarning($"Is player inside: {EntranceTeleportPatch.isPlayerInside}");
 
         if (weatherEffects.Contains(timeOfDayEffect))
         {
@@ -110,7 +110,17 @@ namespace WeatherTweaks
         else
         {
           logger.LogDebug($"Disabling effect: {timeOfDayEffect.name}");
-          timeOfDay.DisableWeatherEffect(timeOfDayEffect);
+          timeOfDayEffect.effectEnabled = false;
+
+          if (timeOfDayEffect.effectObject != null)
+          {
+            timeOfDayEffect.effectObject.SetActive(false);
+          }
+
+          if (timeOfDayEffect.effectPermanentObject != null)
+          {
+            timeOfDayEffect.effectPermanentObject.SetActive(false);
+          }
         }
       }
     }
