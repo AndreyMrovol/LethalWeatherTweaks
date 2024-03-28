@@ -16,6 +16,12 @@ namespace WeatherTweaks
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
 
       Variables.GetGameLevels(__instance);
+      Variables.PopulateWeathers(__instance);
+      ChangeMidDay.lastCheckedEntry = 0;
+      EntranceTeleportPatch.isPlayerInside = false;
+
+      // NetworkedConfig.SetWeatherEffects([]);
+      // Variables.CurrentWeathers = [];
 
       // there are 3 possible cases:
       // we're hosting - mod is active, we're syncing weather data
@@ -34,11 +40,20 @@ namespace WeatherTweaks
 
       if (StartOfRound.Instance.IsHost)
       {
-        Dictionary<string, LevelWeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+        Variables.CurrentWeathers = [];
+
+        Dictionary<string, WeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+
+        // newWeathers.Do(entry =>
+        // {
+        //   Plugin.logger.LogDebug($"{entry.Key} :: {entry.Value}");
+        // });
+
         GameInteraction.SetWeather(newWeathers);
         NetworkedConfig.SetWeather(newWeathers);
 
         Dictionary<string, string> uncertainWeathers = UncertainWeather.GenerateUncertainty();
+
         NetworkedConfig.SetDisplayWeather(uncertainWeathers);
 
         __instance.SetMapScreenInfoToCurrentLevel();
@@ -65,7 +80,7 @@ namespace WeatherTweaks
           }
         }
 
-        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherSynced.Value}");
+        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherDictionarySynced.Value}");
       }
 
       return false;
