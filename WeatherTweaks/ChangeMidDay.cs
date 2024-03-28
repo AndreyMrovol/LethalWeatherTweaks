@@ -101,6 +101,8 @@ namespace WeatherTweaks
       TimeOfDay.Instance.currentLevelWeather = fullWeatherType.weatherType;
       GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.weatherType;
 
+      currentEntry = entry;
+
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, fullWeatherType.Effects.ToList());
 
       HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
