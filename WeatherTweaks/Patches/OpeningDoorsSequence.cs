@@ -40,11 +40,6 @@ namespace WeatherTweaks
       cursor.EmitDelegate<Func<string, StartOfRound, string>>(
         (desc, self) =>
         {
-          if (self.currentLevel.currentWeather == LevelWeatherType.None)
-          {
-            return desc;
-          }
-
           var weatherName =
             self.currentLevel.currentWeather != LevelWeatherType.None ? Variables.GetPlanetCurrentWeather(self.currentLevel, false) : "Clear";
           var weatherLine = $"WEATHER: {weatherName}";
