@@ -153,7 +153,9 @@ namespace WeatherTweaks.Patches
           break;
       }
 
-      logger.LogInfo($"Setting MeteoMultiplierData for {currentWeather.Name}");
+      logger.LogInfo(
+        $"Setting MeteoMultiplierData for {currentWeather.Name}: {meteoMultipliersData.multiplier}, {meteoMultipliersData.spawnMultiplier}"
+      );
     }
 
     internal static void MeteoMultiplierPatch(RoundManager __instance)
