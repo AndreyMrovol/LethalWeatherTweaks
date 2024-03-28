@@ -66,11 +66,13 @@ namespace WeatherTweaks
           // get a random between 0-1
           // compare to entry.chance
 
-          double randomRoll = random.NextDouble();
+          float randomRoll = (float)random.NextDouble();
 
-          if (randomRoll < entry.Chance)
+          // compare randomRoll (float) to Chance (float)
+
+          if (randomRoll > entry.Chance)
           {
-            logger.LogWarning($"Random roll failed - got {randomRoll}, needed {entry.Chance} or higher");
+            logger.LogWarning($"Random roll failed - got {randomRoll}, needed {entry.Chance} or lower");
             lastCheckedEntry = entry.DayTime;
             break;
           }
