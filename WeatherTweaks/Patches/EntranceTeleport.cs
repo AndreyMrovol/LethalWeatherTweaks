@@ -58,20 +58,20 @@ namespace WeatherTweaks
               timeOfDayEffect.effectPermanentObject.SetActive(true);
             }
           }
-          else
-          {
-            timeOfDayEffect.effectEnabled = false;
+          // else
+          // {
+          //   timeOfDayEffect.effectEnabled = false;
 
-            if (timeOfDayEffect.effectObject != null)
-            {
-              timeOfDayEffect.effectObject.SetActive(false);
-            }
+          //   if (timeOfDayEffect.effectObject != null)
+          //   {
+          //     timeOfDayEffect.effectObject.SetActive(false);
+          //   }
 
-            if (timeOfDayEffect.effectPermanentObject != null)
-            {
-              timeOfDayEffect.effectPermanentObject.SetActive(false);
-            }
-          }
+          //   if (timeOfDayEffect.effectPermanentObject != null)
+          //   {
+          //     timeOfDayEffect.effectPermanentObject.SetActive(false);
+          //   }
+          // }
         }
       }
     }
