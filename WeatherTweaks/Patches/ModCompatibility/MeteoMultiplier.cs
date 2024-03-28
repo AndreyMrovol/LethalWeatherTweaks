@@ -32,7 +32,6 @@ namespace WeatherTweaks.Patches
 
   internal class MeteoMultiplierPatches
   {
-    public static LethalNetworkVariable<MeteoMultipliersData> currentMeteoMultiplierData = new("meteomultiplier");
     internal static MeteoMultipliersData meteoMultipliersData;
 
     internal static Harmony mmHarmony = new("WeatherTweaks.MeteoMultiplier");
@@ -41,7 +40,6 @@ namespace WeatherTweaks.Patches
     public static void Init()
     {
       logger.LogInfo("Initializing MeteoMultiplierPatches");
-      currentMeteoMultiplierData.OnValueChanged += MeteoMultiplierDataReceived;
 
       Type roundManagerType = typeof(RoundManager);
 
@@ -180,21 +178,6 @@ namespace WeatherTweaks.Patches
       logger.LogInfo(
         $"Setting MeteoMultiplierData for {data.weatherType} with multiplier {data.multiplier} and spawnMultiplier {data.spawnMultiplier}"
       );
-
-      meteoMultipliersData = data;
-      currentMeteoMultiplierData.Value = data;
-    }
-
-    internal static void MeteoMultiplierDataReceived(MeteoMultipliersData data)
-    {
-      logger.LogInfo(
-        $"Received MeteoMultiplierData for {data.weatherType} with multiplier {data.multiplier} and spawnMultiplier {data.spawnMultiplier}"
-      );
-
-      if (StartOfRound.Instance.IsHost)
-      {
-        return;
-      }
 
       meteoMultipliersData = data;
     }
