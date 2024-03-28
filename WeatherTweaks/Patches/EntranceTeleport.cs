@@ -29,7 +29,7 @@ namespace WeatherTweaks
       {
         logger.LogDebug("Player is outside");
 
-        List<WeatherEffect> weatherEffects = Variables.CurrentLevelWeather.Effects;
+        List<WeatherEffect> weatherEffects = Variables.GetCurrentWeather().Effects;
 
         weatherEffects.Do(effect =>
         {
@@ -56,6 +56,20 @@ namespace WeatherTweaks
             if (timeOfDayEffect.effectPermanentObject != null)
             {
               timeOfDayEffect.effectPermanentObject.SetActive(true);
+            }
+          }
+          else
+          {
+            timeOfDayEffect.effectEnabled = false;
+
+            if (timeOfDayEffect.effectObject != null)
+            {
+              timeOfDayEffect.effectObject.SetActive(false);
+            }
+
+            if (timeOfDayEffect.effectPermanentObject != null)
+            {
+              timeOfDayEffect.effectPermanentObject.SetActive(false);
             }
           }
         }

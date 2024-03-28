@@ -16,6 +16,7 @@ namespace WeatherTweaks
     // internal static List<ProgressingWeatherEntry> weatherEntries = [];
     internal static float lastCheckedEntry = 0.0f;
     internal static System.Random random;
+    internal static ProgressingWeatherEntry currentEntry;
 
     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks ChangeMidDay");
 
@@ -82,6 +83,7 @@ namespace WeatherTweaks
           DoMidDayChange(entry);
 
           lastCheckedEntry = entry.DayTime;
+          currentEntry = entry;
           break;
         }
       }
@@ -93,8 +95,11 @@ namespace WeatherTweaks
 
       WeatherType fullWeatherType = Variables.GetFullWeatherType(entry.GetWeatherType());
 
-      Variables.CurrentLevelWeather = fullWeatherType;
+      logger.LogWarning($"{fullWeatherType.Name} {fullWeatherType.Type} {fullWeatherType.weatherType}");
+
       StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.weatherType;
+      TimeOfDay.Instance.currentLevelWeather = fullWeatherType.weatherType;
+      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.weatherType;
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, fullWeatherType.Effects.ToList());
 

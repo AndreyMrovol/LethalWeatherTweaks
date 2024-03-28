@@ -24,6 +24,16 @@ namespace WeatherTweaks
 
     public static WeatherType CurrentLevelWeather;
 
+    internal static WeatherType GetCurrentWeather()
+    {
+      if (CurrentLevelWeather.Type == CustomWeatherType.Progressing)
+      {
+        return ChangeMidDay.currentEntry.GetWeatherType();
+      }
+
+      return CurrentLevelWeather;
+    }
+
     internal static Dictionary<int, LevelWeatherType> GetWeatherData(string weatherData)
     {
       Dictionary<int, LevelWeatherType> weatherDataDict = JsonConvert.DeserializeObject<Dictionary<int, LevelWeatherType>>(weatherData);
