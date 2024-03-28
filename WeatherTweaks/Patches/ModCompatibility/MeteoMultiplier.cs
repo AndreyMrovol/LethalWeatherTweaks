@@ -32,7 +32,6 @@ namespace WeatherTweaks.Patches
 
   internal class MeteoMultiplierPatches
   {
-    public static LethalNetworkVariable<MeteoMultipliersData> currentMeteoMultiplierData = new("meteomultiplier");
     internal static MeteoMultipliersData meteoMultipliersData;
 
     internal static Harmony mmHarmony = new("WeatherTweaks.MeteoMultiplier");
@@ -41,7 +40,6 @@ namespace WeatherTweaks.Patches
     public static void Init()
     {
       logger.LogInfo("Initializing MeteoMultiplierPatches");
-      currentMeteoMultiplierData.OnValueChanged += MeteoMultiplierDataReceived;
 
       Type roundManagerType = typeof(RoundManager);
 
@@ -111,7 +109,6 @@ namespace WeatherTweaks.Patches
       switch (currentWeather.Type)
       {
         case CustomWeatherType.Vanilla:
-          SetMeteoMultiplierData(GetMeteoMultiplierData(currentWeather.weatherType));
           break;
         case CustomWeatherType.Combined:
           MeteoMultipliersData combinedData = new(currentWeather.weatherType, 0, 0);
@@ -123,7 +120,6 @@ namespace WeatherTweaks.Patches
             combinedData.spawnMultiplier += data.spawnMultiplier;
           }
 
-          SetMeteoMultiplierData(combinedData);
           break;
         case CustomWeatherType.Progressing:
           MeteoMultipliersData progressingData = new(currentWeather.weatherType, 0, 0);
@@ -148,7 +144,6 @@ namespace WeatherTweaks.Patches
           progressingData.multiplier = sumMultiplier / sumChances;
           progressingData.spawnMultiplier = sumSpawnMultiplier / sumChances;
 
-          SetMeteoMultiplierData(progressingData);
           break;
         default:
           logger.LogError($"Unknown weather type {currentWeather.Type}");
@@ -173,30 +168,6 @@ namespace WeatherTweaks.Patches
         logger.LogWarning($"Applying MeteoMultiplierData: spawnMultiplier {meteoMultipliersData.spawnMultiplier}");
         __instance.scrapAmountMultiplier = meteoMultipliersData.spawnMultiplier;
       }
-    }
-
-    internal static void SetMeteoMultiplierData(MeteoMultipliersData data)
-    {
-      logger.LogInfo(
-        $"Setting MeteoMultiplierData for {data.weatherType} with multiplier {data.multiplier} and spawnMultiplier {data.spawnMultiplier}"
-      );
-
-      meteoMultipliersData = data;
-      currentMeteoMultiplierData.Value = data;
-    }
-
-    internal static void MeteoMultiplierDataReceived(MeteoMultipliersData data)
-    {
-      logger.LogInfo(
-        $"Received MeteoMultiplierData for {data.weatherType} with multiplier {data.multiplier} and spawnMultiplier {data.spawnMultiplier}"
-      );
-
-      if (StartOfRound.Instance.IsHost)
-      {
-        return;
-      }
-
-      meteoMultipliersData = data;
     }
   }
 }
