@@ -73,15 +73,8 @@ namespace WeatherTweaks
         {
           logger.LogInfo($"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}");
 
-          // NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
-          // NetworkedConfig.SetWeatherType(entry.GetWeatherType());
-
-          // get a random between 0-1
-          // compare to entry.chance
-
           float randomRoll = (float)random.NextDouble();
-
-          // compare randomRoll (float) to Chance (float)
+          // entry.Chance = 1;
 
           if (randomRoll > entry.Chance)
           {
