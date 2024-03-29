@@ -28,6 +28,12 @@ namespace WeatherTweaks
     {
       if (CurrentLevelWeather.Type == CustomWeatherType.Progressing)
       {
+        if(ChangeMidDay.currentEntry == null)
+        {
+          Plugin.logger.LogWarning("Current entry is null");
+          return CurrentLevelWeather;
+        }
+
         return ChangeMidDay.currentEntry.GetWeatherType();
       }
 
@@ -103,6 +109,8 @@ namespace WeatherTweaks
       Plugin.logger.LogDebug("Populating weathers");
       WeatherEffect[] effects = TimeOfDay.Instance.effects;
 
+      WeatherTypes.Clear();
+
       if (effects == null || effects.Count() == 0)
       {
         Plugin.logger.LogWarning("Effects are null");
@@ -133,7 +141,7 @@ namespace WeatherTweaks
         combinedWeather.Effects.Clear();
         combinedWeather.Weathers.ForEach(weather =>
         {
-          Plugin.logger.LogWarning($"Adding weather effect: {weather}");
+          // Plugin.logger.LogWarning($"Adding weather effect: {weather}");
           combinedWeather.Effects.Add(TimeOfDay.Instance.effects[(int)weather]);
         });
         combinedWeather.WeatherType.Effects = combinedWeather.Effects;

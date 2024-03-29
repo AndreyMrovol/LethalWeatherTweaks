@@ -63,8 +63,6 @@ namespace WeatherTweaks.Modules
           }
         }
 
-        remainingWeathers.Do(weather => Plugin.logger.LogWarning($"Remaining weather: {weather}"));
-
         return remainingWeathers.Count == 0;
       }
 

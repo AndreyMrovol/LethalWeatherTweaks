@@ -26,12 +26,12 @@ namespace WeatherTweaks
     {
       WeatherType currentWeather = Variables.CurrentLevelWeather;
 
-      if (!StartOfRound.Instance.IsHost)
+      if (currentWeather.Type != CustomWeatherType.Progressing)
       {
         return;
       }
 
-      if (currentWeather.Type != CustomWeatherType.Progressing)
+      if (!StartOfRound.Instance.IsHost)
       {
         return;
       }
@@ -40,6 +40,18 @@ namespace WeatherTweaks
       if (random == null)
       {
         random = new System.Random(StartOfRound.Instance.randomMapSeed);
+      }
+
+      // when this runs we know that weather is progressing *and* nothing else has been set as a current weather
+      // this allows us to not set the weather type at 0.0f time, instead uses the "base" weather as a 0.0 entry
+      if (currentEntry == null)
+      {
+        currentEntry = new ProgressingWeatherEntry()
+        {
+          DayTime = 0.0f,
+          Chance = 1.0f,
+          WeatherType = currentWeather.weatherType
+        };
       }
 
       ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather => weather.Name == currentWeather.Name);

@@ -38,6 +38,7 @@ namespace WeatherTweaks
       }
 
       ChangeMidDay.lastCheckedEntry = 0;
+      ChangeMidDay.currentEntry = null;
       // LLLDungeonExitPatch.RemoveListener();
 
       if (StartOfRound.Instance.IsHost)
