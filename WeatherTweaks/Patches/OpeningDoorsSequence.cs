@@ -62,6 +62,16 @@ namespace WeatherTweaks
       // LLLDungeonExitPatch.StartListener();
 
       Variables.CurrentLevelWeather = currentWeather;
+
+      // TimeOfDay.Instance.globalTimeSpeedMultiplier = 5f;
+
+      Plugin.logger.LogError(
+        $"Landing at {TimeOfDay.Instance.currentLevel.PlanetName} with weather {JsonConvert.SerializeObject(
+        currentWeather,
+        Formatting.None,
+        new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
+      )}"
+      );
     }
   }
 }
