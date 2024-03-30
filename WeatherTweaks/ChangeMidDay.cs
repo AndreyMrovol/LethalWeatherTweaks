@@ -96,7 +96,15 @@ namespace WeatherTweaks
 
     internal static void DoMidDayChange(ProgressingWeatherEntry entry)
     {
-      logger.LogWarning($"Changing weather, is player inside: {EntranceTeleportPatch.isPlayerInside}");
+      if (entry == null)
+      {
+        logger.LogError("ProgressingWeatherEntry is null");
+        return;
+      }
+
+      logger.LogWarning(
+        $"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {EntranceTeleportPatch.isPlayerInside}"
+      );
 
       WeatherType fullWeatherType = Variables.GetFullWeatherType(entry.GetWeatherType());
 
