@@ -131,7 +131,7 @@ namespace WeatherTweaks
         return;
       }
 
-      Plugin.logger.LogInfo($"Received weather type data {weatherType} from server, applying");
+      Plugin.logger.LogWarning($"Received weather type data {weatherType} from server, applying");
 
       Variables.CurrentLevelWeather = Variables.GetFullWeatherType(currentWeather);
       StartOfRound.Instance.currentLevel.currentWeather = Variables.CurrentLevelWeather.weatherType;
@@ -151,7 +151,7 @@ namespace WeatherTweaks
         return;
       }
 
-      Plugin.logger.LogInfo($"Received progressing weather entry data {progressingWeatherEntry} from server, applying");
+      Plugin.logger.LogWarning($"Received progressing weather entry data {progressingWeatherEntry} from server, applying");
 
       ChangeMidDay.DoMidDayChange(entry);
     }
