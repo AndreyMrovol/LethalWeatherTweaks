@@ -33,7 +33,7 @@ namespace WeatherTweaks.Modules
           {
             speakerText = "Weather Forecast",
             bodyText = $"The weather will be changing to {WeatherType}",
-            waitTime = 3f
+            waitTime = 7f
           }
         ];
       }
