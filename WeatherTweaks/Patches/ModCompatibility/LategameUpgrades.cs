@@ -58,6 +58,8 @@ namespace WeatherTweaks.Patches
 
       Variables.CurrentWeathers[pickedLevel] = newWeather;
 
+      UncertainWeather.uncertainWeathers[pickedLevel.PlanetName] = newWeather.Name;
+
       // TODO: cleanup
 
       if (StartOfRound.Instance.currentLevel.PlanetName == pickedLevel.PlanetName)
@@ -70,6 +72,7 @@ namespace WeatherTweaks.Patches
       if (StartOfRound.Instance.IsHost)
       {
         NetworkedConfig.SetWeather(newWeathers);
+        NetworkedConfig.SetDisplayWeather(UncertainWeather.uncertainWeathers);
       }
     }
   }
