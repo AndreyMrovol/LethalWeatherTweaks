@@ -3,6 +3,7 @@ using System.Collections;
 using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using Newtonsoft.Json;
 
 namespace WeatherTweaks
 {
@@ -64,6 +65,8 @@ namespace WeatherTweaks
       Variables.CurrentLevelWeather = currentWeather;
 
       // TimeOfDay.Instance.globalTimeSpeedMultiplier = 5f;
+
+      BasegameWeatherPatch.ChangeFog();
 
       Plugin.logger.LogError(
         $"Landing at {TimeOfDay.Instance.currentLevel.PlanetName} with weather {JsonConvert.SerializeObject(

@@ -73,6 +73,8 @@ namespace WeatherTweaks
           //   }
           // }
         }
+
+        BasegameWeatherPatch.ChangeFog();
       }
     }
   }
