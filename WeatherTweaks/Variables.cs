@@ -28,7 +28,7 @@ namespace WeatherTweaks
     {
       if (CurrentLevelWeather.Type == CustomWeatherType.Progressing)
       {
-        if(ChangeMidDay.currentEntry == null)
+        if (ChangeMidDay.currentEntry == null)
         {
           Plugin.logger.LogWarning("Current entry is null");
           return CurrentLevelWeather;
@@ -76,7 +76,7 @@ namespace WeatherTweaks
     {
       List<LevelWeatherType> randomWeathers = GetPlanetPossibleWeathers(level);
 
-      List<WeatherType> possibleTypes = new();
+      List<WeatherType> possibleTypes = [];
 
       foreach (WeatherType weather in WeatherTypes)
       {
@@ -116,7 +116,7 @@ namespace WeatherTweaks
 
     internal static Dictionary<string, WeatherType> GetAllPlanetWeathersDictionary()
     {
-      Dictionary<string, WeatherType> weathers = new();
+      Dictionary<string, WeatherType> weathers = [];
 
       CurrentWeathers
         .ToList()
@@ -279,12 +279,11 @@ namespace WeatherTweaks
 
       difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
 
-      foreach (var weather in GetPlanetWeatherTypes(level))
+      List<WeatherType> weatherTypes = GetPlanetWeatherTypes(level);
+      foreach (var weather in weatherTypes)
       {
         var weatherType = weather;
         var weatherWeight = weights[weather.weatherType];
-
-        // Plugin.logger.LogDebug($"Weather: {weatherType.Name} has weight {weatherWeight}");
 
         if (ConfigManager.ScaleDownClearWeather.Value && weather.weatherType == LevelWeatherType.None)
         {
@@ -298,15 +297,16 @@ namespace WeatherTweaks
             .ToList()
             .ForEach(randomWeather =>
             {
-              possibleWeathersWeightSum = possibleWeathersWeightSum + weights[randomWeather.weatherType];
+              possibleWeathersWeightSum += weights[randomWeather.weatherType];
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
           double noWetherFinalWeight = (double)(clearWeatherWeight * possibleWeathersWeightSum / fullWeightSum);
           weatherWeight = Convert.ToInt32(noWetherFinalWeight);
 
-          Plugin.logger.LogDebug($"{clearWeatherWeight} * {possibleWeathersWeightSum} / {fullWeightSum} == {weatherWeight}");
-          Plugin.logger.LogDebug($"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight}");
+          Plugin.logger.LogDebug(
+            $"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight} : ({clearWeatherWeight} * {possibleWeathersWeightSum} / {fullWeightSum}) == {weatherWeight}"
+          );
         }
 
         if (weatherType.Type == CustomWeatherType.Combined)
