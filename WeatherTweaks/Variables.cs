@@ -80,9 +80,33 @@ namespace WeatherTweaks
 
       foreach (WeatherType weather in WeatherTypes)
       {
-        if (randomWeathers.Contains(weather.weatherType) && weather != NoneWeather)
+        if (randomWeathers.Contains(weather.weatherType) && weather != NoneWeather && weather.Type == CustomWeatherType.Vanilla)
         {
           possibleTypes.Add(weather);
+        }
+
+        switch (weather.Type)
+        {
+          case CustomWeatherType.Combined:
+            CombinedWeatherType combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
+            if (combinedWeather.CanCombinedWeatherBeApplied(level))
+            {
+              possibleTypes.Add(weather);
+            }
+            break;
+          case CustomWeatherType.Progressing:
+            ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
+            if (progressingWeather.Enabled.Value == false)
+            {
+              Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
+              continue;
+            }
+
+            if (progressingWeather.CanWeatherBeApplied(level))
+            {
+              possibleTypes.Add(weather);
+            }
+            break;
         }
       }
 
