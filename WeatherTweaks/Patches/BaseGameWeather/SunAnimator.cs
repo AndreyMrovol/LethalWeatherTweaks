@@ -12,40 +12,43 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(TimeOfDay))]
   partial class BasegameWeatherPatch
   {
-    // dictionary storing <animatorcontoller name, <weather type, animation clip name>>
-    internal static Dictionary<string, Dictionary<LevelWeatherType, string>> animationClips = new Dictionary<
-      string,
-      Dictionary<LevelWeatherType, string>
-    >()
+    internal static Dictionary<LevelWeatherType, string> clipNames =
+      new()
+      {
+        { LevelWeatherType.None, "" },
+        { LevelWeatherType.Stormy, "Stormy" },
+        { LevelWeatherType.Eclipsed, "Eclipse" },
+      };
+
+    internal static List<string> animatorControllerNames = new List<string>()
     {
+      "SunAnimContainer",
+      "SunAnimContainer 1",
+      "BlizzardSunAnimContainer",
+      "BasicSun",
+      "StarlancerSolaceSunAnimContainer",
+      "StarlancerAuralisSunAnimContainer",
+      "StarlancerTriskelionSunAnimContainer",
+    };
+
+    internal static AnimatorOverrideController animatorOverrideController;
+
+    public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, AnimationClip>>
+    {
+      public AnimationClipOverrides(int capacity)
+        : base(capacity) { }
+
+      public AnimationClip this[string name]
       {
-        "SunAnimContainer",
-        new Dictionary<LevelWeatherType, string>()
+        get { return this.Find(x => x.Key.name.Equals(name)).Value; }
+        set
         {
-          { LevelWeatherType.None, "TimeOfDaySun" },
-          { LevelWeatherType.Stormy, "TimeOfDaySunStormy" },
-          { LevelWeatherType.Eclipsed, "TimeOfDaySunEclipse" },
-        }
-      },
-      {
-        "SunAnimContainer 1",
-        new Dictionary<LevelWeatherType, string>()
-        {
-          { LevelWeatherType.None, "TimeOfDaySunTypeB" },
-          { LevelWeatherType.Stormy, "TimeOfDaySunTypeBStormy" },
-          { LevelWeatherType.Eclipsed, "TimeOfDaySunTypeBEclipse" },
-        }
-      },
-      {
-        "BlizzardSunAnimContainer",
-        new Dictionary<LevelWeatherType, string>()
-        {
-          { LevelWeatherType.None, "TimeOfDaySunTypeC" },
-          { LevelWeatherType.Stormy, "TimeOfDaySunTypeCStormy" },
-          { LevelWeatherType.Eclipsed, "TimeOfDaySunTypeCEclipse" },
+          int index = this.FindIndex(x => x.Key.name.Equals(name));
+          if (index != -1)
+            this[index] = new KeyValuePair<AnimationClip, AnimationClip>(this[index].Key, value);
         }
       }
-    };
+    }
 
     public static void OverrideSunAnimator(LevelWeatherType weatherType)
     {
@@ -54,17 +57,43 @@ namespace WeatherTweaks
       // state TimeOfDaySun -> state TimeOfDaySunStormy (bool overcast = true is the condition)
 
       Animator animator = TimeOfDay.Instance.sunAnimator;
+      // animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+      // AnimationClipOverrides clipOverrides = new(animatorOverrideController.overridesCount);
 
       // i want to change the animation clip of the sun based on the weather type
 
+      // log all clips in the animator
+      animator.runtimeAnimatorController.animationClips.ToList().ForEach(clip => Plugin.logger.LogInfo(clip.name));
+
       // get the name of the sun animator controller
       string animatorControllerName = animator.runtimeAnimatorController.name;
-      Plugin.logger.LogInfo($"animatorControllerName: {animatorControllerName}");
+      Plugin.logger.LogInfo($"animatorControllerName: {animatorControllerName}, weatherType: {weatherType}");
 
-      var clips = animationClips[animatorControllerName];
+      if (!animatorControllerNames.Contains(animatorControllerName))
+      {
+        Plugin.logger.LogError($"Animator controller {animatorControllerName} not found in list of supported animator controllers");
+        return;
+      }
+
+      var animationClips = animator.runtimeAnimatorController.animationClips.ToList();
+      Dictionary<LevelWeatherType, AnimationClip> clips =
+        new()
+        {
+          { LevelWeatherType.Stormy, animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Stormy])) },
+          { LevelWeatherType.Eclipsed, animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Eclipsed])) },
+          {
+            LevelWeatherType.None,
+            animationClips.Find(clip =>
+              !clip.name.Contains(clipNames[LevelWeatherType.Stormy]) && !clip.name.Contains(clipNames[LevelWeatherType.Eclipsed])
+            )
+          },
+        };
+
+      // try to get clip names dynamically from the animator controller
+      // use contains to check through the dictionary
 
       // get the name of the animation clip for the current weather type
-      string animationClipName = clips.TryGetValue(weatherType, out string clipName) ? clipName : null;
+      string animationClipName = clips.TryGetValue(weatherType, out AnimationClip clip) ? clip.name : null;
       if (animationClipName == null)
       {
         Plugin.logger.LogError($"No animation clip found for weather type {weatherType}");
@@ -75,10 +104,11 @@ namespace WeatherTweaks
       int animationClipHash = Animator.StringToHash(animationClipName);
 
       Plugin.logger.LogInfo($"Changing animation clip to {animationClipName} ({animationClipHash})");
+      Plugin.logger.LogInfo($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
 
       // set the animation clip with 2s transition
-      // possibly not using crossfade
       animator.CrossFadeInFixedTime(animationClipHash, 2.5f, 0);
+      // animator.Play(animationClipHash, 0, 0);
     }
 
     // [HarmonyPatch("Update")]
