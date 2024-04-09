@@ -339,7 +339,7 @@ namespace WeatherTweaks
             continue;
           }
 
-          weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * 2);
+          weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * progressingWeather.weightModify);
         }
 
         if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)

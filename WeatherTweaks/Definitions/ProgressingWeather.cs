@@ -49,6 +49,8 @@ namespace WeatherTweaks.Modules
       public List<ProgressingWeatherEntry> WeatherEntries = [];
       public WeatherType WeatherType;
 
+      public float weightModify = 2;
+
       public bool CanWeatherBeApplied(SelectableLevel level)
       {
         var randomWeathers = level.randomWeathers;
