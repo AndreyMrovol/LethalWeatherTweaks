@@ -104,7 +104,11 @@ namespace WeatherTweaks
 
           if (timeOfDayEffect.sunAnimatorBool == "eclipse")
           {
-            timeOfDay.sunAnimator.SetBool(timeOfDay.effects[index].sunAnimatorBool, true);
+            BasegameWeatherPatch.OverrideSunAnimator(weatherVariables.weatherType);
+          }
+          else if (timeOfDayEffect.sunAnimatorBool == "overcast")
+          {
+            BasegameWeatherPatch.OverrideSunAnimator(weatherVariables.weatherType);
           }
         }
         else
@@ -120,6 +124,17 @@ namespace WeatherTweaks
           if (timeOfDayEffect.effectPermanentObject != null)
           {
             timeOfDayEffect.effectPermanentObject.SetActive(false);
+          }
+
+          if (timeOfDayEffect.sunAnimatorBool == "eclipse")
+          {
+            timeOfDay.sunAnimator.SetBool("eclipse", false);
+            BasegameWeatherPatch.OverrideSunAnimator(LevelWeatherType.None);
+          }
+          else if (timeOfDayEffect.sunAnimatorBool == "overcast")
+          {
+            timeOfDay.sunAnimator.SetBool("overcast", false);
+            BasegameWeatherPatch.OverrideSunAnimator(LevelWeatherType.None);
           }
         }
       }
