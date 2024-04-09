@@ -52,7 +52,11 @@ namespace WeatherTweaks.Modules
       public bool CanWeatherBeApplied(SelectableLevel level)
       {
         var randomWeathers = level.randomWeathers;
-        List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.WeatherType).Distinct().ToList();
+        List<LevelWeatherType> remainingWeathers = WeatherEntries
+          .Select(entry => entry.WeatherType)
+          .Append(WeatherType.weatherType)
+          .Distinct()
+          .ToList();
         remainingWeathers.RemoveAll(weather => weather == LevelWeatherType.None);
 
         foreach (RandomWeatherWithVariables weather in randomWeathers)
