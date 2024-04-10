@@ -86,7 +86,7 @@ namespace WeatherTweaks
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
-          double noWetherFinalWeight = (double)(clearWeatherWeight * possibleWeathersWeightSum / fullWeightSum);
+          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Min(possibleWeathersWeightSum, 1) / fullWeightSum);
           weatherWeight = Convert.ToInt32(noWetherFinalWeight);
 
           Plugin.logger.LogDebug($"{clearWeatherWeight} * {possibleWeathersWeightSum} / {fullWeightSum} == {weatherWeight}");
