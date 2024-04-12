@@ -41,6 +41,8 @@ namespace WeatherTweaks
       ChangeMidDay.currentEntry = null;
       // LLLDungeonExitPatch.RemoveListener();
 
+      SunAnimator.Clear();
+
       if (StartOfRound.Instance.IsHost)
       {
         NetworkedConfig.SetWeatherEffects([]);
