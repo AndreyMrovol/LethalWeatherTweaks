@@ -124,9 +124,6 @@ namespace WeatherTweaks
             timeOfDayEffect.effectPermanentObject.SetActive(false);
           }
 
-          Plugin.logger.LogDebug($"Count: {sunBools.Count}");
-          // Plugin.logger.LogDebug($"Contains: {sunBools.Contains(weatherVariables.weatherType)}");
-
           try
           {
             if (!String.IsNullOrEmpty(timeOfDayEffect.sunAnimatorBool))
@@ -137,18 +134,18 @@ namespace WeatherTweaks
           }
           catch (Exception e)
           {
-            logger.LogError($"Error removing sun animator bool: {e}");
+            logger.LogWarning($"Error removing sun animator bool: {e}");
           }
         }
       }
 
       if (sunBools.Count == 0)
       {
-        BasegameWeatherPatch.OverrideSunAnimator(LevelWeatherType.None);
+        SunAnimator.OverrideSunAnimator(LevelWeatherType.None);
       }
       else
       {
-        sunBools.Distinct().ToList().ForEach(loopWeatherType => BasegameWeatherPatch.OverrideSunAnimator(loopWeatherType));
+        sunBools.Distinct().ToList().ForEach(loopWeatherType => SunAnimator.OverrideSunAnimator(loopWeatherType));
       }
     }
   }
