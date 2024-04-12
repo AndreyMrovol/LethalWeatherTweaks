@@ -85,7 +85,8 @@ namespace WeatherTweaks
 
           NetworkedConfig.SetProgressingWeatherEntry(entry);
           NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
-          DoMidDayChange(entry);
+
+          TimeOfDay.Instance.StartCoroutine(DoMidDayChange(entry));
 
           lastCheckedEntry = entry.DayTime;
           currentEntry = entry;
@@ -94,17 +95,21 @@ namespace WeatherTweaks
       }
     }
 
-    internal static void DoMidDayChange(ProgressingWeatherEntry entry)
+    internal static IEnumerator DoMidDayChange(ProgressingWeatherEntry entry)
     {
       if (entry == null)
       {
         logger.LogError("ProgressingWeatherEntry is null");
-        return;
+        yield return null;
       }
 
       logger.LogWarning(
         $"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {EntranceTeleportPatch.isPlayerInside}"
       );
+
+      HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
+
+      yield return new WaitForSeconds(3);
 
       WeatherType fullWeatherType = Variables.GetFullWeatherType(entry.GetWeatherType());
 
@@ -117,8 +122,7 @@ namespace WeatherTweaks
       currentEntry = entry;
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, fullWeatherType.Effects.ToList());
-
-      HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
+      // TODO account for player being dead
     }
   }
 }
