@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -55,7 +56,7 @@ namespace WeatherTweaks
       }
 
       ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather => weather.Name == currentWeather.Name);
-      List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries;
+      List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries.ToList();
       weatherEntries.RemoveAll(entry => entry.DayTime < lastCheckedEntry);
 
       // the plan:
