@@ -17,7 +17,6 @@ namespace WeatherTweaks
     // i love creating config hell
 
     public static ConfigEntry<bool> MapScreenPatch { get; private set; }
-    public static ConfigEntry<bool> TerminalForcePatch { get; private set; }
     public static ConfigEntry<bool> SunAnimatorPatch { get; private set; }
 
     public static ConfigEntry<int> FirstDaySeed { get; private set; }
@@ -106,12 +105,6 @@ namespace WeatherTweaks
       // create config entries
 
       MapScreenPatch = configFile.Bind("0> General", "MapScreenPatch", true, "Enable map screen patch (weather in top row)");
-      TerminalForcePatch = configFile.Bind(
-        "0> General",
-        "TerminalForcePatch",
-        false,
-        "Forcefully patch terminal weathers (will break things, use only if you know what you're doing)"
-      );
       SunAnimatorPatch = configFile.Bind("0> General", "SunAnimatorPatch", true, "Enable sun animator patch (sun animators for weather)");
 
       UncertainWeatherEnabled = configFile.Bind("1> Uncertain weather", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
