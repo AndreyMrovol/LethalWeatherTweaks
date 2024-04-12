@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,53 @@ using UnityEngine;
 
 namespace WeatherTweaks
 {
+  [HarmonyPatch(typeof(Animator))]
+  public class AnimatorPatch
+  {
+    public static bool SetBoolPatch(Animator __instance, object nameOrId, bool value)
+    {
+      // BasegameWeatherPatch.loggerSun.LogInfo($"SetBoolPatch: {nameOrId} {value}");
+
+      string name = nameOrId as string;
+      int id = (nameOrId is int) ? (int)nameOrId : -1; // Assuming -1 is not a valid ID
+
+      if (BasegameWeatherPatch.animator == null)
+      {
+        return true;
+      }
+
+      if (__instance == BasegameWeatherPatch.animator)
+      {
+        if (name != null)
+        {
+          if ((name == "overcast" || name == "eclipse") && value == true)
+          {
+            BasegameWeatherPatch.loggerSun.LogInfo($"Setting {name} to {false}");
+            //
+            // __instance.SetBool(name, false);
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    [HarmonyPatch(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(string), typeof(bool) })]
+    [HarmonyPrefix]
+    public static bool SetBoolStringPatch(Animator __instance, string name, bool value)
+    {
+      return SetBoolPatch(__instance, name, value);
+    }
+
+    [HarmonyPatch(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(int), typeof(bool) })]
+    [HarmonyPrefix]
+    public static bool SetBoolIntPatch(Animator __instance, int id, bool value)
+    {
+      return SetBoolPatch(__instance, id, value);
+    }
+  }
+
   [HarmonyPatch(typeof(TimeOfDay))]
   partial class BasegameWeatherPatch
   {
@@ -94,12 +142,12 @@ namespace WeatherTweaks
 
       // log all clips in the animator
       var animationClips = animatorOverrideController.runtimeAnimatorController.animationClips.ToList();
-      animationClips.ForEach(clip =>
-      {
-        loggerSun.LogInfo($"clip: {clip.name}");
-        loggerSun.LogInfo($"clip length: {clip.length}");
-        loggerSun.LogInfo($"clip framerate: {clip.frameRate}");
-      });
+      // animationClips.ForEach(clip =>
+      // {
+      //   loggerSun.LogInfo($"clip: {clip.name}");
+      //   loggerSun.LogInfo($"clip length: {clip.length}");
+      //   loggerSun.LogInfo($"clip framerate: {clip.frameRate}");
+      // });
 
       Dictionary<LevelWeatherType, AnimationClip> clips =
         new()
@@ -113,6 +161,12 @@ namespace WeatherTweaks
             )
           },
         };
+
+      if (clips.Keys.Select(key => key == weatherType).Count() == 0)
+      {
+        loggerSun.LogError($"No animation clip found for weather type {weatherType}");
+        return;
+      }
 
       // try to get clip names dynamically from the animator controller
       // use contains to check through the dictionary
@@ -154,7 +208,7 @@ namespace WeatherTweaks
       //   loggerSun.LogInfo($"Setting override from {clip.name} to {clips[weatherType]}");
       // });
 
-      loggerSun.LogInfo($"Changing animation clip to {animationClipName} ({animationClipHash})");
+      // loggerSun.LogInfo($"Changing animation clip to {animationClipName} ({animationClipHash})");
       loggerSun.LogInfo($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
 
       // // set the overrides
@@ -185,8 +239,7 @@ namespace WeatherTweaks
         animator.runtimeAnimatorController = animatorOverrideController.runtimeAnimatorController;
       }
 
-      // animator.CrossFadeInFixedTime(animationClipHash, 2.5f, 0);
-      // animator.Play(animationClipHash, 0, 0);
+      // animator.PlayInFixedTime(animationClipHash, 0, 2.5f);
 
       // log the current clip name
       loggerSun.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
@@ -201,6 +254,7 @@ namespace WeatherTweaks
 
       // set the animation clip with 2s transition
       // animator.Play(animationClipHash, 0, 0);
+      loggerSun.LogInfo($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
     }
 
     internal static void LogOverrides(AnimationClipOverrides clipOverrides)
@@ -210,7 +264,7 @@ namespace WeatherTweaks
         .ToList()
         .ForEach(clip =>
         {
-          loggerSun.LogInfo($"clip {(clip.Key ? clip.Key.name : "null")} : {(clip.Value ? clip.Value.name : "null")}");
+          loggerSun.LogInfo($"overrideclip {(clip.Key ? clip.Key.name : "null")} : {(clip.Value ? clip.Value.name : "null")}");
         });
     }
 
@@ -218,8 +272,7 @@ namespace WeatherTweaks
     // [HarmonyPostfix]
     // public static void UpdatePatch()
     // {
-    //   loggerSun.LogInfo($"{TimeOfDay.Instance.sunAnimator.GetFloat("timeOfDay")}");
-    //   loggerSun.LogInfo($"{TimeOfDay.Instance.sunIndirect.intensity} {TimeOfDay.Instance.sunDirect.intensity}");
+    //   loggerSun.LogInfo($"0Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
     // }
   }
 }

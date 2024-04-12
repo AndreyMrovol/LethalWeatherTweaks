@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Logging;
@@ -60,6 +61,7 @@ namespace WeatherTweaks
       }
 
       Variables.CurrentEffects = weatherEffects;
+      List<LevelWeatherType> sunBools = new List<LevelWeatherType>();
 
       foreach (WeatherEffect timeOfDayEffect in timeOfDay.effects)
       {
@@ -102,13 +104,9 @@ namespace WeatherTweaks
             }
           }
 
-          if (timeOfDayEffect.sunAnimatorBool == "eclipse")
+          if (timeOfDayEffect.sunAnimatorBool != "" && timeOfDayEffect.sunAnimatorBool != null)
           {
-            BasegameWeatherPatch.OverrideSunAnimator(weatherVariables.weatherType);
-          }
-          else if (timeOfDayEffect.sunAnimatorBool == "overcast")
-          {
-            BasegameWeatherPatch.OverrideSunAnimator(weatherVariables.weatherType);
+            sunBools.Add(weatherVariables.weatherType);
           }
         }
         else
@@ -126,17 +124,31 @@ namespace WeatherTweaks
             timeOfDayEffect.effectPermanentObject.SetActive(false);
           }
 
-          if (timeOfDayEffect.sunAnimatorBool == "eclipse")
+          Plugin.logger.LogDebug($"Count: {sunBools.Count}");
+          // Plugin.logger.LogDebug($"Contains: {sunBools.Contains(weatherVariables.weatherType)}");
+
+          try
           {
-            timeOfDay.sunAnimator.SetBool("eclipse", false);
-            BasegameWeatherPatch.OverrideSunAnimator(LevelWeatherType.None);
+            if (!String.IsNullOrEmpty(timeOfDayEffect.sunAnimatorBool))
+            {
+              logger.LogDebug($"Removing sun animator bool, weather: {weatherVariables.weatherType}, bool: {timeOfDayEffect.sunAnimatorBool}");
+              sunBools.Remove(weatherVariables.weatherType);
+            }
           }
-          else if (timeOfDayEffect.sunAnimatorBool == "overcast")
+          catch (Exception e)
           {
-            timeOfDay.sunAnimator.SetBool("overcast", false);
-            BasegameWeatherPatch.OverrideSunAnimator(LevelWeatherType.None);
+            logger.LogError($"Error removing sun animator bool: {e}");
           }
         }
+      }
+
+      if (sunBools.Count == 0)
+      {
+        BasegameWeatherPatch.OverrideSunAnimator(LevelWeatherType.None);
+      }
+      else
+      {
+        sunBools.Distinct().ToList().ForEach(loopWeatherType => BasegameWeatherPatch.OverrideSunAnimator(loopWeatherType));
       }
     }
   }
