@@ -11,28 +11,56 @@ using UnityEngine;
 
 namespace WeatherTweaks
 {
-  [HarmonyPatch(typeof(Animator))]
-  public class AnimatorPatch
+  internal class SunAnimator
   {
+    public static void Init()
+    {
+      if (!ConfigManager.SunAnimatorPatch.Value)
+      {
+        return;
+      }
+
+      // create separate harmony instance for Animator
+      var harmony = new Harmony("WeatherTweaks.SunAnimator");
+
+      // patch the Animator class with the SetBool method
+      harmony.Patch(
+        AccessTools.Method(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(string), typeof(bool) }),
+        new HarmonyMethod(typeof(SunAnimator), "SetBoolStringPatch")
+      );
+      logger.LogWarning("Patching Animator.SetBool(string, bool)");
+
+      harmony.Patch(
+        AccessTools.Method(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(int), typeof(bool) }),
+        new HarmonyMethod(typeof(SunAnimator), "SetBoolIntPatch")
+      );
+      logger.LogWarning("Patching Animator.SetBool(int, bool)");
+    }
+
     public static bool SetBoolPatch(Animator __instance, object nameOrId, bool value)
     {
-      // BasegameWeatherPatch.loggerSun.LogInfo($"SetBoolPatch: {nameOrId} {value}");
+      // BasegameWeatherPatch.logger.LogInfo($"SetBoolPatch: {nameOrId} {value}");
 
       string name = nameOrId as string;
       int id = (nameOrId is int) ? (int)nameOrId : -1; // Assuming -1 is not a valid ID
 
-      if (BasegameWeatherPatch.animator == null)
+      if (name == "overcast" || name == "eclipse")
+      {
+        return false;
+      }
+
+      if (SunAnimator.animator == null)
       {
         return true;
       }
 
-      if (__instance == BasegameWeatherPatch.animator)
+      if (__instance == SunAnimator.animator)
       {
         if (name != null)
         {
           if ((name == "overcast" || name == "eclipse") && value == true)
           {
-            BasegameWeatherPatch.loggerSun.LogInfo($"Setting {name} to {false}");
+            // SunAnimator.logger.LogInfo($"Setting {name} to {false}");
             //
             // __instance.SetBool(name, false);
             return false;
@@ -43,25 +71,17 @@ namespace WeatherTweaks
       return true;
     }
 
-    [HarmonyPatch(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(string), typeof(bool) })]
-    [HarmonyPrefix]
     public static bool SetBoolStringPatch(Animator __instance, string name, bool value)
     {
       return SetBoolPatch(__instance, name, value);
     }
 
-    [HarmonyPatch(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(int), typeof(bool) })]
-    [HarmonyPrefix]
     public static bool SetBoolIntPatch(Animator __instance, int id, bool value)
     {
       return SetBoolPatch(__instance, id, value);
     }
-  }
 
-  [HarmonyPatch(typeof(TimeOfDay))]
-  partial class BasegameWeatherPatch
-  {
-    internal static ManualLogSource loggerSun = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks SunAnimator");
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks SunAnimator");
 
     internal static Dictionary<LevelWeatherType, string> clipNames =
       new()
@@ -81,6 +101,8 @@ namespace WeatherTweaks
       "StarlancerAuralisSunAnimContainer",
       "StarlancerTriskelionSunAnimContainer",
     };
+
+    internal static List<string> animatorControllerBlacklist = new List<string>() { "SunAnimContainerCompanyLevel" };
 
     internal static Animator animator;
     internal static AnimatorOverrideController animatorOverrideController;
@@ -111,20 +133,33 @@ namespace WeatherTweaks
       // state TimeOfDaySun -> state TimeOfDaySunStormy (bool overcast = true is the condition)
       // i want to change the animation clip of the sun based on the weather type
 
+      if (!ConfigManager.SunAnimatorPatch.Value)
+      {
+        return;
+      }
+
       if (animator == null)
       {
         animator = TimeOfDay.Instance.sunAnimator;
       }
 
+      logger.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
+
       // get the name of the sun animator controller
       string animatorControllerName = animator.runtimeAnimatorController.name;
-      loggerSun.LogInfo($"animatorControllerName: {animatorControllerName}, weatherType: {weatherType}");
+      logger.LogInfo($"animatorControllerName: {animatorControllerName}, weatherType: {weatherType}");
 
-      if (!animatorControllerNames.Contains(animatorControllerName) && !animatorControllerName.Contains("override"))
+      if (animatorControllerBlacklist.Contains(animatorControllerName))
       {
-        loggerSun.LogError($"Animator controller {animatorControllerName} not found in list of supported animator controllers");
+        logger.LogWarning($"Animator controller {animatorControllerName} is blacklisted");
         return;
       }
+
+      // if (!animatorControllerNames.Contains(animatorControllerName) && !animatorControllerName.Contains("override"))
+      // {
+      //   logger.LogError($"Animator controller {animatorControllerName} not found in list of supported animator controllers");
+      //   return;
+      // }
 
       if (animatorOverrideController == null)
       {
@@ -135,18 +170,16 @@ namespace WeatherTweaks
       }
 
       AnimationClipOverrides clipOverrides = new(animatorOverrideController.overridesCount);
-      loggerSun.LogWarning($"Overrides: {animatorOverrideController.overridesCount}");
+      logger.LogDebug($"Overrides: {animatorOverrideController.overridesCount}");
       animatorOverrideController.GetOverrides(clipOverrides);
-
-      LogOverrides(clipOverrides);
 
       // log all clips in the animator
       var animationClips = animatorOverrideController.runtimeAnimatorController.animationClips.ToList();
       // animationClips.ForEach(clip =>
       // {
-      //   loggerSun.LogInfo($"clip: {clip.name}");
-      //   loggerSun.LogInfo($"clip length: {clip.length}");
-      //   loggerSun.LogInfo($"clip framerate: {clip.frameRate}");
+      //   logger.LogInfo($"clip: {clip.name}");
+      //   logger.LogInfo($"clip length: {clip.length}");
+      //   logger.LogInfo($"clip framerate: {clip.frameRate}");
       // });
 
       Dictionary<LevelWeatherType, AnimationClip> clips =
@@ -164,7 +197,7 @@ namespace WeatherTweaks
 
       if (clips.Keys.Select(key => key == weatherType).Count() == 0)
       {
-        loggerSun.LogError($"No animation clip found for weather type {weatherType}");
+        logger.LogWarning($"No animation clip found for weather type {weatherType}");
         return;
       }
 
@@ -175,7 +208,7 @@ namespace WeatherTweaks
       string animationClipName = clips.TryGetValue(weatherType, out AnimationClip clip) ? clip.name : null;
       if (animationClipName == null)
       {
-        loggerSun.LogError($"No animation clip found for weather type {weatherType}");
+        logger.LogWarning($"No animation clip found for weather type {weatherType}");
         return;
       }
 
@@ -188,46 +221,20 @@ namespace WeatherTweaks
           if (clipPair.Key != weatherType)
           {
             clipOverrides[clipPair.Value.name] = clips[weatherType];
-            loggerSun.LogInfo($"Setting override from {clipPair.Value.name} to {clips[weatherType].name}");
+            logger.LogDebug($"Setting override from {clipPair.Value.name} to {clips[weatherType].name}");
           }
           else
           {
             clipOverrides[clipPair.Value.name] = null;
-            loggerSun.LogInfo($"Setting override from {clipPair.Value.name} to null");
+            logger.LogDebug($"Setting override from {clipPair.Value.name} to null");
           }
         });
 
       // get the hash of the animation clip
-      int animationClipHash = Animator.StringToHash(animationClipName);
-      loggerSun.LogInfo($"animationClipHash: {animationClipHash}");
+      // int animationClipHash = Animator.StringToHash(animationClipName);
+      // logger.LogDebug($"animationClipHash: {animationClipHash}");
 
-      // animationClips.ForEach(clip =>
-      // {
-      //   clipOverrides[clip.name] = clips[weatherType];
-
-      //   loggerSun.LogInfo($"Setting override from {clip.name} to {clips[weatherType]}");
-      // });
-
-      // loggerSun.LogInfo($"Changing animation clip to {animationClipName} ({animationClipHash})");
-      loggerSun.LogInfo($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
-
-      // // set the overrides
-      // if (weatherType == LevelWeatherType.None)
-      // {
-      //   loggerSun.LogInfo($"Setting {animationClipName} to {clips[LevelWeatherType.None].name}");
-      //   clipOverrides[animationClipName] = clips[LevelWeatherType.None];
-      // }
-      // else if (weatherType == LevelWeatherType.Stormy)
-      // {
-      //   loggerSun.LogInfo($"Setting animation clip to {clips[LevelWeatherType.Stormy].name}");
-      //   clipOverrides[animationClipName] = clips[LevelWeatherType.Stormy];
-      // }
-      // else if (weatherType == LevelWeatherType.Eclipsed)
-      // {
-      //   clipOverrides[animationClipName] = clips[LevelWeatherType.Eclipsed];
-      // }
-
-      LogOverrides(clipOverrides);
+      logger.LogDebug($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
 
       if (weatherType != LevelWeatherType.None)
       {
@@ -242,37 +249,25 @@ namespace WeatherTweaks
       // animator.PlayInFixedTime(animationClipHash, 0, 2.5f);
 
       // log the current clip name
-      loggerSun.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
-
-      // if (weatherType == LevelWeatherType.None)
-      // {
-      //   animator.Play(0, 1, 0);
-      // }
-      // else
-      // {
-      // }
-
-      // set the animation clip with 2s transition
-      // animator.Play(animationClipHash, 0, 0);
-      loggerSun.LogInfo($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
+      // logger.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
+      // logger.LogInfo($"Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
     }
 
     internal static void LogOverrides(AnimationClipOverrides clipOverrides)
     {
-      loggerSun.LogWarning($"Overrides: {clipOverrides.Count}");
+      logger.LogDebug($"Overrides: {clipOverrides.Count}");
       clipOverrides
         .ToList()
         .ForEach(clip =>
         {
-          loggerSun.LogInfo($"overrideclip {(clip.Key ? clip.Key.name : "null")} : {(clip.Value ? clip.Value.name : "null")}");
+          logger.LogInfo($"overrideclip {(clip.Key ? clip.Key.name : "null")} : {(clip.Value ? clip.Value.name : "null")}");
         });
     }
 
-    // [HarmonyPatch("Update")]
-    // [HarmonyPostfix]
-    // public static void UpdatePatch()
-    // {
-    //   loggerSun.LogInfo($"0Current bools: {animator.GetBool("overcast")} {animator.GetBool("eclipsed")}");
-    // }
+    internal static void Clear()
+    {
+      animator = null;
+      animatorOverrideController = null;
+    }
   }
 }

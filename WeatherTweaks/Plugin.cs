@@ -39,6 +39,8 @@ namespace WeatherTweaks
         Patches.MeteoMultiplierPatches.Init();
       }
 
+      SunAnimator.Init();
+
       logger.LogInfo(
         @"
                   .::.                  
