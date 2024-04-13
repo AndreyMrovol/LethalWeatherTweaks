@@ -134,7 +134,7 @@ namespace WeatherTweaks
           }
           catch (Exception e)
           {
-            logger.LogWarning($"Error removing sun animator bool: {e}");
+            logger.LogInfo($"Cannot remove sun animator bool: {e.Message}");
           }
         }
       }
