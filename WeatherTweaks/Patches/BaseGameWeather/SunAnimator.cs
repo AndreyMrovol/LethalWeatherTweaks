@@ -30,19 +30,17 @@ namespace WeatherTweaks
       );
       logger.LogWarning("Patching Animator.SetBool(string, bool)");
 
-      harmony.Patch(
-        AccessTools.Method(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(int), typeof(bool) }),
-        new HarmonyMethod(typeof(SunAnimator), "SetBoolIntPatch")
-      );
-      logger.LogWarning("Patching Animator.SetBool(int, bool)");
+      // harmony.Patch(
+      //   AccessTools.Method(typeof(UnityEngine.Animator), "SetBool", new Type[] { typeof(int), typeof(bool) }),
+      //   new HarmonyMethod(typeof(SunAnimator), "SetBoolIntPatch")
+      // );
+      // logger.LogWarning("Patching Animator.SetBool(int, bool)");
     }
 
     public static bool SetBoolPatch(Animator __instance, object nameOrId, bool value)
     {
-      // BasegameWeatherPatch.logger.LogInfo($"SetBoolPatch: {nameOrId} {value}");
-
       string name = nameOrId as string;
-      int id = (nameOrId is int) ? (int)nameOrId : -1; // Assuming -1 is not a valid ID
+      // int id = (nameOrId is int) ? (int)nameOrId : -1; // Assuming -1 is not a valid ID
 
       if (name == "overcast" || name == "eclipse")
       {
