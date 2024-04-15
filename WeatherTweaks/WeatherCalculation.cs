@@ -9,6 +9,7 @@ namespace WeatherTweaks
   internal class WeatherCalculation
   {
     internal static Dictionary<string, LevelWeatherType> previousDayWeather = [];
+    internal static SelectableLevel CompanyMoon;
 
     internal static Dictionary<string, WeatherType> NewWeathers(StartOfRound startOfRound)
     {
@@ -27,6 +28,8 @@ namespace WeatherTweaks
 
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, startOfRound);
       Dictionary<string, WeatherType> currentWeather = [];
+
+      CompanyMoon = StartOfRound.Instance.levels.ToList().Find(level => level.PlanetName == "71 Gordion");
 
       List<SelectableLevel> levels = Variables.GetGameLevels(startOfRound);
       int day = startOfRound.gameStats.daysSpent;
@@ -170,11 +173,10 @@ namespace WeatherTweaks
         // currentWeather[level.PlanetName] = currentWeather[level.PlanetName];
       }
 
-      SelectableLevel companyMoon = LethalLevelLoader.PatchedContent.SeletectableLevels.Find(level => level.PlanetName == "71 Gordion");
-      if (companyMoon != null)
+      if (CompanyMoon != null)
       {
-        Variables.CurrentWeathers[companyMoon] = Variables.NoneWeather;
-        currentWeather[companyMoon.PlanetName] = Variables.NoneWeather;
+        Variables.CurrentWeathers[CompanyMoon] = Variables.NoneWeather;
+        currentWeather[CompanyMoon.PlanetName] = Variables.NoneWeather;
       }
 
       Plugin.logger.LogDebug("-------------");
@@ -266,11 +268,10 @@ namespace WeatherTweaks
         Plugin.logger.LogDebug($"Set weather for {planetName}: {selectedWeather.Name}");
       }
 
-      SelectableLevel companyMoon = LethalLevelLoader.PatchedContent.SeletectableLevels.Find(level => level.PlanetName == "71 Gordion");
-      if (companyMoon != null)
+      if (CompanyMoon != null)
       {
-        Variables.CurrentWeathers[companyMoon] = Variables.NoneWeather;
-        selectedWeathers[companyMoon.PlanetName] = Variables.NoneWeather;
+        Variables.CurrentWeathers[CompanyMoon] = Variables.NoneWeather;
+        selectedWeathers[CompanyMoon.PlanetName] = Variables.NoneWeather;
       }
 
       Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
