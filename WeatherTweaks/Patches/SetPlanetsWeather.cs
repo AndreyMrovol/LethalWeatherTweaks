@@ -9,11 +9,17 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(StartOfRound))]
   public static class SetPlanetsWeatherPatch
   {
+    [HarmonyBefore("imabatby.lethallevelloader")]
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
+
+      if (__instance == null)
+      {
+        return true;
+      }
 
       Variables.GetGameLevels(__instance);
       Variables.PopulateWeathers(__instance);
@@ -38,7 +44,7 @@ namespace WeatherTweaks
 
       bool isLobby = GameNetworkManager.Instance.currentLobby != null;
 
-      if (StartOfRound.Instance.IsHost)
+      if (__instance.IsHost)
       {
         Variables.CurrentWeathers = [];
 

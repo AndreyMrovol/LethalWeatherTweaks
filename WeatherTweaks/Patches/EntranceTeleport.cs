@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using LethalLevelLoader;
 using UnityEngine;
 
 namespace WeatherTweaks

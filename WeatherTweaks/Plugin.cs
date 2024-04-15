@@ -7,13 +7,14 @@ using HarmonyLib;
 namespace WeatherTweaks
 {
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-  [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.HardDependency)]
+  [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.github.fredolx.meteomultiplier", BepInDependency.DependencyFlags.SoftDependency)]
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
+    internal static bool IsLLLPresent = false;
 
     private void Awake()
     {
@@ -28,6 +29,10 @@ namespace WeatherTweaks
       UncertainWeather.Init();
 
       GeneralImprovementsWeather.Init();
+      // if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
+      // {
+      //   Patches.LLL.Init();
+      // }
 
       if (Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades"))
       {

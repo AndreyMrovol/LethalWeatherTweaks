@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherTweaks.Patches;
 using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
@@ -48,13 +49,23 @@ namespace WeatherTweaks
 
     internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound, bool includeCompanyMoon = false)
     {
-      GameLevels = LethalLevelLoader.PatchedContent.SeletectableLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
+      List<SelectableLevel> GameLevels = [];
 
-      if (includeCompanyMoon)
+      if (Plugin.IsLLLPresent)
       {
-        GameLevels.Add(LethalLevelLoader.PatchedContent.SeletectableLevels.First(level => level.PlanetName == "71 Gordion"));
+        GameLevels = LLL.GetSelectableLevels();
+      }
+      else
+      {
+        GameLevels = startOfRound.levels.ToList();
       }
 
+      if (!includeCompanyMoon)
+      {
+        GameLevels = GameLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
+      }
+
+      Variables.GameLevels = GameLevels;
       return GameLevels;
     }
 
@@ -131,6 +142,13 @@ namespace WeatherTweaks
     internal static void PopulateWeathers(StartOfRound startOfRound)
     {
       Plugin.logger.LogDebug("Populating weathers");
+
+      if (TimeOfDay.Instance == null)
+      {
+        Plugin.logger.LogError("TimeOfDay is null");
+        return;
+      }
+
       WeatherEffect[] effects = TimeOfDay.Instance.effects;
 
       WeatherTypes.Clear();
