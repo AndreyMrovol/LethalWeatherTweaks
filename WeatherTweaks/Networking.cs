@@ -42,6 +42,8 @@ namespace WeatherTweaks
         return;
       }
 
+      Variables.PopulateWeathers(StartOfRound.Instance);
+
       Plugin.logger.LogInfo($"Received weather data {weatherData} from server, applying");
 
       GameInteraction.SetWeather(currentWeather);
