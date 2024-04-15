@@ -10,7 +10,7 @@ using TMPro;
 
 // using static GeneralImprovements.Utilities.MonitorsHelper;
 
-namespace WeatherTweaks
+namespace WeatherTweaks.Patches
 {
   public class GeneralImprovementsWeather
   {

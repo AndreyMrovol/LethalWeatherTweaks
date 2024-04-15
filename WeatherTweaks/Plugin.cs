@@ -28,11 +28,12 @@ namespace WeatherTweaks
       ConfigManager.Init(Config);
       UncertainWeather.Init();
 
-      GeneralImprovementsWeather.Init();
       // if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
       // {
       //   Patches.LLL.Init();
       // }
+
+      Patches.GeneralImprovementsWeather.Init();
 
       if (Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades"))
       {
