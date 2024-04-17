@@ -155,7 +155,7 @@ namespace WeatherTweaks
 
       Plugin.logger.LogWarning($"Received progressing weather entry data {progressingWeatherEntry} from server, applying");
 
-      ChangeMidDay.DoMidDayChange(entry);
+      TimeOfDay.Instance.StartCoroutine(ChangeMidDay.DoMidDayChange(entry));
     }
 
     public static void SetWeather(Dictionary<string, WeatherType> currentWeathers)
