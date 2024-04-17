@@ -180,8 +180,13 @@ namespace WeatherTweaks
       //   logger.LogInfo($"clip framerate: {clip.frameRate}");
       // });
 
-      Dictionary<LevelWeatherType, AnimationClip> clips =
-        new()
+      // get the animation clips for the different weather types
+      // if any of them cannot be found, log a warning and return
+      Dictionary<LevelWeatherType, AnimationClip> clips = [];
+
+      try
+      {
+        clips = new Dictionary<LevelWeatherType, AnimationClip>()
         {
           { LevelWeatherType.Stormy, animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Stormy])) },
           { LevelWeatherType.Eclipsed, animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Eclipsed])) },
@@ -192,6 +197,11 @@ namespace WeatherTweaks
             )
           },
         };
+      }
+      catch (Exception e)
+      {
+        logger.LogWarning($"SunAnimator error: {e}");
+      }
 
       if (clips.Keys.Select(key => key == weatherType).Count() == 0)
       {
