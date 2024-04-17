@@ -49,7 +49,7 @@ namespace WeatherTweaks.Modules
       public List<ProgressingWeatherEntry> WeatherEntries = [];
       public WeatherType WeatherType;
 
-      public float weightModify = 2;
+      public float weightModify = 0.9f;
 
       public bool CanWeatherBeApplied(SelectableLevel level)
       {
