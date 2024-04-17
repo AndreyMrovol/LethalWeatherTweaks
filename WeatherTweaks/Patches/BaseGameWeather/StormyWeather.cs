@@ -23,5 +23,14 @@ namespace WeatherTweaks
     {
       return CurrentWeatherVariablePatch(instructions, LevelWeatherType.Stormy, "StormyWeather.StormyLightningStrikeRandomPatch");
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(StormyWeather), "OnEnable")]
+    static void StormyOnEnablePostfix(StormyWeather __instance)
+    {
+      __instance.timeAtLastStrike = TimeOfDay.Instance.globalTime + 25f;
+
+      logger.LogWarning($"StormyWeather.Enable: {__instance.randomThunderTime} {__instance.timeAtLastStrike}");
+    }
   }
 }
