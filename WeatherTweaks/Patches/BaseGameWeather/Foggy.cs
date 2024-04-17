@@ -10,6 +10,21 @@ namespace WeatherTweaks
 {
   partial class BasegameWeatherPatch
   {
+    // TODO: Add a patch for the foggy weather
+    // [HarmonyTranspiler]
+    // [HarmonyPatch(typeof(TimeOfDay), "SetWeatherBasedOnVariables")]
+    // static IEnumerable<CodeInstruction> SetWeatherVariable1Patch(IEnumerable<CodeInstruction> instructions)
+    // {
+    //   return CurrentWeatherVariablePatch(instructions, LevelWeatherType.Foggy, "TimeOfDay.SetWeatherBasedOnVariables");
+    // }
+
+    // [HarmonyTranspiler]
+    // [HarmonyPatch(typeof(TimeOfDay), "SetWeatherBasedOnVariables")]
+    // static IEnumerable<CodeInstruction> SetWeatherVariable2Patch(IEnumerable<CodeInstruction> instructions)
+    // {
+    //   return CurrentWeatherVariable2Patch(instructions, LevelWeatherType.Foggy, "TimeOfDay.SetWeatherBasedOnVariables");
+    // }
+
     internal static void ChangeFog(float meanFreePath = 15f)
     {
       try
