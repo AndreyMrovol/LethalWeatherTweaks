@@ -123,7 +123,7 @@ namespace WeatherTweaks
 
       // string outputString = currentWeatherString;
       string outputString = "";
-      Regex split = new(@"(\/)|(\?)|(>)");
+      Regex split = new(@"(\/)|(\?)|(>)|(\+)");
 
       split
         .Split(currentWeatherString)
