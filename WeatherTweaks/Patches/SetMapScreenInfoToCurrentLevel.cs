@@ -149,6 +149,7 @@ namespace WeatherTweaks
             "+" => "FFFFFF",
             ">" => "FFFFFF",
             "/" => "FFFFFF",
+            "?" => "FFFFFF",
             _ => "000000",
           };
 
