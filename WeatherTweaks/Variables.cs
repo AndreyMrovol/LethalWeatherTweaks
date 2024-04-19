@@ -227,7 +227,7 @@ namespace WeatherTweaks
 
     public static WeatherType GetPlanetCurrentWeatherType(SelectableLevel level)
     {
-      return CurrentWeathers[level];
+      return GetFullWeatherType(CurrentWeathers.TryGetValue(level, out WeatherType weather) ? weather : NoneWeather);
     }
 
     public static float GetLevelWeatherVariable(LevelWeatherType weatherType, bool variable2 = false)
