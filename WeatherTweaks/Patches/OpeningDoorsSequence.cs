@@ -59,7 +59,7 @@ namespace WeatherTweaks
         NetworkedConfig.SetWeatherEffects(currentWeather.Weathers);
       }
 
-      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentWeather.Effects);
+      // GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentWeather.Effects);
       // LLLDungeonExitPatch.StartListener();
 
       Variables.CurrentLevelWeather = currentWeather;

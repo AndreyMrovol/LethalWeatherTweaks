@@ -97,10 +97,10 @@ namespace WeatherTweaks
         return;
       }
 
-      if (StartOfRound.Instance.IsHost)
-      {
-        return;
-      }
+      // if (StartOfRound.Instance.IsHost)
+      // {
+      //   return;
+      // }
 
       foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
       {
