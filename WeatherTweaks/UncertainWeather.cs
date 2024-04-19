@@ -91,6 +91,12 @@ namespace WeatherTweaks
 
       Plugin.logger.LogDebug($"uncertainTypes: {uncertainTypes.Count}");
 
+      if (uncertainTypes.Count == 0)
+      {
+        Plugin.logger.LogInfo("No uncertain types are enabled, skipping uncertainty generation.");
+        return uncertainWeathers;
+      }
+
       foreach (SelectableLevel uncertainLevel in whereWeatherUncertain)
       {
         int rolledType = random.Next(uncertainTypes.Count);
