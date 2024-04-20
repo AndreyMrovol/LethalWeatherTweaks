@@ -141,6 +141,12 @@ namespace WeatherTweaks
         animator = TimeOfDay.Instance.sunAnimator;
       }
 
+      if (TimeOfDay.Instance.sunAnimator == null)
+      {
+        logger.LogWarning("sunAnimator is null, skipping");
+        return;
+      }
+
       logger.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
 
       // get the name of the sun animator controller
