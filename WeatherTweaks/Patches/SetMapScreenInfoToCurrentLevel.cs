@@ -38,70 +38,11 @@ namespace WeatherTweaks
 
       StringBuilder stringBuilder = new();
       stringBuilder.Append("ORBITING: " + ___currentLevel.PlanetName + "\n");
-      // stringBuilder.Append("WEATHER: " + $"{GetHexColor(weatherCondition)}{weatherCondition}</color>" + "\n");
       stringBuilder.Append($"WEATHER: {GetColoredString(___currentLevel)}\n");
       stringBuilder.Append(___currentLevel.LevelDescription ?? "");
 
       ___screenLevelDescription.fontWeight = FontWeight.Bold;
       ___screenLevelDescription.text = stringBuilder.ToString();
-    }
-
-    private static LevelWeatherType ResolveWeatherStringToType(string inputWeather)
-    {
-      // This is a simple switch statement that resolves the weather string to a LevelWeatherType
-      // This needs to account for uncertain weather mechanic (e.g foggy/eclipsed as weather string)
-      // in that case pick the most severe weather type for color to be correct
-      // eclipse > flooded > stormy > foggy > rainy > dustclouds > none
-
-      if (inputWeather.Contains("Eclipsed"))
-      {
-        return LevelWeatherType.Eclipsed;
-      }
-      else if (inputWeather.Contains("Flooded"))
-      {
-        return LevelWeatherType.Flooded;
-      }
-      else if (inputWeather.Contains("Stormy"))
-      {
-        return LevelWeatherType.Stormy;
-      }
-      else if (inputWeather.Contains("Foggy"))
-      {
-        return LevelWeatherType.Foggy;
-      }
-      else if (inputWeather.Contains("Rainy"))
-      {
-        return LevelWeatherType.Rainy;
-      }
-      else if (inputWeather.Contains("DustClouds"))
-      {
-        return LevelWeatherType.DustClouds;
-      }
-      else
-      {
-        return LevelWeatherType.None;
-      }
-    }
-
-    private static string GetHexColor(string currentWeather)
-    {
-      if (currentWeather == "[UNKNOWN]")
-      {
-        return "<color=#4a4a4a>";
-      }
-
-      LevelWeatherType weatherType = ResolveWeatherStringToType(currentWeather);
-
-      string pickedColor = weatherType switch
-      {
-        LevelWeatherType.None or LevelWeatherType.DustClouds => "69FF6B",
-        LevelWeatherType.Rainy or LevelWeatherType.Foggy => "FFDC00",
-        LevelWeatherType.Stormy or LevelWeatherType.Flooded => "FF9300",
-        LevelWeatherType.Eclipsed => "FF0000",
-        _ => "FFFFFF",
-      };
-
-      return "<color=#" + pickedColor + ">";
     }
 
     private static string GetColoredString(SelectableLevel level)
@@ -130,7 +71,6 @@ namespace WeatherTweaks
         .ToList()
         .ForEach(word =>
         {
-          Plugin.logger.LogDebug($"Word: {word}");
           string newWord = word.Trim();
 
           // create a method to resolve each individual word to a weather color
@@ -163,7 +103,6 @@ namespace WeatherTweaks
           outputString += pickedColor != "000000" ? $"<color=#{pickedColor}>{word}</color>" : $"{newWord}";
         });
 
-      Plugin.logger.LogWarning($"Output: {outputString}");
       return outputString;
     }
   }
