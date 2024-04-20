@@ -34,16 +34,17 @@ namespace WeatherTweaks
 
         if (Fog == null)
         {
-          Plugin.logger.LogError("Failed to find LocalVolumetricFog \"Foggy\"");
+          Plugin.logger.LogWarning("Failed to find LocalVolumetricFog \"Foggy\"");
           return;
         }
+
         Fog.parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
         Fog.parameters.meanFreePath = meanFreePath;
         Fog.parameters.size.y = 255f;
       }
       catch (Exception e)
       {
-        Plugin.logger.LogError("Failed to change fog: " + e);
+        Plugin.logger.LogWarning("Failed to change fog");
       }
     }
   }
