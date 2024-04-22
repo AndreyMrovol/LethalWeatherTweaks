@@ -20,6 +20,7 @@ namespace WeatherTweaks.Patches
 
       if (MrovLib.Plugin.LLL.IsModPresent)
       {
+        logger.LogWarning("Patching LethalLevelLoader");
         // Patch the ExtendedLevel GetWeatherConditions method
         harmony.Patch(
           AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
@@ -28,6 +29,7 @@ namespace WeatherTweaks.Patches
       }
       else
       {
+        logger.LogWarning("Patching Old LethalLevelLoader");
         // Patch the Selectable GetWeatherConditions method
         harmony.Patch(
           AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
