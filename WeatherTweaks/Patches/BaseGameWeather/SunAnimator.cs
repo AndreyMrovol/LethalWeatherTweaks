@@ -192,16 +192,20 @@ namespace WeatherTweaks
 
       try
       {
+        AnimationClip clipEclipsed = animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Eclipsed]));
+        AnimationClip clipStormy = animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Stormy]));
+        AnimationClip clipNone = animationClips.Find(clip =>
+          !clip.name.Contains(clipNames[LevelWeatherType.Stormy]) && !clip.name.Contains(clipNames[LevelWeatherType.Eclipsed])
+        );
+
         clips = new Dictionary<LevelWeatherType, AnimationClip>()
         {
-          { LevelWeatherType.Stormy, animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Stormy])) },
-          { LevelWeatherType.Eclipsed, animationClips.Find(clip => clip.name.Contains(clipNames[LevelWeatherType.Eclipsed])) },
-          {
-            LevelWeatherType.None,
-            animationClips.Find(clip =>
-              !clip.name.Contains(clipNames[LevelWeatherType.Stormy]) && !clip.name.Contains(clipNames[LevelWeatherType.Eclipsed])
-            )
-          },
+          { LevelWeatherType.Eclipsed, clipEclipsed },
+          { LevelWeatherType.Stormy, clipStormy },
+          { LevelWeatherType.Flooded, clipStormy },
+          { LevelWeatherType.Foggy, clipStormy },
+          { LevelWeatherType.Rainy, clipStormy },
+          { LevelWeatherType.None, clipNone },
         };
       }
       catch (Exception e)
