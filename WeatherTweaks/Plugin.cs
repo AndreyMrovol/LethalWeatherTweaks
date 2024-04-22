@@ -7,6 +7,7 @@ using HarmonyLib;
 namespace WeatherTweaks
 {
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+  [BepInDependency("MrovLib", BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
@@ -32,6 +33,8 @@ namespace WeatherTweaks
       // {
       //   Patches.LLL.Init();
       // }
+      var weatherMethod = typeof(StartOfRound).GetMethod("SetPlanetsWeather");
+      harmony.Unpatch(weatherMethod, HarmonyPatchType.Postfix, "imabatby.lethallevelloader");
 
       Patches.GeneralImprovementsWeather.Init();
 

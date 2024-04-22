@@ -47,18 +47,11 @@ namespace WeatherTweaks
       return weatherDataDict;
     }
 
-    internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound, bool includeCompanyMoon = false)
+    internal static List<SelectableLevel> GetGameLevels(bool includeCompanyMoon = false)
     {
-      List<SelectableLevel> GameLevels = [];
+      Plugin.logger.LogDebug($"Getting game levels, {includeCompanyMoon}");
+      List<SelectableLevel> GameLevels = MrovLib.API.SharedMethods.GetGameLevels();
 
-      if (Plugin.IsLLLPresent)
-      {
-        GameLevels = LLL.GetSelectableLevels();
-      }
-      else
-      {
-        GameLevels = startOfRound.levels.ToList();
-      }
 
       if (!includeCompanyMoon)
       {

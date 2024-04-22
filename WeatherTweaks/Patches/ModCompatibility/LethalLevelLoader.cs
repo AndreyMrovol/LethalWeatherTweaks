@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using BepInEx.Logging;
 using HarmonyLib;
 using LethalLevelLoader;
+using MrovLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,16 +18,37 @@ namespace WeatherTweaks.Patches
     {
       var harmony = new Harmony("WeatherTweaks.LLL");
 
-      // Patch the GetWeatherConditions method
-      harmony.Patch(
-        AccessTools.Method(typeof(TerminalManager), "GetWeatherConditions"),
-        postfix: new HarmonyMethod(typeof(Patches.LLL), "PatchLLL")
-      );
+      if (MrovLib.Plugin.LLL.IsModPresent)
+      {
+        // Patch the ExtendedLevel GetWeatherConditions method
+        harmony.Patch(
+          AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
+          postfix: new HarmonyMethod(typeof(Patches.LLL), "PatchNewLLL")
+        );
+      }
+      else
+      {
+        // Patch the Selectable GetWeatherConditions method
+        harmony.Patch(
+          AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
+          postfix: new HarmonyMethod(typeof(Patches.LLL), "PatchOldLLL")
+        );
+      }
 
       Plugin.IsLLLPresent = true;
     }
 
-    private static void PatchLLL(SelectableLevel selectableLevel, ref string __result)
+    private static void PatchNewLLL(ExtendedLevel extendedLevel, ref string __result)
+    {
+      __result = PatchLLL(extendedLevel.SelectableLevel);
+    }
+
+    private static void PatchOldLLL(SelectableLevel selectableLevel, ref string __result)
+    {
+      __result = PatchLLL(selectableLevel);
+    }
+
+    private static string PatchLLL(SelectableLevel selectableLevel)
     {
       string currentWeather = Variables.GetPlanetCurrentWeather(selectableLevel);
 
@@ -45,12 +67,7 @@ namespace WeatherTweaks.Patches
         currentWeather = $"({currentWeather})";
       }
 
-      __result = currentWeather;
-    }
-
-    internal static List<SelectableLevel> GetSelectableLevels()
-    {
-      return LethalLevelLoader.PatchedContent.SeletectableLevels;
+      return currentWeather;
     }
   }
 }

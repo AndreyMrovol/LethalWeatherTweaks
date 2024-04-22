@@ -12,12 +12,14 @@ namespace WeatherTweaks
     {
       var table = new ConsoleTables.ConsoleTable("Planet", "Weather");
 
+      Plugin.logger.LogWarning($"Displaying weathers table, instance: {StartOfRound.Instance}");
+
       if (StartOfRound.Instance == null)
       {
         return;
       }
 
-      List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
+      List<SelectableLevel> levels = Variables.GetGameLevels();
       foreach (SelectableLevel level in levels)
       {
         table.AddRow(level.PlanetName, level.currentWeather);

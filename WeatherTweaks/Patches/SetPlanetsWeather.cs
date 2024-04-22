@@ -9,7 +9,7 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(StartOfRound))]
   public static class SetPlanetsWeatherPatch
   {
-    [HarmonyBefore("imabatby.lethallevelloader")]
+    [HarmonyAfter("imabatby.lethallevelloader")]
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
@@ -18,10 +18,17 @@ namespace WeatherTweaks
 
       if (__instance == null)
       {
+        Plugin.logger.LogWarning("Instance is null");
         return true;
       }
 
-      Variables.GetGameLevels(__instance);
+      List<SelectableLevel> Levels = Variables.GetGameLevels();
+      if (Levels == null)
+      {
+        Plugin.logger.LogWarning("Levels are null");
+        return true;
+      }
+
       Variables.PopulateWeathers(__instance);
       ChangeMidDay.lastCheckedEntry = 0;
       EntranceTeleportPatch.isPlayerInside = false;

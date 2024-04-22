@@ -16,7 +16,7 @@ namespace WeatherTweaks
     {
       Plugin.logger.LogMessage("Setting weather");
 
-      List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
+      List<SelectableLevel> levels = Variables.GetGameLevels();
       foreach (SelectableLevel level in levels)
       {
         string levelName = level.PlanetName;
