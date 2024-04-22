@@ -117,8 +117,8 @@ namespace WeatherTweaks.Patches
           foreach (LevelWeatherType weather in currentWeather.Weathers)
           {
             MeteoMultipliersData data = GetMeteoMultiplierData(weather);
-            combinedData.multiplier += data.multiplier;
-            combinedData.spawnMultiplier += data.spawnMultiplier;
+            combinedData.multiplier += data.multiplier * 0.7f;
+            combinedData.spawnMultiplier += data.spawnMultiplier * 0.7f;
           }
 
           SetMeteoMultiplierData(combinedData);
