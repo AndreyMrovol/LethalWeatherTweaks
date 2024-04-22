@@ -23,6 +23,10 @@
         <Reference Include="LethalLevelLoader" PrivateAssets="All">
             <HintPath>../lib/LethalLevelLoader.dll</HintPath>
         </Reference>
+
+        <Reference Include="MrovLib" PrivateAssets="All">
+            <HintPath>../lib/MrovLib.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

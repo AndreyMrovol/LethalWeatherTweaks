@@ -10,7 +10,7 @@ using TMPro;
 
 // using static GeneralImprovements.Utilities.MonitorsHelper;
 
-namespace WeatherTweaks
+namespace WeatherTweaks.Patches
 {
   public class GeneralImprovementsWeather
   {
@@ -56,7 +56,7 @@ namespace WeatherTweaks
         fancyMonitorsField = type.GetField("_fancyWeatherMonitorTexts", BindingFlags.Static | BindingFlags.NonPublic);
 
         // Create a Harmony instance
-        var harmony = new Harmony("Weathertweaks.GIPatch");
+        var harmony = new Harmony("WeatherTweaks.GeneralImprovements");
 
         // Create a HarmonyMethod for the postfix
         var patch = new HarmonyMethod(

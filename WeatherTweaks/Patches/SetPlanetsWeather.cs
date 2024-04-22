@@ -9,13 +9,32 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(StartOfRound))]
   public static class SetPlanetsWeatherPatch
   {
+    [HarmonyAfter("imabatby.lethallevelloader")]
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
 
-      Variables.GetGameLevels(__instance);
+      if (__instance == null)
+      {
+        Plugin.logger.LogWarning("Instance is null");
+        return true;
+      }
+
+      List<SelectableLevel> Levels = Variables.GetGameLevels();
+      if (Levels == null)
+      {
+        Plugin.logger.LogWarning("Levels are null");
+        return true;
+      }
+
+      Variables.PopulateWeathers(__instance);
+      ChangeMidDay.lastCheckedEntry = 0;
+      EntranceTeleportPatch.isPlayerInside = false;
+
+      // NetworkedConfig.SetWeatherEffects([]);
+      // Variables.CurrentWeathers = [];
 
       // there are 3 possible cases:
       // we're hosting - mod is active, we're syncing weather data
@@ -32,13 +51,22 @@ namespace WeatherTweaks
 
       bool isLobby = GameNetworkManager.Instance.currentLobby != null;
 
-      if (StartOfRound.Instance.IsHost)
+      if (__instance.IsHost)
       {
-        Dictionary<string, LevelWeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+        Variables.CurrentWeathers = [];
+
+        Dictionary<string, WeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+
+        // newWeathers.Do(entry =>
+        // {
+        //   Plugin.logger.LogDebug($"{entry.Key} :: {entry.Value}");
+        // });
+
         GameInteraction.SetWeather(newWeathers);
         NetworkedConfig.SetWeather(newWeathers);
 
         Dictionary<string, string> uncertainWeathers = UncertainWeather.GenerateUncertainty();
+
         NetworkedConfig.SetDisplayWeather(uncertainWeathers);
 
         __instance.SetMapScreenInfoToCurrentLevel();
@@ -65,7 +93,7 @@ namespace WeatherTweaks
           }
         }
 
-        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherSynced.Value}");
+        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherDictionarySynced.Value}");
       }
 
       return false;

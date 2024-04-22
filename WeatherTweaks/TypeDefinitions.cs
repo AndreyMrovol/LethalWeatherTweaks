@@ -50,7 +50,7 @@ namespace WeatherTweaks
 
         var randomWeather = randomWeathers[random.Next(randomWeathers.Count)];
 
-        if (random.Next(0, 2) == 0)
+        if (random.Next(0, 1) == 0)
         {
           return $"{weather}/{randomWeather.weatherType}";
         }

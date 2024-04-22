@@ -11,7 +11,15 @@ namespace WeatherTweaks
     public static void DisplayWeathersTable()
     {
       var table = new ConsoleTables.ConsoleTable("Planet", "Weather");
-      List<SelectableLevel> levels = Variables.GetGameLevels(StartOfRound.Instance);
+
+      Plugin.logger.LogWarning($"Displaying weathers table, instance: {StartOfRound.Instance}");
+
+      if (StartOfRound.Instance == null)
+      {
+        return;
+      }
+
+      List<SelectableLevel> levels = Variables.GetGameLevels();
       foreach (SelectableLevel level in levels)
       {
         table.AddRow(level.PlanetName, level.currentWeather);
