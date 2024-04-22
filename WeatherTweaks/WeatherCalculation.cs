@@ -31,7 +31,7 @@ namespace WeatherTweaks
 
       CompanyMoon = StartOfRound.Instance.levels.ToList().Find(level => level.PlanetName == "71 Gordion");
 
-      List<SelectableLevel> levels = Variables.GetGameLevels(startOfRound);
+      List<SelectableLevel> levels = Variables.GetGameLevels();
       int day = startOfRound.gameStats.daysSpent;
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
