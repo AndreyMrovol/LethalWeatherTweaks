@@ -33,6 +33,11 @@ namespace WeatherTweaks
       // {
       //   Patches.LLL.Init();
       // }
+      if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
+      {
+        Patches.LLL.Init();
+      }
+
       var weatherMethod = typeof(StartOfRound).GetMethod("SetPlanetsWeather");
       harmony.Unpatch(weatherMethod, HarmonyPatchType.Postfix, "imabatby.lethallevelloader");
 
