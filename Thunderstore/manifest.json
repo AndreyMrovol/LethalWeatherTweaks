@@ -1,11 +1,11 @@
 {
 	"name": "WeatherTweaks",
-	"version_number": "0.0.3",
+	"version_number": "0.5.0",
 	"website_url": "https://github.com/AndreyMrovol/LethalWeatherTweaks",
-	"description": "Tweaks the weather system to make it more random.",
+	"description": "Changes to the weather system in Lethal Company.",
 	"dependencies": [
 		"BepInEx-BepInExPack-5.4.2100",
-		"xilophor-LethalNetworkAPI-2.1.4",
-		"IAmBatby-LethalLevelLoader-1.1.4"
+		"xilophor-LethalNetworkAPI-2.1.7",
+		"mrov-MrovLib-0.0.3"
 	]
 }
