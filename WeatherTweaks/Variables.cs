@@ -20,9 +20,9 @@ namespace WeatherTweaks
       return weatherDataDict;
     }
 
-    internal static List<SelectableLevel> GetGameLevels(StartOfRound startOfRound)
+    internal static List<SelectableLevel> GetGameLevels()
     {
-      GameLevels = LethalLevelLoader.PatchedContent.SeletectableLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
+      GameLevels = MrovLib.API.SharedMethods.GetGameLevels();
 
       return GameLevels;
     }

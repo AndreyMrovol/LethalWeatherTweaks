@@ -15,7 +15,18 @@ namespace WeatherTweaks
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
 
-      Variables.GetGameLevels(__instance);
+      if (__instance == null)
+      {
+        Plugin.logger.LogWarning("Instance is null");
+        return true;
+      }
+
+      List<SelectableLevel> Levels = Variables.GetGameLevels();
+      if (Levels == null)
+      {
+        Plugin.logger.LogWarning("Levels are null");
+        return true;
+      }
 
       // there are 3 possible cases:
       // we're hosting - mod is active, we're syncing weather data
@@ -32,7 +43,7 @@ namespace WeatherTweaks
 
       bool isLobby = GameNetworkManager.Instance.currentLobby != null;
 
-      if (StartOfRound.Instance.IsHost)
+      if (__instance.IsHost)
       {
         Dictionary<string, LevelWeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
         GameInteraction.SetWeather(newWeathers);

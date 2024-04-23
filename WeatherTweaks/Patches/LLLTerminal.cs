@@ -1,20 +1,54 @@
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using BepInEx.Logging;
 using HarmonyLib;
 using LethalLevelLoader;
+using MrovLib;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace WeatherTweaks
+namespace WeatherTweaks.Patches
 {
-  [HarmonyPatch(typeof(TerminalManager))]
-  public static class LLLTerminalPatch
+  public static class LLL
   {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks Terminal");
+    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks LLL");
 
-    [HarmonyPatch("GetWeatherConditions")]
-    [HarmonyPostfix]
-    private static void PatchLLL(SelectableLevel selectableLevel, ref string __result)
+    internal static void Init()
+    {
+      var harmony = new Harmony("WeatherTweaks.LLL");
+
+      if (MrovLib.Plugin.LLL.IsModPresent)
+      {
+        logger.LogWarning("Patching LethalLevelLoader");
+        // Patch the ExtendedLevel GetWeatherConditions method
+        harmony.Patch(
+          AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
+          postfix: new HarmonyMethod(typeof(Patches.LLL), "PatchNewLLL")
+        );
+      }
+      else
+      {
+        logger.LogWarning("Patching Old LethalLevelLoader");
+        // Patch the Selectable GetWeatherConditions method
+        harmony.Patch(
+          AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
+          postfix: new HarmonyMethod(typeof(Patches.LLL), "PatchOldLLL")
+        );
+      }
+    }
+
+    private static void PatchNewLLL(ExtendedLevel extendedLevel, ref string __result)
+    {
+      __result = PatchLLL(extendedLevel.SelectableLevel);
+    }
+
+    private static void PatchOldLLL(SelectableLevel selectableLevel, ref string __result)
+    {
+      __result = PatchLLL(selectableLevel);
+    }
+
+    private static string PatchLLL(SelectableLevel selectableLevel)
     {
       string currentWeather = Variables.GetPlanetCurrentWeather(selectableLevel);
 
@@ -33,7 +67,7 @@ namespace WeatherTweaks
         currentWeather = $"({currentWeather})";
       }
 
-      __result = currentWeather;
+      return currentWeather;
     }
   }
 }

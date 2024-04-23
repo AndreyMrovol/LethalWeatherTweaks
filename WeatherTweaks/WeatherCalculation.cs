@@ -28,7 +28,7 @@ namespace WeatherTweaks
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, startOfRound);
       Dictionary<string, LevelWeatherType> currentWeather = new Dictionary<string, LevelWeatherType>();
 
-      List<SelectableLevel> levels = Variables.GetGameLevels(startOfRound);
+      List<SelectableLevel> levels = Variables.GetGameLevels();
       int day = startOfRound.gameStats.daysSpent;
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
