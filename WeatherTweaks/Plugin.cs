@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
@@ -61,6 +61,11 @@ namespace WeatherTweaks
 
       SunAnimator.Init();
       BasegameWeatherPatch.FogPatchInit();
+
+      if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
+      {
+        Patches.Malfunctions.Init();
+      }
 
       logger.LogInfo(
         @"
