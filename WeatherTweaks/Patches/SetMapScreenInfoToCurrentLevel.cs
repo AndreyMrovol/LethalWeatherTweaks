@@ -14,6 +14,7 @@ namespace WeatherTweaks
     [HarmonyPatch("SetMapScreenInfoToCurrentLevel")]
     [HarmonyPostfix]
     [HarmonyPriority(Priority.HigherThanNormal)]
+    [HarmonyBefore("com.zealsprince.malfunctions")]
     internal static void GameMethodPatch(ref TextMeshProUGUI ___screenLevelDescription, ref SelectableLevel ___currentLevel)
     {
       if (!ConfigManager.MapScreenPatch.Value)
