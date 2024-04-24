@@ -41,7 +41,7 @@ namespace WeatherTweaks
       return weathersToChooseFrom;
     }
 
-    internal static string GetPlanetCurrentWeather(SelectableLevel level)
+    internal static string GetPlanetCurrentWeather(SelectableLevel level, bool uncertain = true)
     {
       bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
 
@@ -86,11 +86,12 @@ namespace WeatherTweaks
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
-          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Min(possibleWeathersWeightSum, 1) / fullWeightSum);
+          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / fullWeightSum);
           weatherWeight = Convert.ToInt32(noWetherFinalWeight);
 
-          Plugin.logger.LogDebug($"{clearWeatherWeight} * {possibleWeathersWeightSum} / {fullWeightSum} == {weatherWeight}");
-          Plugin.logger.LogDebug($"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight}");
+          Plugin.logger.LogDebug(
+            $"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight} : ({clearWeatherWeight} * {Math.Max(possibleWeathersWeightSum, 1)} / {fullWeightSum}) == {weatherWeight}"
+          );
         }
 
         if (difficulty != 0 && weatherType == LevelWeatherType.None)
