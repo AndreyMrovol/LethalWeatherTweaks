@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
 
@@ -22,6 +23,11 @@ namespace WeatherTweaks
       UncertainWeather.Init();
 
       GeneralImprovementsWeather.Init();
+
+      if(Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
+      {
+        Patches.Malfunctions.Init();
+      }
 
       logger.LogInfo(
         @"

@@ -11,29 +11,6 @@ using HarmonyLib;
 
 namespace WeatherTweaks.Patches
 {
-  public static class ManualLogSourceExtensions
-  {
-    class CodeInstructionFormatter(int instructionCount)
-    {
-      private int _instructionIndexPadLength = instructionCount.ToString().Length;
-
-      public string Format(CodeInstruction instruction, int index) =>
-        $"    IL_{index.ToString().PadLeft(_instructionIndexPadLength, '0')}: {instruction}";
-    }
-
-    public static void LogDebugInstructionsFrom(this ManualLogSource source, CodeMatcher matcher)
-    {
-      var methodName = new StackTrace().GetFrame(1).GetMethod().Name;
-
-      var instructionFormatter = new CodeInstructionFormatter(matcher.Length);
-      var builder = new StringBuilder($"'{methodName}' Matcher Instructions:\n")
-        .AppendLine(String.Join("\n", matcher.InstructionEnumeration().Select(instructionFormatter.Format)))
-        .AppendLine("End of matcher instructions.");
-
-      source.LogDebug(builder.ToString());
-    }
-  }
-
   class Malfunctions
   {
     static Type StartOfRoundPatches;
@@ -67,13 +44,6 @@ namespace WeatherTweaks.Patches
     {
       var logger = Plugin.logger;
 
-      string nspace = "Malfunctions";
-      string className = "Malfunction";
-      string stateClassName = "State";
-
-      Type MalfunctionType = assembly.GetType($"{nspace}.{className}");
-      Type StateType = assembly.GetType($"{nspace}.{stateClassName}");
-
       CodeMatcher codeMatcher = new(instructions);
 
       // match the following IL code:
@@ -96,10 +66,6 @@ namespace WeatherTweaks.Patches
       {
         match.RemoveInstructions(3);
       });
-
-      logger.LogDebugInstructionsFrom(codeMatcher);
-
-      logger.LogDebugInstructionsFrom(codeMatcher);
 
       // logger.LogDebug($"Patched {wherefrom} for {weatherType}");
       return codeMatcher.InstructionEnumeration();
