@@ -16,23 +16,27 @@ namespace WeatherTweaks
     [HarmonyPriority(Priority.VeryHigh)]
     private static bool PatchGameMethod(ref string modifiedDisplayText, TerminalNode node)
     {
-      if (node.buyRerouteToMoon == -2)
+      if (ConfigManager.TerminalForcePatch.Value)
       {
-        // Re-route dialog
-
-        logger.LogDebug("buyRerouteToMoon == -2");
-        Regex regex = new(@"\ It is (\n)*currently.+\[currentPlanetTime].+");
-
-        if (regex.IsMatch(modifiedDisplayText))
+        logger.LogInfo("Removing terminal weather formatting");
+        if (node.buyRerouteToMoon == -2)
         {
+          // Re-route dialog
+
+          logger.LogDebug("buyRerouteToMoon == -2");
+          Regex regex = new(@"\ It is (\n)*currently.+\[currentPlanetTime].+");
+
+          if (regex.IsMatch(modifiedDisplayText))
+          {
+            modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
+          }
+        }
+
+        if (node.name == "MoonsCatalogue")
+        {
+          Regex regex = new(@"\[planetTime\]");
           modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
         }
-      }
-
-      if (node.name == "MoonsCatalogue")
-      {
-        Regex regex = new(@"\[planetTime\]");
-        modifiedDisplayText = regex.Replace(modifiedDisplayText, "");
       }
 
       return true;
