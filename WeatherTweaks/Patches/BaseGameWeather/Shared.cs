@@ -12,6 +12,7 @@ namespace WeatherTweaks
   partial class BasegameWeatherPatch
   {
     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks BaseGameWeatherPatches");
+    internal static Harmony harmony = new("WeatherTweaks.BaseGame");
 
     internal static IEnumerable<CodeInstruction> VariablePatch(
       IEnumerable<CodeInstruction> instructions,
