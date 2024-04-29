@@ -12,6 +12,7 @@ namespace WeatherTweaks
   [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.github.fredolx.meteomultiplier", BepInDependency.DependencyFlags.SoftDependency)]
+  [BepInDependency("xxxstoner420bongmasterxxx.open_monitors", BepInDependency.DependencyFlags.SoftDependency)]
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
@@ -51,6 +52,11 @@ namespace WeatherTweaks
       if (Chainloader.PluginInfos.ContainsKey("com.github.fredolx.meteomultiplier"))
       {
         Patches.MeteoMultiplierPatches.Init();
+      }
+
+      if (Chainloader.PluginInfos.ContainsKey("xxxstoner420bongmasterxxx.open_monitors"))
+      {
+        Patches.OpenMonitorsPatch.Init();
       }
 
       SunAnimator.Init();
