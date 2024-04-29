@@ -240,6 +240,7 @@ namespace WeatherTweaks
 
         if (randomWeathers.Count == 0 || randomWeathers == null)
         {
+          selectedWeathers[planetName] = Variables.NoneWeather;
           Plugin.logger.LogDebug($"No random weathers for {planetName}, skipping");
           continue;
         }
