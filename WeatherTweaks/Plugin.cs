@@ -6,6 +6,7 @@ using HarmonyLib;
 namespace WeatherTweaks
 {
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+  [BepInDependency("xxxstoner420bongmasterxxx.open_monitors", BepInDependency.DependencyFlags.SoftDependency)]
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
@@ -27,6 +28,11 @@ namespace WeatherTweaks
       if(Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
       {
         Patches.Malfunctions.Init();
+      }
+
+      if (Chainloader.PluginInfos.ContainsKey("xxxstoner420bongmasterxxx.open_monitors"))
+      {
+        Patches.OpenMonitorsPatch.Init();
       }
 
       logger.LogInfo(
