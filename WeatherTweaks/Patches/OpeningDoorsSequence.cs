@@ -66,8 +66,6 @@ namespace WeatherTweaks
 
       // TimeOfDay.Instance.globalTimeSpeedMultiplier = 5f;
 
-      BasegameWeatherPatch.ChangeFog();
-
       Plugin.logger.LogError(
         $"Landing at {TimeOfDay.Instance.currentLevel.PlanetName} with weather {JsonConvert.SerializeObject(
         currentWeather,
