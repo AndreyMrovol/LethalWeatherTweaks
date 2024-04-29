@@ -215,7 +215,6 @@ namespace WeatherTweaks
       }
       catch (Exception e)
       {
-        logger.LogWarning($"SunAnimator error: {e}");
         logger.LogError($"Detected a null clip: {e.Message}");
         return;
       }
