@@ -108,8 +108,8 @@ namespace WeatherTweaks
       TerminalForcePatch = configFile.Bind(
         "0> General",
         "TerminalForcePatch",
-        false,
-        "Forcefully patch terminal weathers (will break things, use only if you know what you're doing)"
+        true,
+        "Disable patching terminal weather formatting (for compatibility with vanilla game)"
       );
 
       UncertainWeatherEnabled = configFile.Bind("1> Uncertain weather", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
