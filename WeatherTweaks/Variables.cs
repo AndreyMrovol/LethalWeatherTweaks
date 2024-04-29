@@ -84,7 +84,7 @@ namespace WeatherTweaks
 
       foreach (WeatherType weather in WeatherTypes)
       {
-        if (randomWeathers.Contains(weather.weatherType) && weather != NoneWeather && weather.Type == CustomWeatherType.Vanilla)
+        if (randomWeathers.Contains(weather.weatherType) && weather.Type == CustomWeatherType.Vanilla)
         {
           possibleTypes.Add(weather);
         }
@@ -312,7 +312,7 @@ namespace WeatherTweaks
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
-          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Min(possibleWeathersWeightSum, 1) / fullWeightSum);
+          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / fullWeightSum);
           weatherWeight = Convert.ToInt32(noWetherFinalWeight);
 
           Plugin.logger.LogDebug(
