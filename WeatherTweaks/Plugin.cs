@@ -60,6 +60,7 @@ namespace WeatherTweaks
       }
 
       SunAnimator.Init();
+      BasegameWeatherPatch.FogPatchInit();
 
       logger.LogInfo(
         @"
