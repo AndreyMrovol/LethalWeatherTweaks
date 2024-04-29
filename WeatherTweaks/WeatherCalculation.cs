@@ -87,6 +87,15 @@ namespace WeatherTweaks
           continue;
         }
 
+        if (level.overrideWeather)
+        {
+          Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
+          currentWeather[level.PlanetName] = Variables.WeatherTypes.Find(x =>
+            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
+          );
+          continue;
+        }
+
         // the weather should be more random by making it less random:
 
         // possible weathers taken from level.randomWeathers
@@ -126,15 +135,6 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug("No possible weathers, setting to None");
           currentWeather[level.PlanetName] = Variables.NoneWeather;
-          continue;
-        }
-
-        if (level.overrideWeather)
-        {
-          Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
-          currentWeather[level.PlanetName] = Variables.WeatherTypes.Find(x =>
-            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
-          );
           continue;
         }
 
@@ -208,6 +208,15 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug("AlwaysClear is true, setting weather to None");
           selectedWeathers[level.PlanetName] = Variables.NoneWeather;
+          continue;
+        }
+
+        if (level.overrideWeather)
+        {
+          Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
+          selectedWeathers[level.PlanetName] = Variables.WeatherTypes.Find(x =>
+            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
+          );
           continue;
         }
 
