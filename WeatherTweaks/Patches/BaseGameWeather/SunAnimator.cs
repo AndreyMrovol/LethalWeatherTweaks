@@ -207,10 +207,17 @@ namespace WeatherTweaks
           { LevelWeatherType.Rainy, clipStormy },
           { LevelWeatherType.None, clipNone },
         };
+
+        if (clipEclipsed == null || clipStormy == null || clipNone == null)
+        {
+          return;
+        }
       }
       catch (Exception e)
       {
         logger.LogWarning($"SunAnimator error: {e}");
+        logger.LogError($"Detected a null clip: {e.Message}");
+        return;
       }
 
       if (clips.Keys.Select(key => key == weatherType).Count() == 0)
