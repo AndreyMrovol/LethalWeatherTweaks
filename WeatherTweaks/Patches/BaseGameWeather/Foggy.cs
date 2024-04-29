@@ -10,37 +10,51 @@ namespace WeatherTweaks
 {
   partial class BasegameWeatherPatch
   {
-    // TODO: Add a patch for the foggy weather
-    // [HarmonyTranspiler]
-    // [HarmonyPatch(typeof(TimeOfDay), "SetWeatherBasedOnVariables")]
-    // static IEnumerable<CodeInstruction> SetWeatherVariable1Patch(IEnumerable<CodeInstruction> instructions)
-    // {
-    //   return CurrentWeatherVariablePatch(instructions, LevelWeatherType.Foggy, "TimeOfDay.SetWeatherBasedOnVariables");
-    // }
-
-    // [HarmonyTranspiler]
-    // [HarmonyPatch(typeof(TimeOfDay), "SetWeatherBasedOnVariables")]
-    // static IEnumerable<CodeInstruction> SetWeatherVariable2Patch(IEnumerable<CodeInstruction> instructions)
-    // {
-    //   return CurrentWeatherVariable2Patch(instructions, LevelWeatherType.Foggy, "TimeOfDay.SetWeatherBasedOnVariables");
-    // }
-
-    internal static void ChangeFog(float meanFreePath = 15f)
+    internal static void FogPatchInit()
     {
       try
       {
-        // get LocalVolumetricFog "Foggy" from all game objects
-        LocalVolumetricFog Fog = GameObject.Find("Foggy").GetComponent<LocalVolumetricFog>();
+        Plugin.logger.LogWarning("Patching FoggyWeather");
+        harmony.Patch(
+          typeof(TimeOfDay).GetMethod(
+            "SetWeatherBasedOnVariables",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
+          ),
+          postfix: new HarmonyMethod(typeof(BasegameWeatherPatch), "ChangeFog")
+        );
+      }
+      catch
+      {
+        Plugin.logger.LogWarning("Failed to patch FoggyWeather");
+      }
 
-        if (Fog == null)
-        {
-          Plugin.logger.LogWarning("Failed to find LocalVolumetricFog \"Foggy\"");
-          return;
-        }
+      // TODO replace this with proper [HarmonyPostfix] when v49 will be irrelevant
+    }
 
-        Fog.parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
-        Fog.parameters.meanFreePath = meanFreePath;
-        Fog.parameters.size.y = 255f;
+    internal static void ChangeFog(TimeOfDay __instance, LocalVolumetricFog ___foggyWeather)
+    {
+      logger.LogInfo("Changing fog");
+
+      if (___foggyWeather == null)
+      {
+        Plugin.logger.LogWarning("Failed to find LocalVolumetricFog \"Foggy\"");
+        return;
+      }
+
+      WeatherType currentWeather = Variables.GetPlanetCurrentWeatherType(__instance.currentLevel);
+
+      try
+      {
+        // change the position of the fog to be 128 units lower
+        ___foggyWeather.transform.position += new Vector3(0, -128, 0);
+
+        ___foggyWeather.parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
+
+        ___foggyWeather.parameters.meanFreePath *= 0.75f;
+        ___foggyWeather.parameters.size.y += 800f;
+
+        ___foggyWeather.parameters.size.x *= 5;
+        ___foggyWeather.parameters.size.z *= 5;
       }
       catch (Exception e)
       {
