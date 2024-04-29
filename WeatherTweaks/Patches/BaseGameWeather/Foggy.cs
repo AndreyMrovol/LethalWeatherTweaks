@@ -45,16 +45,31 @@ namespace WeatherTweaks
 
       try
       {
+        LocalVolumetricFogArtistParameters parameters = ___foggyWeather.parameters;
+
         // change the position of the fog to be 128 units lower
         ___foggyWeather.transform.position += new Vector3(0, -128, 0);
 
-        ___foggyWeather.parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
+        parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
 
-        ___foggyWeather.parameters.meanFreePath *= 0.75f;
-        ___foggyWeather.parameters.size.y += 800f;
+        // parameters.meanFreePath *= 1.45f;
+        parameters.meanFreePath = 11f;
+        parameters.falloffMode = LocalVolumetricFogFalloffMode.Linear;
 
-        ___foggyWeather.parameters.size.x *= 5;
-        ___foggyWeather.parameters.size.z *= 5;
+        parameters.distanceFadeEnd = 200;
+        parameters.distanceFadeStart = 0;
+        parameters.blendingMode = LocalVolumetricFogBlendingMode.Additive;
+
+        parameters.size.y += 800f;
+
+        parameters.size.x *= 5;
+        parameters.size.z *= 5;
+
+        ___foggyWeather.parameters = parameters;
+
+        // logger.LogWarning(
+        //   $"Changing freeMeanPath from {___foggyWeather.parameters.meanFreePath} to {___foggyWeather.parameters.meanFreePath * 1.5f}"
+        // );
       }
       catch (Exception e)
       {
