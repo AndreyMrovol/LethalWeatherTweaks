@@ -64,6 +64,8 @@ namespace WeatherTweaks
 
       Variables.CurrentLevelWeather = currentWeather;
 
+      TimeOfDay.Instance.nextTimeSync = 0;
+
       // TimeOfDay.Instance.globalTimeSpeedMultiplier = 5f;
 
       Plugin.logger.LogError(
