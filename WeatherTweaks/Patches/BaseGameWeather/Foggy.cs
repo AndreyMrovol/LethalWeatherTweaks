@@ -48,7 +48,11 @@ namespace WeatherTweaks
         LocalVolumetricFogArtistParameters parameters = ___foggyWeather.parameters;
 
         // change the position of the fog to be 128 units lower
-        ___foggyWeather.transform.position += new Vector3(0, -128, 0);
+        ___foggyWeather.transform.position = new Vector3(
+          ___foggyWeather.transform.position.x,
+          ___foggyWeather.transform.position.y + 128f,
+          ___foggyWeather.transform.position.z
+        );
 
         parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
 
@@ -60,7 +64,7 @@ namespace WeatherTweaks
         parameters.distanceFadeStart = 0;
         parameters.blendingMode = LocalVolumetricFogBlendingMode.Additive;
 
-        parameters.size.y += 800f;
+        parameters.size.y += 256f;
 
         parameters.size.x *= 5;
         parameters.size.z *= 5;
