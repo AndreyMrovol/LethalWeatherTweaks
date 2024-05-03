@@ -28,13 +28,7 @@ namespace WeatherTweaks
         return;
       }
 
-      Plugin.logger.LogWarning(
-        $"Color: {___screenLevelDescription.color}, {___screenLevelDescription.colorGradient}, {___screenLevelDescription.colorGradientPreset}, {___screenLevelDescription.faceColor}, {___screenLevelDescription.outlineColor}"
-      );
-
       string weatherCondition = Variables.GetPlanetCurrentWeather(___currentLevel);
-
-      Plugin.logger.LogDebug($"Weather condition: {weatherCondition}");
 
       StringBuilder stringBuilder = new();
       stringBuilder.Append("ORBITING: " + ___currentLevel.PlanetName + "\n");
