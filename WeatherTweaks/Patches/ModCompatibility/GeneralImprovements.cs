@@ -12,7 +12,7 @@ using TMPro;
 
 namespace WeatherTweaks.Patches
 {
-  public class GeneralImprovementsWeather
+  public class GeneralImprovementsWeather(string guid, string version = null) : MrovLib.Compatibility.CompatibilityBase(guid, version)
   {
     static Type type;
 
@@ -39,7 +39,7 @@ namespace WeatherTweaks.Patches
       string className = "MonitorsHelper";
 
       // Get the assembly that contains the class
-      var assembly = Chainloader.PluginInfos[assemblyName].Instance.GetType().Assembly;
+      var assembly = Plugin.GeneralImprovements.GetModAssembly;
 
       // Get the Type object for the class
       type = assembly.GetType($"{nspace}.{className}");

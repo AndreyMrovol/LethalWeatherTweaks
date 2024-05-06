@@ -9,7 +9,7 @@ namespace WeatherTweaks
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
   [BepInDependency("MrovLib", BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
-  [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
+  // [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.github.fredolx.meteomultiplier", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("xxxstoner420bongmasterxxx.open_monitors", BepInDependency.DependencyFlags.SoftDependency)]
@@ -18,6 +18,7 @@ namespace WeatherTweaks
     internal static ManualLogSource logger;
     internal static bool IsLLLPresent = false;
 
+    internal static GeneralImprovementsWeather GeneralImprovements;
     private void Awake()
     {
       logger = Logger;
@@ -42,7 +43,7 @@ namespace WeatherTweaks
       var weatherMethod = typeof(StartOfRound).GetMethod("SetPlanetsWeather");
       harmony.Unpatch(weatherMethod, HarmonyPatchType.Postfix, "imabatby.lethallevelloader");
 
-      Patches.GeneralImprovementsWeather.Init();
+      GeneralImprovements = new GeneralImprovementsWeather("ShaosilGaming.GeneralImprovements");
 
       if (Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades"))
       {
@@ -87,6 +88,20 @@ namespace WeatherTweaks
 
       // Plugin startup logic
       Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+    }
+  }
+
+  [HarmonyPatch(typeof(Terminal), "Start")]
+  public static class TerminalPatch
+  {
+    [HarmonyPostfix]
+    public static void Postfix()
+    {
+      if (Plugin.GeneralImprovements.IsModPresent)
+      {
+        Plugin.logger.LogInfo("GeneralImprovements is present");
+        GeneralImprovementsWeather.Init();
+      }
     }
   }
 }
