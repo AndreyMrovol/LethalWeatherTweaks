@@ -1,6 +1,7 @@
 using System;
 using BepInEx.Logging;
 using HarmonyLib;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
@@ -22,19 +23,9 @@ namespace WeatherTweaks
 
       logger.LogDebug("DecativateObjects is true");
 
-      foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
+      foreach (Weather weather in Variables.Weathers)
       {
-        effect.effectEnabled = false;
-
-        if (effect.effectObject != null)
-        {
-          effect.effectObject.SetActive(false);
-        }
-
-        if (effect.effectPermanentObject != null)
-        {
-          effect.effectPermanentObject.SetActive(false);
-        }
+        weather.Effect.EffectEnabled = false;
       }
 
       ChangeMidDay.lastCheckedEntry = 0;

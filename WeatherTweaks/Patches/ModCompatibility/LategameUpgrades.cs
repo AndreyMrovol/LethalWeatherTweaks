@@ -51,7 +51,7 @@ namespace WeatherTweaks.Patches
     internal static void LGUSyncWeatherPatch(string level, LevelWeatherType selectedWeather)
     {
       SelectableLevel pickedLevel = Variables.GameLevels.First(x => x.PlanetName.Contains(level));
-      WeatherType newWeather = Variables.WeatherTypes.First(x => x.Name == selectedWeather.ToString() && x.Type == CustomWeatherType.Vanilla);
+      WeatherType newWeather = Variables.WeatherTypes.First(x => x.Name == selectedWeather.ToString() && x.Type == CustomWeatherType.Normal);
 
       Dictionary<string, WeatherType> newWeathers = Variables.GetAllPlanetWeathersDictionary();
       newWeathers[pickedLevel.PlanetName] = newWeather;

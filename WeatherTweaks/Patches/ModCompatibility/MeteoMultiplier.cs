@@ -5,6 +5,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
+using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks.Patches
@@ -108,13 +109,13 @@ namespace WeatherTweaks.Patches
 
       switch (currentWeather.Type)
       {
-        case CustomWeatherType.Vanilla:
-          SetMeteoMultiplierData(GetMeteoMultiplierData(currentWeather.weatherType));
+        case CustomWeatherType.Normal:
+          SetMeteoMultiplierData(GetMeteoMultiplierData(currentWeather.Weather.VanillaWeatherType));
           break;
         case CustomWeatherType.Combined:
-          MeteoMultipliersData combinedData = new(currentWeather.weatherType, 0, 0);
+          MeteoMultipliersData combinedData = new(currentWeather.Weather.VanillaWeatherType, 0, 0);
 
-          foreach (LevelWeatherType weather in currentWeather.Weathers)
+          foreach (LevelWeatherType weather in currentWeather.Weathers.Select(x => x.VanillaWeatherType))
           {
             MeteoMultipliersData data = GetMeteoMultiplierData(weather);
             combinedData.multiplier += data.multiplier * 0.7f;

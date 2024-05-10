@@ -91,7 +91,7 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
           currentWeather[level.PlanetName] = Variables.WeatherTypes.Find(x =>
-            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
+            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Normal
           );
           continue;
         }
@@ -124,22 +124,21 @@ namespace WeatherTweaks
         //   )
         //   .ToList();
 
-        List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
-
+        // List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
         bool canBeDustClouds = level.randomWeathers.Any(randomWeather => randomWeather.weatherType == LevelWeatherType.DustClouds);
 
         // var stringifiedPossibleWeathers = JsonConvert.SerializeObject(possibleWeathers.Select(x => x.weatherType.ToString()).ToList());
         // Plugin.logger.LogDebug($"possibleWeathers: {stringifiedPossibleWeathers}");
 
-        if (possibleWeathers.Count == 0)
-        {
-          Plugin.logger.LogDebug("No possible weathers, setting to None");
-          currentWeather[level.PlanetName] = Variables.NoneWeather;
-          continue;
-        }
+        // if (possibleWeathers.Count == 0)
+        // {
+        //   Plugin.logger.LogDebug("No possible weathers, setting to None");
+        //   currentWeather[level.PlanetName] = Variables.NoneWeather;
+        //   continue;
+        // }
 
         // add None to the list of possible weathers
-        List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
+        // List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
 
         // get the weighted list of weathers from config
         var weatherWeights = Variables.GetPlanetWeightedList(
@@ -147,6 +146,14 @@ namespace WeatherTweaks
           ConfigManager.Weights[previousDayWeather[level.PlanetName]],
           difficultyMultiplier
         );
+
+        if (weatherWeights.Count == 0)
+        {
+          Plugin.logger.LogWarning($"No possible weathers, setting to None");
+          currentWeather[level.PlanetName] = Variables.NoneWeather;
+          continue;
+        }
+
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 
         if (weather == Variables.NoneWeather && canBeDustClouds)
@@ -215,7 +222,7 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
           selectedWeathers[level.PlanetName] = Variables.WeatherTypes.Find(x =>
-            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
+            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Normal
           );
           continue;
         }
@@ -225,9 +232,16 @@ namespace WeatherTweaks
           .Where(randomWeather =>
             randomWeather.weatherType != LevelWeatherType.None
             && randomWeather.weatherType != LevelWeatherType.DustClouds
-            && randomWeather.Type == CustomWeatherType.Vanilla
+            && randomWeather.Type == CustomWeatherType.Normal
           )
           .ToList();
+
+        if (randomWeathers.Count == 0)
+        {
+          Plugin.logger.LogDebug($"No random weathers for {planetName}, skipping");
+          selectedWeathers[planetName] = Variables.NoneWeather;
+          continue;
+        }
 
         // var randomWeathers = level.randomWeathers.ToList();
         Plugin.logger.LogDebug($"randomWeathers count: {randomWeathers.Count}");
@@ -271,7 +285,7 @@ namespace WeatherTweaks
         }
 
         WeatherType selectedWeather = Variables.WeatherTypes.Find(x =>
-          x.weatherType == selectedRandom.weatherType && x.Type == CustomWeatherType.Vanilla
+          x.weatherType == selectedRandom.weatherType && x.Type == CustomWeatherType.Normal
         );
         selectedWeathers[planetName] = selectedWeather;
         Variables.CurrentWeathers[level] = selectedWeather;

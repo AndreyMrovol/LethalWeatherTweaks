@@ -3,6 +3,8 @@ using System.Linq;
 using Dissonance;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
+using WeatherTweaks.Definitions;
+using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
@@ -90,8 +92,8 @@ namespace WeatherTweaks
 
     public static void WeatherEffectsReceived(string weatherEffects)
     {
-      List<LevelWeatherType> effectsDeserialized = JsonConvert.DeserializeObject<List<LevelWeatherType>>(weatherEffects);
-      List<WeatherEffect> currentEffects = [];
+      List<Weather> effectsDeserialized = JsonConvert.DeserializeObject<List<Weather>>(weatherEffects);
+      List<Definitions.WeatherEffect> currentEffects = [];
       if (currentEffects == null)
       {
         return;
@@ -102,15 +104,24 @@ namespace WeatherTweaks
       //   return;
       // }
 
-      foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
+      // foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
+      // {
+      //   Plugin.logger.LogDebug($"Checking effect {effect.name} ({TimeOfDay.Instance.effects.ToList().IndexOf(effect)})");
+
+      //   if (effectsDeserialized.Contains((LevelWeatherType)TimeOfDay.Instance.effects.ToList().IndexOf(effect)))
+      //   {
+      //     currentEffects.Add(effect);
+
+      //     Plugin.logger.LogDebug($"Adding effect {effect.name}");
+      //   }
+      // }
+
+      foreach (Weather weather in Variables.Weathers)
       {
-        Plugin.logger.LogDebug($"Checking effect {effect.name} ({TimeOfDay.Instance.effects.ToList().IndexOf(effect)})");
-
-        if (effectsDeserialized.Contains((LevelWeatherType)TimeOfDay.Instance.effects.ToList().IndexOf(effect)))
+        // check if the weather name (not the full object) is in the deserizlied list
+        if (effectsDeserialized.Select(weather => weather.Name).Contains(weather.Name))
         {
-          currentEffects.Add(effect);
-
-          Plugin.logger.LogDebug($"Adding effect {effect.name}");
+          currentEffects.Add(weather.Effect);
         }
       }
 
@@ -182,18 +193,18 @@ namespace WeatherTweaks
       Plugin.logger.LogInfo($"Set weather display data on server: {serialized}");
     }
 
-    public static void SetWeatherEffects(List<LevelWeatherType> weatherEffectsIndexes)
+    public static void SetWeatherEffects(List<Weather> weathers)
     {
-      if (weatherEffectsIndexes == null)
+      if (weathers == null)
       {
         return;
       }
 
-      weatherEffectsIndexes.Remove(LevelWeatherType.None);
+      weathers.Select(weather => weather.VanillaWeatherType != LevelWeatherType.None);
       Variables.CurrentEffects.RemoveAll(effect => effect == null);
 
       string serialized = JsonConvert.SerializeObject(
-        weatherEffectsIndexes,
+        weathers,
         Formatting.None,
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
       );

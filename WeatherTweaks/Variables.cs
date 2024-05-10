@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherTweaks.Definitions;
 using WeatherTweaks.Patches;
 using static WeatherTweaks.Modules.Types;
 
@@ -13,16 +14,23 @@ namespace WeatherTweaks
   internal class Variables
   {
     internal static List<SelectableLevel> GameLevels = [];
+    internal static bool IsSetupFinished = false;
 
     internal static WeatherType NoneWeather;
+    public static List<Weather> Weathers = [];
     public static List<WeatherType> WeatherTypes = [];
 
-    public static List<CombinedWeatherType> CombinedWeatherTypes = [];
-    public static List<ProgressingWeatherType> ProgressingWeatherTypes = [];
+    public static List<Weather> RegisteredWeathers = [];
+
+    public static List<LevelWeather> LevelWeathers = [];
+
+    // public static List<VanillaWeatherType> VanillaWeathers = [];
+    public static List<Definitions.Types.CombinedWeatherType> CombinedWeatherTypes = [];
+    public static List<Definitions.Types.ProgressingWeatherType> ProgressingWeatherTypes = [];
 
     public static Dictionary<SelectableLevel, WeatherType> CurrentWeathers = [];
-    public static List<WeatherEffect> CurrentEffects = [];
 
+    public static List<Definitions.WeatherEffect> CurrentEffects = [];
     public static WeatherType CurrentLevelWeather;
 
     internal static WeatherType GetCurrentWeather()
@@ -52,6 +60,17 @@ namespace WeatherTweaks
       Plugin.logger.LogDebug($"Getting game levels, {includeCompanyMoon}");
       List<SelectableLevel> GameLevels = MrovLib.API.SharedMethods.GetGameLevels();
 
+      // for (int i = 0; i < GameLevels.Count; i++)
+      // {
+      //   if (GameLevels[i] == null)
+      //   {
+      //     Plugin.logger.LogDebug($"Level {i} is null");
+      //     // continue;
+      //     return null;
+      //   }
+
+      //   Plugin.logger.LogDebug($"Level {i}: {GameLevels[i].PlanetName}");
+      // }
 
       if (!includeCompanyMoon)
       {
@@ -62,29 +81,38 @@ namespace WeatherTweaks
       return GameLevels;
     }
 
-    internal static List<LevelWeatherType> GetPlanetPossibleWeathers(SelectableLevel level)
+    internal static List<Weather> GetPlanetPossibleWeathers(SelectableLevel level)
     {
-      if (level.randomWeathers == null || level.randomWeathers.Count() == 0)
+      Plugin.logger.LogDebug($"Getting possible weathers for {level.PlanetName}");
+
+      List<LevelWeather> possibleWeathers = LevelWeathers.Where(x => x.Level == level).ToList();
+
+      Plugin.logger.LogInfo($"Possible weathers: {string.Join("; ", possibleWeathers.Select(x => x.Weather.Name))}");
+
+      if (possibleWeathers == null || possibleWeathers.Count() == 0)
       {
         Plugin.logger.LogError("Random weathers are null");
         return [];
       }
 
-      List<LevelWeatherType> weathersToChooseFrom = level
-        .randomWeathers.Where(randomWeather =>
-          randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
-        )
-        .ToList()
-        .Select(x => x.weatherType)
-        .Append(LevelWeatherType.None)
-        .ToList();
+      List<Weather> weathersToChooseFrom = possibleWeathers.Select(x => x.Weather).ToList();
+
+      // List<LevelWeatherType> weathersToChooseFrom = level
+      //   .randomWeathers.Where(randomWeather =>
+      //     randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
+      //   )
+      //   .ToList()
+      //   .Select(x => x.weatherType)
+      //   .Append(LevelWeatherType.None)
+      //   .ToList();
 
       return weathersToChooseFrom;
     }
 
     internal static List<WeatherType> GetPlanetWeatherTypes(SelectableLevel level)
     {
-      List<LevelWeatherType> randomWeathers = GetPlanetPossibleWeathers(level);
+      Plugin.logger.LogDebug($"Getting weather types for {level.PlanetName}");
+      List<Weather> randomWeathers = GetPlanetPossibleWeathers(level);
 
       if (randomWeathers.Count() == 0)
       {
@@ -92,39 +120,99 @@ namespace WeatherTweaks
         return [];
       }
 
+      Plugin.logger.LogMessage($"Got {randomWeathers.Count()} random weathers for {level.PlanetName}");
+
       List<WeatherType> possibleTypes = [];
 
-      foreach (WeatherType weather in WeatherTypes)
+      Plugin.logger.LogWarning($"Weather Types: {WeatherTypes.Count()}");
+
+      foreach (Weather randomWeather in randomWeathers)
       {
-        if (randomWeathers.Contains(weather.weatherType) && weather.Type == CustomWeatherType.Vanilla)
+        foreach (WeatherType weatherType in WeatherTypes)
         {
-          possibleTypes.Add(weather);
-        }
+          if (weatherType == null)
+          {
+            Plugin.logger.LogWarning($"Weather Type is null");
+            continue;
+          }
 
-        switch (weather.Type)
-        {
-          case CustomWeatherType.Combined:
-            CombinedWeatherType combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
-            if (combinedWeather.CanCombinedWeatherBeApplied(level))
-            {
-              possibleTypes.Add(weather);
-            }
-            break;
-          case CustomWeatherType.Progressing:
-            ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
-            if (progressingWeather.Enabled.Value == false)
-            {
-              Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
-              continue;
-            }
+          Plugin.logger.LogWarning($"Weather Type: {weatherType.Name}");
 
-            if (progressingWeather.CanWeatherBeApplied(level))
-            {
-              possibleTypes.Add(weather);
-            }
-            break;
+          if (weatherType.Weathers.Contains(randomWeather))
+          {
+            Plugin.logger.LogWarning($"Weather Type: {weatherType.Name} contains {randomWeather.Name}");
+            possibleTypes.Add(weatherType);
+          }
         }
       }
+
+      // foreach (Weather weather in randomWeathers)
+      // {
+      //   if (weather.VanillaWeatherType == LevelWeatherType.DustClouds)
+      //   {
+      //     continue;
+      //   }
+
+      //   WeatherType weatherType = WeatherTypes.Find(x => x.Weathers.SequenceEqual([weather]));
+
+      //   if (weatherType == null)
+      //   {
+      //     Plugin.logger.LogWarning($"No weather type found for {weather.Name}");
+      //     continue;
+      //   }
+
+      //   weatherType.weatherType = weather.VanillaWeatherType;
+      //   possibleTypes.Add(weatherType);
+      // }
+
+      Plugin.logger.LogDebug($"Possible types: {string.Join("; ", possibleTypes.Select(x => x.Name))}");
+
+      // foreach (Weather weather in Weathers)
+      // {
+      //   LevelWeatherVariables variables = weather.WeatherVariables.Find(x => x.Level == level);
+
+      //   if (variables == null)
+      //   {
+      //     Plugin.logger.LogWarning($"No weather variables found for {level.PlanetName}");
+      //     continue;
+      //   }
+
+      //   List<WeatherType> types = WeatherTypes.Where(x => x.Weathers.SequenceEqual([weather])).ToList();
+
+      //   possibleTypes.Add(types.First());
+      // }
+
+      // foreach (WeatherType weather in WeatherTypes)
+      // {
+      //   if (randomWeathers.Contains(weather.weatherType) && weather.Type == CustomWeatherType.Vanilla)
+      //   {
+      //     possibleTypes.Add(weather);
+      //   }
+
+      //   switch (weather.Type)
+      //   {
+      //     case CustomWeatherType.Combined:
+      //       CombinedWeatherType combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
+      //       if (combinedWeather.CanCombinedWeatherBeApplied(level))
+      //       {
+      //         possibleTypes.Add(weather);
+      //       }
+      //       break;
+      //     case CustomWeatherType.Progressing:
+      //       ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
+      //       if (progressingWeather.Enabled.Value == false)
+      //       {
+      //         Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
+      //         continue;
+      //       }
+
+      //       if (progressingWeather.CanWeatherBeApplied(level))
+      //       {
+      //         possibleTypes.Add(weather);
+      //       }
+      //       break;
+      //   }
+      // }
 
       // Plugin.logger.LogDebug($"Possible types: {string.Join("; ", possibleTypes.Select(x => x.Name))}");
       return possibleTypes.Distinct().ToList();
@@ -154,30 +242,32 @@ namespace WeatherTweaks
         return;
       }
 
-      WeatherEffect[] effects = TimeOfDay.Instance.effects;
-
       WeatherTypes.Clear();
+      // WeatherEffect[] effects = TimeOfDay.Instance.effects;
 
-      if (effects == null || effects.Count() == 0)
+      // if (effects == null || effects.Count() == 0)
+      // {
+      //   Plugin.logger.LogWarning("Effects are null");
+      // }
+
+      // NoneWeather = new("None", LevelWeatherType.None, [LevelWeatherType.None], CustomWeatherType.Vanilla) { Effects = [] };
+      // WeatherTypes.Add(NoneWeather);
+
+      for (int i = 0; i < Weathers.Count; i++)
       {
-        Plugin.logger.LogWarning("Effects are null");
-      }
+        Weather weather = Weathers[i];
 
-      NoneWeather = new("None", LevelWeatherType.None, [LevelWeatherType.None], CustomWeatherType.Vanilla) { Effects = [] };
-      WeatherTypes.Add(NoneWeather);
+        Plugin.logger.LogMessage("Creating weather: " + weather.Name);
 
-      for (int i = 0; i < effects.Length; i++)
-      {
-        WeatherEffect effect = effects[i];
+        WeatherType weatherType = new(weather.Name, [weather], CustomWeatherType.Normal) { weatherType = weather.VanillaWeatherType };
 
-        LevelWeatherType weatherType = (LevelWeatherType)i;
-        WeatherType newWeather = new(weatherType.ToString(), weatherType, [weatherType], CustomWeatherType.Vanilla) { Effects = [effect] };
-
-        WeatherTypes.Add(newWeather);
+        WeatherTypes.Add(weatherType);
       }
 
       CombinedWeatherTypes.ForEach(combinedWeather =>
       {
+        Plugin.logger.LogMessage($"Creating combined weather: {combinedWeather.Name}");
+
         if (combinedWeather.Enabled.Value == false)
         {
           Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} is disabled");
@@ -185,20 +275,23 @@ namespace WeatherTweaks
         }
         Plugin.logger.LogDebug($"Adding combined weather: {combinedWeather.Name}");
 
-        combinedWeather.Effects.Clear();
-        combinedWeather.Weathers.ForEach(weather =>
+        List<Weather> combinedWeathers = [];
+        foreach (LevelWeatherType weather in combinedWeather.Weathers)
         {
-          // Plugin.logger.LogWarning($"Adding weather effect: {weather}");
-          combinedWeather.Effects.Add(TimeOfDay.Instance.effects[(int)weather]);
-        });
-        combinedWeather.WeatherType.Effects = combinedWeather.Effects;
-        combinedWeather.WeatherType.Weathers = combinedWeather.Weathers;
+          Weather resolvedWeather = Weathers.Find(x => x.VanillaWeatherType == weather);
+          combinedWeathers.Add(resolvedWeather);
+        }
 
-        WeatherTypes.Add(combinedWeather.WeatherType);
+        WeatherType newCombinedWeather =
+          new(combinedWeather.Name, combinedWeathers, CustomWeatherType.Combined) { weatherType = LevelWeatherType.None };
+
+        WeatherTypes.Add(newCombinedWeather);
       });
 
       ProgressingWeatherTypes.ForEach(progressingWeather =>
       {
+        Plugin.logger.LogMessage($"Creating progressing weather: {progressingWeather.Name}");
+
         if (progressingWeather.Enabled.Value == false)
         {
           Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
@@ -207,7 +300,11 @@ namespace WeatherTweaks
 
         Plugin.logger.LogDebug($"Adding progressing weather: {progressingWeather.Name}");
 
-        WeatherTypes.Add(progressingWeather.WeatherType);
+        Weather startingWeather = Weathers.Find(x => x.VanillaWeatherType == progressingWeather.StartingWeather);
+        WeatherType newProgressingWeather =
+          new(progressingWeather.Name, [startingWeather], CustomWeatherType.Progressing) { weatherType = LevelWeatherType.None };
+
+        WeatherTypes.Add(newProgressingWeather);
       });
     }
 
@@ -273,7 +370,28 @@ namespace WeatherTweaks
         return LevelWeatherType.None;
       }
 
-      if (CurrentWeathers[level].Weathers.Contains(weatherType))
+      Plugin.logger.LogInfo($"Current level: {level.PlanetName}");
+      Plugin.logger.LogInfo($"Is current level in Levels: {GameLevels.Contains(level)}");
+      Plugin.logger.LogInfo($"Current level weather: {level.currentWeather}");
+      Plugin.logger.LogInfo($"Is current level weather in CurrentWeathers: {CurrentWeathers.ContainsKey(level)}");
+
+      if (!CurrentWeathers.ContainsKey(level))
+      {
+        Plugin.logger.LogWarning($"Level {level.PlanetName} has no defined weather");
+
+        GameLevels.ForEach(level =>
+        {
+          Plugin.logger.LogDebug($"Level: {level.PlanetName} has weather {CurrentWeathers.TryGetValue(level, out WeatherType weather)}");
+        });
+
+        // return LevelWeatherType.None;
+      }
+      else
+      {
+        Plugin.logger.LogWarning($"Level {level.PlanetName} has a defined weather: {CurrentWeathers[level].Name}");
+      }
+
+      if (CurrentWeathers[level].Weathers.Any(weather => weather.VanillaWeatherType == weatherType))
       {
         Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
         return weatherType;
@@ -284,7 +402,7 @@ namespace WeatherTweaks
 
     internal static WeatherType GetVanillaWeatherType(LevelWeatherType weatherType)
     {
-      return WeatherTypes.Find(x => x.weatherType == weatherType && x.Type == CustomWeatherType.Vanilla);
+      return WeatherTypes.Find(x => x.Weathers.Any(weather => weather.VanillaWeatherType == weatherType) && x.Type == CustomWeatherType.Normal);
     }
 
     internal static WeatherType GetFullWeatherType(WeatherType weatherType)
@@ -303,12 +421,25 @@ namespace WeatherTweaks
       difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
 
       List<WeatherType> weatherTypes = GetPlanetWeatherTypes(level);
+
+      if (weatherTypes.Count == 0)
+      {
+        return [];
+      }
+
       foreach (var weather in weatherTypes)
       {
-        var weatherType = weather;
-        var weatherWeight = weights[weather.weatherType];
+        // clone the object
+        Weather typeOfWeather = weather.Weathers[0];
 
-        if (ConfigManager.ScaleDownClearWeather.Value && weather.weatherType == LevelWeatherType.None)
+        if (typeOfWeather.VanillaWeatherType == LevelWeatherType.DustClouds)
+        {
+          typeOfWeather.VanillaWeatherType = LevelWeatherType.None;
+        }
+
+        var weatherWeight = weights[typeOfWeather.VanillaWeatherType];
+
+        if (ConfigManager.ScaleDownClearWeather.Value && typeOfWeather.VanillaWeatherType == LevelWeatherType.None)
         {
           int clearWeatherWeight = weights[LevelWeatherType.None];
           int fullWeightSum = weights.Sum(x => x.Value);
@@ -332,13 +463,13 @@ namespace WeatherTweaks
           );
         }
 
-        if (weatherType.Type == CustomWeatherType.Combined)
+        if (weather.Type == CustomWeatherType.Combined)
         {
-          var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weatherType.Name);
+          var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
 
           if (combinedWeather.CanCombinedWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * combinedWeather.weightModify);
+            weatherWeight = Mathf.RoundToInt(weights[typeOfWeather.VanillaWeatherType] * combinedWeather.weightModify);
           }
           else
           {
@@ -347,9 +478,9 @@ namespace WeatherTweaks
           }
         }
 
-        if (weatherType.Type == CustomWeatherType.Progressing)
+        if (weather.Type == CustomWeatherType.Progressing)
         {
-          var progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weatherType.Name);
+          var progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
           if (progressingWeather.Enabled.Value == false)
           {
             Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
@@ -362,15 +493,15 @@ namespace WeatherTweaks
             continue;
           }
 
-          weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * progressingWeather.weightModify);
+          weatherWeight = Mathf.RoundToInt(weights[typeOfWeather.VanillaWeatherType] * progressingWeather.weightModify);
         }
 
-        if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)
+        if (difficulty != 0 && typeOfWeather.VanillaWeatherType == LevelWeatherType.None)
         {
           weatherWeight = (int)(weatherWeight * (1 - difficulty));
         }
 
-        Plugin.logger.LogDebug($"{weatherType.Name} has weight {weatherWeight}");
+        Plugin.logger.LogDebug($"{weather.Name} has weight {weatherWeight}");
 
         for (var i = 0; i < weatherWeight; i++)
         {

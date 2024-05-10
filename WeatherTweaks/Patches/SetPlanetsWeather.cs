@@ -10,11 +10,17 @@ namespace WeatherTweaks
   public static class SetPlanetsWeatherPatch
   {
     [HarmonyAfter("imabatby.lethallevelloader")]
+    [HarmonyPriority(Priority.First)]
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
+
+      if (Variables.IsSetupFinished == false)
+      {
+        return false;
+      }
 
       if (__instance == null)
       {

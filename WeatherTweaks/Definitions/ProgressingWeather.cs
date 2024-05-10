@@ -4,7 +4,7 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using Newtonsoft.Json;
 
-namespace WeatherTweaks.Modules
+namespace WeatherTweaks.Definitions
 {
   partial class Types
   {
@@ -18,11 +18,14 @@ namespace WeatherTweaks.Modules
       public float Chance;
 
       [JsonProperty]
-      public LevelWeatherType WeatherType;
+      public LevelWeatherType Weather;
 
       internal WeatherType GetWeatherType()
       {
-        return Variables.GetVanillaWeatherType(WeatherType);
+        Weather vanillaWeather = Variables.Weathers.First(weather => weather.VanillaWeatherType == Weather);
+        return Variables.WeatherTypes.First(weatherType =>
+          weatherType.Weathers.SequenceEqual([vanillaWeather]) && weatherType.Type == CustomWeatherType.Normal
+        );
       }
 
       internal List<DialogueSegment> GetDialogueSegment()
@@ -32,14 +35,14 @@ namespace WeatherTweaks.Modules
           new DialogueSegment
           {
             speakerText = "Weather Forecast",
-            bodyText = $"The weather will be changing to {WeatherType}",
+            bodyText = $"The weather will be changing to {GetWeatherType().Name}",
             waitTime = 7f
           }
         ];
       }
     }
 
-    public abstract class ProgressingWeatherType
+    public class ProgressingWeatherType
     {
       public string Name;
 
@@ -47,19 +50,17 @@ namespace WeatherTweaks.Modules
       public ConfigEntry<bool> Enabled;
 
       public List<ProgressingWeatherEntry> WeatherEntries = [];
+      public LevelWeatherType StartingWeather;
+
       public WeatherType WeatherType;
 
-      public float weightModify = 0.9f;
+      public float weightModify = 0.6f;
 
       public bool CanWeatherBeApplied(SelectableLevel level)
       {
         var randomWeathers = level.randomWeathers;
-        List<LevelWeatherType> remainingWeathers = WeatherEntries
-          .Select(entry => entry.WeatherType)
-          .Append(WeatherType.weatherType)
-          .Distinct()
-          .ToList();
-        remainingWeathers.RemoveAll(weather => weather == LevelWeatherType.None);
+        List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.Weather).Append(StartingWeather).Distinct().ToList();
+        remainingWeathers.RemoveAll(weather => weather != LevelWeatherType.None);
 
         foreach (RandomWeatherWithVariables weather in randomWeathers)
         {
@@ -85,7 +86,8 @@ namespace WeatherTweaks.Modules
         WeatherEntries = weatherEntries;
         WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
 
-        WeatherType = new(Name, (LevelWeatherType)baseWeather, [baseWeather], CustomWeatherType.Progressing) { Effects = [], };
+        StartingWeather = baseWeather;
+
         Variables.ProgressingWeatherTypes.Add(this);
       }
     }

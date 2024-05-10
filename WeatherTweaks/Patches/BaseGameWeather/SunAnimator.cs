@@ -219,6 +219,8 @@ namespace WeatherTweaks
         return;
       }
 
+      logger.LogWarning($"Clips: {clips.Count}");
+
       if (clips.Keys.Select(key => key == weatherType).Count() == 0)
       {
         logger.LogWarning($"No animation clip found for weather type {weatherType}");
@@ -269,6 +271,8 @@ namespace WeatherTweaks
       {
         animator.runtimeAnimatorController = animatorOverrideController.runtimeAnimatorController;
       }
+
+      logger.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
 
       // animator.PlayInFixedTime(animationClipHash, 0, 2.5f);
 

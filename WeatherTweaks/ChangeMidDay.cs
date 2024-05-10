@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using BepInEx.Logging;
+using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
+using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
@@ -51,11 +53,13 @@ namespace WeatherTweaks
         {
           DayTime = 0.0f,
           Chance = 1.0f,
-          WeatherType = currentWeather.weatherType
+          Weather = currentWeather.weatherType
         };
       }
 
-      ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather => weather.Name == currentWeather.Name);
+      Definitions.Types.ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather =>
+        weather.Name == currentWeather.Name
+      );
       List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries.ToList();
       weatherEntries.RemoveAll(entry => entry.DayTime < lastCheckedEntry);
 
@@ -83,6 +87,8 @@ namespace WeatherTweaks
             lastCheckedEntry = entry.DayTime;
             break;
           }
+
+          // TODO if currentEntry weather type is the same as the new entry, don't change it
 
           NetworkedConfig.SetProgressingWeatherEntry(entry);
           NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
@@ -122,7 +128,7 @@ namespace WeatherTweaks
 
       currentEntry = entry;
 
-      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, fullWeatherType.Effects.ToList());
+      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Weather.Effect]);
       // TODO account for player being dead
     }
   }

@@ -1,51 +1,70 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
   public enum CustomWeatherType
   {
-    Vanilla,
-    Modded,
-    Custom,
+    Normal,
     Combined,
     Progressing
   }
 
   [JsonObject(MemberSerialization.OptIn)]
-  public class WeatherType(string name, LevelWeatherType weatherType, List<LevelWeatherType> weathers, CustomWeatherType type)
+  public class WeatherType
   {
     [JsonProperty]
-    public string Name = name;
-
-    // public RandomWeatherWithVariables Weather;
-    [JsonProperty]
-    public LevelWeatherType weatherType = weatherType;
-
-    [JsonIgnore]
-    public List<WeatherEffect> Effects;
+    public string Name;
 
     [JsonProperty]
-    public List<LevelWeatherType> Weathers = weathers;
+    public List<Weather> Weathers;
 
     [JsonProperty]
-    public CustomWeatherType Type = type;
+    public Weather Weather;
+
+    public bool IsOneWeather = false;
+
+    public LevelWeatherType weatherType;
+
+    [JsonProperty]
+    public CustomWeatherType Type;
+
+    public bool CanCombinedWeatherBeApplied(SelectableLevel level)
+    {
+      var possibleWeathers = Variables.LevelWeathers.Where(weather => weather.Level == level).ToList();
+
+      foreach (Weather weather in Weathers)
+      {
+        if (possibleWeathers.Any(possibleWeather => possibleWeather.Weather == weather))
+        {
+          possibleWeathers.Remove(possibleWeathers.First(possibleWeather => possibleWeather.Weather == weather));
+        }
+      }
+
+      return possibleWeathers.Count == 0;
+    }
+
+    public WeatherType(string name, List<Weather> weathers, CustomWeatherType type)
+    {
+      Name = name;
+      // Weathers = weathers;
+      Type = type;
+
+      // if (weathers.Count == 1)
+      // {
+      // Weather = weathers[0];
+      //   IsOneWeather = true;
+      // }else{
+
+      // }
+
+      Weathers = weathers;
+
+      // weatherType = Weather.VanillaWeatherType;
+
+      // Variables.WeatherTypes.Add(this);
+    }
   }
-
-  // [JsonObject(MemberSerialization.OptIn)]
-  // public class ExtendedWeatherEffect : WeatherEffect
-  // {
-  //   [JsonProperty]
-  //   public int variable1 = 1;
-
-  //   [JsonProperty]
-  //   public int variable2 = 1;
-  // }
-
-  // public class CustomWeatherEffect : WeatherEffect
-  // {
-  //   public int variable1 = 1;
-  //   public int variable2 = 1;
-  // }
 }
