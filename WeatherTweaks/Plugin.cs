@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using WeatherTweaks.Patches;
 
 namespace WeatherTweaks
 {
@@ -19,6 +20,7 @@ namespace WeatherTweaks
     internal static bool IsLLLPresent = false;
 
     internal static GeneralImprovementsWeather GeneralImprovements;
+
     private void Awake()
     {
       logger = Logger;
@@ -61,7 +63,7 @@ namespace WeatherTweaks
       }
 
       SunAnimator.Init();
-      BasegameWeatherPatch.FogPatchInit();
+      // BasegameWeatherPatch.FogPatchInit();
 
       if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
       {

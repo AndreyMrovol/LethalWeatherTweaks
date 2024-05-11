@@ -6,7 +6,6 @@ using HarmonyLib;
 using LethalLevelLoader;
 using MrovLib;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace WeatherTweaks.Patches
 {

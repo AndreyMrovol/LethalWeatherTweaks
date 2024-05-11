@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using HarmonyLib;
 using MonoMod.Cil;
@@ -10,28 +11,9 @@ namespace WeatherTweaks
 {
   partial class BasegameWeatherPatch
   {
-    internal static void FogPatchInit()
-    {
-      try
-      {
-        Plugin.logger.LogWarning("Patching FoggyWeather");
-        harmony.Patch(
-          typeof(TimeOfDay).GetMethod(
-            "SetWeatherBasedOnVariables",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance
-          ),
-          postfix: new HarmonyMethod(typeof(BasegameWeatherPatch), "ChangeFog")
-        );
-      }
-      catch
-      {
-        Plugin.logger.LogWarning("Failed to patch FoggyWeather");
-      }
+    internal static LocalVolumetricFog foggyObject = null;
 
-      // TODO replace this with proper [HarmonyPostfix] when v49 will be irrelevant
-    }
-
-    internal static void ChangeFog(TimeOfDay __instance, LocalVolumetricFog ___foggyWeather)
+    internal static void FogPatch(TimeOfDay __instance, LocalVolumetricFog ___foggyWeather)
     {
       logger.LogInfo("Changing fog");
 
@@ -41,18 +23,52 @@ namespace WeatherTweaks
         return;
       }
 
-      WeatherType currentWeather = Variables.GetPlanetCurrentWeatherType(__instance.currentLevel);
+      ChangeFog(___foggyWeather);
+    }
+
+    internal static void ChangeFog()
+    {
+      // Get fog and call ChangeFog
+
+      LocalVolumetricFog Fog = Resources
+        .FindObjectsOfTypeAll<LocalVolumetricFog>()
+        .ToList()
+        .Where(fog => fog.name == "Foggy")
+        .ToList()
+        .FirstOrDefault();
+
+      if (Fog == null)
+      {
+        Plugin.logger.LogWarning("Failed to find LocalVolumetricFog \"Foggy\"");
+        return;
+      }
+
+      ChangeFog(Fog);
+    }
+
+    internal static void ChangeFog(LocalVolumetricFog Fog)
+    {
+      Plugin.logger.LogInfo("ChangeFog called");
 
       try
       {
-        LocalVolumetricFogArtistParameters parameters = ___foggyWeather.parameters;
+        Plugin.logger.LogWarning($"Fog null? : {foggyObject == null}");
 
-        // change the position of the fog to be 128 units lower
-        ___foggyWeather.transform.position = new Vector3(
-          ___foggyWeather.transform.position.x,
-          ___foggyWeather.transform.position.y + 128f,
-          ___foggyWeather.transform.position.z
-        );
+        if (foggyObject != null)
+        {
+          Plugin.logger.LogInfo(
+            $"FOG is already changed to: {Fog.name} {Fog.parameters.size} {Fog.transform.position} {Fog.parameters.albedo} {Fog.parameters.meanFreePath}"
+          );
+          throw new Exception("Fog has already been changed");
+        }
+
+        LocalVolumetricFog localFog = Fog;
+        LocalVolumetricFogArtistParameters parameters = localFog.parameters;
+
+        Plugin.logger.LogWarning($"FOG: {Fog.name} {parameters.size} {Fog.transform.position} {parameters.albedo} {parameters.meanFreePath}");
+
+        // change the position of the fog to be 128 units higher
+        Fog.transform.position = new Vector3(Fog.transform.position.x, Fog.transform.position.y + 128f, Fog.transform.position.z);
 
         parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
 
@@ -69,7 +85,10 @@ namespace WeatherTweaks
         parameters.size.x *= 5;
         parameters.size.z *= 5;
 
-        ___foggyWeather.parameters = parameters;
+        Plugin.logger.LogWarning($"FOG: {Fog.name} {parameters.size} {Fog.transform.position} {parameters.albedo} {parameters.meanFreePath}");
+
+        Fog.parameters = parameters;
+        foggyObject = Fog;
 
         // logger.LogWarning(
         //   $"Changing freeMeanPath from {___foggyWeather.parameters.meanFreePath} to {___foggyWeather.parameters.meanFreePath * 1.5f}"

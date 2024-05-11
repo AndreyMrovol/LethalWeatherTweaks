@@ -66,6 +66,8 @@ namespace WeatherTweaks
 
       TimeOfDay.Instance.nextTimeSync = 0;
 
+      BasegameWeatherPatch.ChangeFog();
+
       // TimeOfDay.Instance.globalTimeSpeedMultiplier = 5f;
 
       Plugin.logger.LogError(
