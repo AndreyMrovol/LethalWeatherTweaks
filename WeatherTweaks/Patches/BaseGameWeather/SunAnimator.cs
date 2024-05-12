@@ -89,18 +89,7 @@ namespace WeatherTweaks
         { LevelWeatherType.Eclipsed, "Eclipse" },
       };
 
-    internal static List<string> animatorControllerNames = new List<string>()
-    {
-      "SunAnimContainer",
-      "SunAnimContainer 1",
-      "BlizzardSunAnimContainer",
-      "BasicSun",
-      "StarlancerSolaceSunAnimContainer",
-      "StarlancerAuralisSunAnimContainer",
-      "StarlancerTriskelionSunAnimContainer",
-    };
-
-    internal static List<string> animatorControllerBlacklist = new List<string>() { "SunAnimContainerCompanyLevel" };
+    internal static List<string> animatorControllerBlacklist = ["SunAnimContainerCompanyLevel"];
 
     internal static Animator animator;
     internal static AnimatorOverrideController animatorOverrideController;
@@ -147,7 +136,15 @@ namespace WeatherTweaks
         return;
       }
 
-      logger.LogInfo($"Current clip: {animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}");
+      AnimatorClipInfo currentClip = animator.GetCurrentAnimatorClipInfo(0).ElementAtOrDefault(0);
+
+      if (currentClip.clip == null)
+      {
+        logger.LogWarning("Current clip is null, skipping");
+        return;
+      }
+
+      logger.LogInfo($"Current clip: {currentClip.clip.name}");
 
       // get the name of the sun animator controller
       string animatorControllerName = animator.runtimeAnimatorController.name;
