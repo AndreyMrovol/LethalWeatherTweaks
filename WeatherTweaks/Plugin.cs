@@ -7,6 +7,7 @@ namespace WeatherTweaks
 {
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
   [BepInDependency("xxxstoner420bongmasterxxx.open_monitors", BepInDependency.DependencyFlags.SoftDependency)]
+  [BepInDependency("MrovLib", BepInDependency.DependencyFlags.HardDependency)]
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
@@ -25,7 +26,12 @@ namespace WeatherTweaks
 
       GeneralImprovementsWeather.Init();
 
-      if(Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
+      if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
+      {
+        Patches.LLL.Init();
+      }
+
+      if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
       {
         Patches.Malfunctions.Init();
       }
