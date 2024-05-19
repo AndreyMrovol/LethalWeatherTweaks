@@ -8,12 +8,13 @@ using BepInEx.Logging;
 using HarmonyLib;
 using MoreShipUpgrades;
 using TMPro;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Patches
 {
   internal class LateGameUpgrades
   {
-    static Type type;
+    static System.Type type;
 
     internal static void Init()
     {

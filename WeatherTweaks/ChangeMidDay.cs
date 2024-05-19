@@ -8,6 +8,7 @@ using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
+using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
 
@@ -91,7 +92,7 @@ namespace WeatherTweaks
           // TODO if currentEntry weather type is the same as the new entry, don't change it
 
           NetworkedConfig.SetProgressingWeatherEntry(entry);
-          NetworkedConfig.SetWeatherEffects(entry.GetWeatherType().Weathers.ToList());
+          NetworkedConfig.SetWeatherEffects([entry.GetWeatherType().Weather]);
 
           TimeOfDay.Instance.StartCoroutine(DoMidDayChange(entry));
 

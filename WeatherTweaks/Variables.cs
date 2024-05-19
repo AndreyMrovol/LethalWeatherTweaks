@@ -138,7 +138,7 @@ namespace WeatherTweaks
 
           Plugin.logger.LogWarning($"Weather Type: {weatherType.Name}");
 
-          if (weatherType.Weathers.Contains(randomWeather))
+          if (weatherType.Weather == randomWeather)
           {
             Plugin.logger.LogWarning($"Weather Type: {weatherType.Name} contains {randomWeather.Name}");
             possibleTypes.Add(weatherType);
@@ -259,7 +259,7 @@ namespace WeatherTweaks
 
         Plugin.logger.LogMessage("Creating weather: " + weather.Name);
 
-        WeatherType weatherType = new(weather.Name, [weather], CustomWeatherType.Normal) { weatherType = weather.VanillaWeatherType };
+        WeatherType weatherType = new(weather.Name, CustomWeatherType.Normal) { weatherType = weather.VanillaWeatherType, Weather = weather };
 
         WeatherTypes.Add(weatherType);
       }
@@ -275,15 +275,8 @@ namespace WeatherTweaks
         }
         Plugin.logger.LogDebug($"Adding combined weather: {combinedWeather.Name}");
 
-        List<Weather> combinedWeathers = [];
-        foreach (LevelWeatherType weather in combinedWeather.Weathers)
-        {
-          Weather resolvedWeather = Weathers.Find(x => x.VanillaWeatherType == weather);
-          combinedWeathers.Add(resolvedWeather);
-        }
-
-        WeatherType newCombinedWeather =
-          new(combinedWeather.Name, combinedWeathers, CustomWeatherType.Combined) { weatherType = LevelWeatherType.None };
+        Definitions.Types.CombinedWeatherType newCombinedWeather =
+          new(combinedWeather.Name, combinedWeather.Weathers) { weatherType = LevelWeatherType.None };
 
         WeatherTypes.Add(newCombinedWeather);
       });
@@ -301,8 +294,11 @@ namespace WeatherTweaks
         Plugin.logger.LogDebug($"Adding progressing weather: {progressingWeather.Name}");
 
         Weather startingWeather = Weathers.Find(x => x.VanillaWeatherType == progressingWeather.StartingWeather);
-        WeatherType newProgressingWeather =
-          new(progressingWeather.Name, [startingWeather], CustomWeatherType.Progressing) { weatherType = LevelWeatherType.None };
+        Definitions.Types.ProgressingWeatherType newProgressingWeather =
+          new(progressingWeather.Name, progressingWeather.StartingWeather, progressingWeather.WeatherEntries)
+          {
+            weatherType = LevelWeatherType.None,
+          };
 
         WeatherTypes.Add(newProgressingWeather);
       });
@@ -391,7 +387,7 @@ namespace WeatherTweaks
         Plugin.logger.LogWarning($"Level {level.PlanetName} has a defined weather: {CurrentWeathers[level].Name}");
       }
 
-      if (CurrentWeathers[level].Weathers.Any(weather => weather.VanillaWeatherType == weatherType))
+      if (CurrentWeathers[level].Weather.VanillaWeatherType == weatherType)
       {
         Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
         return weatherType;
@@ -402,7 +398,7 @@ namespace WeatherTweaks
 
     internal static WeatherType GetVanillaWeatherType(LevelWeatherType weatherType)
     {
-      return WeatherTypes.Find(x => x.Weathers.Any(weather => weather.VanillaWeatherType == weatherType) && x.Type == CustomWeatherType.Normal);
+      return WeatherTypes.Find(x => x.Weather.VanillaWeatherType == weatherType && x.Type == CustomWeatherType.Normal);
     }
 
     internal static WeatherType GetFullWeatherType(WeatherType weatherType)
@@ -430,7 +426,7 @@ namespace WeatherTweaks
       foreach (var weather in weatherTypes)
       {
         // clone the object
-        Weather typeOfWeather = weather.Weathers[0];
+        Weather typeOfWeather = weather.Weather;
 
         if (typeOfWeather.VanillaWeatherType == LevelWeatherType.DustClouds)
         {
@@ -467,7 +463,7 @@ namespace WeatherTweaks
         {
           var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
 
-          if (combinedWeather.CanCombinedWeatherBeApplied(level))
+          if (combinedWeather.CanWeatherBeApplied(level))
           {
             weatherWeight = Mathf.RoundToInt(weights[typeOfWeather.VanillaWeatherType] * combinedWeather.weightModify);
           }

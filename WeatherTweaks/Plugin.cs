@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using MrovLib.Compatibility;
+using WeatherTweaks.Patches;
 
 namespace WeatherTweaks
 {

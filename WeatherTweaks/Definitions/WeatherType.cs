@@ -21,7 +21,7 @@ namespace WeatherTweaks.Definitions
     public LevelWeatherType VanillaWeatherType = LevelWeatherType.None;
 
     [JsonProperty]
-    public Type WeatherType = Type.Modded;
+    public Type Type = Type.Modded;
 
     [JsonIgnore]
     public List<LevelWeatherVariables> WeatherVariables;

@@ -63,6 +63,12 @@ namespace WeatherTweaks
 
         if (!whereWeatherUncertain.Contains(randomLevel))
         {
+          // if (Variables.GetPlanetCurrentWeatherType(randomLevel).Type != (CustomWeatherType.Vanilla | CustomWeatherType.Modded))
+          // {
+          //   Plugin.logger.LogDebug($"Planet {randomLevel.PlanetName} has a special weather type, no uncertainty will be applied.");
+          //   continue;
+          // }
+
           whereWeatherUncertain.Add(randomLevel);
         }
         else

@@ -8,26 +8,20 @@ namespace WeatherTweaks.Modules
 {
   partial class Types
   {
-    public abstract class CombinedWeatherType
+    public abstract class CombinedWeatherType : RegisteredWeatherType
     {
+      public List<LevelWeatherType> Weathers = [];
+
       public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModify = 1f)
       {
         Plugin.logger.LogDebug($"Creating CombinedWeatherType: {name}");
 
-        // Weathers = weathers.Append(baseWeather).Distinct().ToList();
-        // Weathers.ForEach(weather =>
-        // {
-        //   Plugin.logger.LogWarning($"Adding weather effect: {weather}");
-        //   Effects.Add(TimeOfDay.Instance.effects[(int)weather]);
-        // });
+        Name = name;
+        Weathers = weathers;
+        WeightModify = weightModify;
+        Type = CustomWeatherType.Combined;
 
-        // WeatherType = new(Name, (LevelWeatherType)baseWeather, Weathers, CustomWeatherType.Combined) { Effects = [], }
-
-        // List<Weather> weathersToCombine = Variables
-        //   .Weathers.Where(weather => weathers.Contains(weather.VanillaWeatherType) && weather.WeatherType == Type.Vanilla)
-        //   .ToList();
-
-        new Definitions.Types.CombinedWeatherType(name, weathers) { weightModify = weightModify };
+        WeatherManager.AddCombinedWeather(this);
       }
     }
   }

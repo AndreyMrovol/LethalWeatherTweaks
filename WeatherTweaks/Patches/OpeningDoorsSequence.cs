@@ -4,6 +4,7 @@ using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Newtonsoft.Json;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
@@ -56,7 +57,7 @@ namespace WeatherTweaks
 
       if (StartOfRound.Instance.IsHost)
       {
-        NetworkedConfig.SetWeatherEffects(currentWeather.Weathers);
+        NetworkedConfig.SetWeatherEffects([currentWeather.Weather]);
       }
 
       // GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentWeather.Effects);

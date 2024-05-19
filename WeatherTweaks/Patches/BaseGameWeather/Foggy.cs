@@ -5,6 +5,7 @@ using HarmonyLib;
 using MonoMod.Cil;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {

@@ -8,21 +8,16 @@ namespace WeatherTweaks.Definitions
 {
   partial class Types
   {
-    public class CombinedWeatherType
+    public class CombinedWeatherType : WeatherType
     {
-      public string Name;
+      public List<Weather> Weathers = [];
 
-      public List<LevelWeatherType> Weathers = [];
+      public new float weightModify = 0.15f;
 
-      // public List<WeatherEffect> Effects = [];
-      // public WeatherType WeatherType;
-
-      public float weightModify = 0.15f;
-
-      public bool CanCombinedWeatherBeApplied(SelectableLevel level)
+      public new bool CanWeatherBeApplied(SelectableLevel level)
       {
         var randomWeathers = level.randomWeathers;
-        List<LevelWeatherType> remainingWeathers = Weathers.ToList();
+        List<LevelWeatherType> remainingWeathers = Weathers.Select(weather => weather.VanillaWeatherType).ToList();
 
         foreach (RandomWeatherWithVariables weather in randomWeathers)
         {
@@ -37,7 +32,8 @@ namespace WeatherTweaks.Definitions
 
       public ConfigEntry<bool> Enabled;
 
-      public CombinedWeatherType(string name, List<LevelWeatherType> weathers)
+      public CombinedWeatherType(string name, List<Weather> weathers)
+        : base(name, CustomWeatherType.Combined)
       {
         Plugin.logger.LogDebug($"Creating CombinedWeatherType: {Name}");
 

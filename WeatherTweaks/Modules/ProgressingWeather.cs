@@ -10,8 +10,11 @@ namespace WeatherTweaks.Modules
 {
   partial class Types
   {
-    public class ProgressingWeatherType
+    public class ProgressingWeatherType : RegisteredWeatherType
     {
+      public List<ProgressingWeatherEntry> WeatherEntries = [];
+      public LevelWeatherType StartingWeather;
+
       public ProgressingWeatherType(
         string name,
         LevelWeatherType baseWeather,
@@ -19,7 +22,14 @@ namespace WeatherTweaks.Modules
         float weightModify = 1f
       )
       {
-        new Definitions.Types.ProgressingWeatherType(name, baseWeather, weatherEntries) { weightModify = weightModify };
+        Name = name;
+        StartingWeather = baseWeather;
+        WeatherEntries = weatherEntries;
+        WeightModify = weightModify;
+        Type = CustomWeatherType.Progressing;
+        weatherType = baseWeather;
+
+        WeatherManager.AddProgressingWeather(this);
       }
     }
   }

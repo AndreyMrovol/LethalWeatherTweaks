@@ -24,7 +24,7 @@ namespace WeatherTweaks.Definitions
       {
         Weather vanillaWeather = Variables.Weathers.First(weather => weather.VanillaWeatherType == Weather);
         return Variables.WeatherTypes.First(weatherType =>
-          weatherType.Weathers.SequenceEqual([vanillaWeather]) && weatherType.Type == CustomWeatherType.Normal
+          weatherType.Weather == vanillaWeather && weatherType.Type == CustomWeatherType.Normal
         );
       }
 
@@ -42,21 +42,17 @@ namespace WeatherTweaks.Definitions
       }
     }
 
-    public class ProgressingWeatherType
+    public class ProgressingWeatherType : WeatherType
     {
-      public string Name;
-
       // public abstract string CreateChangingString(SelectableLevel level, System.Random random);
       public ConfigEntry<bool> Enabled;
 
       public List<ProgressingWeatherEntry> WeatherEntries = [];
       public LevelWeatherType StartingWeather;
 
-      public WeatherType WeatherType;
+      public new float weightModify = 0.6f;
 
-      public float weightModify = 0.6f;
-
-      public bool CanWeatherBeApplied(SelectableLevel level)
+      public new bool CanWeatherBeApplied(SelectableLevel level)
       {
         var randomWeathers = level.randomWeathers;
         List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.Weather).Append(StartingWeather).Distinct().ToList();
@@ -74,6 +70,7 @@ namespace WeatherTweaks.Definitions
       }
 
       public ProgressingWeatherType(string name, LevelWeatherType baseWeather, List<ProgressingWeatherEntry> weatherEntries)
+        : base(name, CustomWeatherType.Progressing)
       {
         Name = name;
 

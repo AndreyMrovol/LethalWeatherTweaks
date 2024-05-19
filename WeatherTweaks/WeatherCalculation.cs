@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {

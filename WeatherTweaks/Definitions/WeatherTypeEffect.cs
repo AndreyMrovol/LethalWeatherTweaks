@@ -3,7 +3,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using WeatherTweaks.Definitions;
 
-namespace WeatherTweaks
+namespace WeatherTweaks.Definitions
 {
   public enum CustomWeatherType
   {
@@ -19,52 +19,38 @@ namespace WeatherTweaks
     public string Name;
 
     [JsonProperty]
-    public List<Weather> Weathers;
-
-    [JsonProperty]
-    public Weather Weather;
-
-    public bool IsOneWeather = false;
+    public virtual Weather Weather { get; set; }
 
     public LevelWeatherType weatherType;
 
     [JsonProperty]
     public CustomWeatherType Type;
 
-    public bool CanCombinedWeatherBeApplied(SelectableLevel level)
+    public virtual bool CanWeatherBeApplied(SelectableLevel level)
     {
-      var possibleWeathers = Variables.LevelWeathers.Where(weather => weather.Level == level).ToList();
-
-      foreach (Weather weather in Weathers)
-      {
-        if (possibleWeathers.Any(possibleWeather => possibleWeather.Weather == weather))
-        {
-          possibleWeathers.Remove(possibleWeathers.First(possibleWeather => possibleWeather.Weather == weather));
-        }
-      }
-
-      return possibleWeathers.Count == 0;
+      return true;
     }
 
-    public WeatherType(string name, List<Weather> weathers, CustomWeatherType type)
+    public virtual float weightModify { get; set; } = 1f;
+
+    public WeatherType(string name, CustomWeatherType type)
     {
       Name = name;
-      // Weathers = weathers;
       Type = type;
-
-      // if (weathers.Count == 1)
-      // {
-      // Weather = weathers[0];
-      //   IsOneWeather = true;
-      // }else{
-
-      // }
-
-      Weathers = weathers;
-
-      // weatherType = Weather.VanillaWeatherType;
-
-      // Variables.WeatherTypes.Add(this);
     }
+  }
+
+  [JsonObject(MemberSerialization.OptIn)]
+  public class RegisteredWeatherType
+  {
+    [JsonProperty]
+    public string Name;
+
+    [JsonProperty]
+    public LevelWeatherType weatherType;
+
+    public CustomWeatherType Type;
+
+    public float WeightModify = 1f;
   }
 }

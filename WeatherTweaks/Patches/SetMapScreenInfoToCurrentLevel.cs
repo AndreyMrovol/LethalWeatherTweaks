@@ -6,6 +6,7 @@ using HarmonyLib;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {

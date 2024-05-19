@@ -30,7 +30,18 @@ namespace WeatherTweaks
       {
         logger.LogDebug("Player is outside");
 
-        List<Definitions.WeatherEffect> weatherEffects = Variables.GetCurrentWeather().Weathers.Select(weather => weather.Effect).ToList();
+        List<Definitions.WeatherEffect> weatherEffects = [];
+        WeatherType currentWeather = Variables.GetCurrentWeather();
+
+        if (currentWeather.Type == CustomWeatherType.Combined)
+        {
+          Definitions.Types.CombinedWeatherType currentWeatherCombined = (Definitions.Types.CombinedWeatherType)currentWeather;
+          weatherEffects = currentWeatherCombined.Weathers.Select(weather => weather.Effect).ToList();
+        }
+        else
+        {
+          weatherEffects = [currentWeather.Weather.Effect];
+        }
 
         weatherEffects.Do(effect =>
         {

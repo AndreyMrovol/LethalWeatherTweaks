@@ -30,12 +30,12 @@ namespace WeatherTweaks.Patches
 
       Weather noneWeather = new Weather("None", new Definitions.WeatherEffect(null, null))
       {
-        WeatherType = Definitions.Type.Clear,
+        // WeatherType = Definitions.Type.Clear,
         Color = new Color(0, 0, 0, 0),
         VanillaWeatherType = LevelWeatherType.None
       };
 
-      Variables.NoneWeather = new WeatherType("None", [noneWeather], CustomWeatherType.Normal);
+      Variables.NoneWeather = new WeatherType("None", CustomWeatherType.Normal) { Weather = noneWeather };
 
       for (int i = 0; i < effects.Count(); i++)
       {
@@ -50,7 +50,7 @@ namespace WeatherTweaks.Patches
         Weather weather =
           new(weatherType.ToString(), weatherEffect)
           {
-            WeatherType = Definitions.Type.Vanilla,
+            // WeatherType = Definitions.Type.Vanilla,
             Color = Color.magenta,
             VanillaWeatherType = weatherType,
           };
@@ -72,7 +72,7 @@ namespace WeatherTweaks.Patches
       {
         List<LevelWeatherVariables> levelWeatherVariables = [];
 
-        if (weather.WeatherType == Type.Clear)
+        if (weather.Type == Type.Clear)
         {
           continue;
         }

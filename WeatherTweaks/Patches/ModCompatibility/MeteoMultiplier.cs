@@ -5,6 +5,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
+using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
 
@@ -42,7 +43,7 @@ namespace WeatherTweaks.Patches
     {
       logger.LogInfo("Initializing MeteoMultiplierPatches");
 
-      Type roundManagerType = typeof(RoundManager);
+      System.Type roundManagerType = typeof(RoundManager);
 
       mmHarmony.Patch(
         roundManagerType.GetMethod("GenerateNewLevelClientRpc", BindingFlags.Public | BindingFlags.Instance),
@@ -113,11 +114,16 @@ namespace WeatherTweaks.Patches
           SetMeteoMultiplierData(GetMeteoMultiplierData(currentWeather.Weather.VanillaWeatherType));
           break;
         case CustomWeatherType.Combined:
+
+          Definitions.Types.CombinedWeatherType currentCombinedWeather = Variables.CombinedWeatherTypes.First(weather =>
+            weather.Name == currentWeather.Name
+          );
+
           MeteoMultipliersData combinedData = new(currentWeather.Weather.VanillaWeatherType, 0, 0);
 
-          foreach (LevelWeatherType weather in currentWeather.Weathers.Select(x => x.VanillaWeatherType))
+          foreach (Weather weather in currentCombinedWeather.Weathers)
           {
-            MeteoMultipliersData data = GetMeteoMultiplierData(weather);
+            MeteoMultipliersData data = GetMeteoMultiplierData(weather.VanillaWeatherType);
             combinedData.multiplier += data.multiplier * 0.7f;
             combinedData.spawnMultiplier += data.spawnMultiplier * 0.7f;
           }
