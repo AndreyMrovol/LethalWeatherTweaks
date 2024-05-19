@@ -433,7 +433,7 @@ namespace WeatherTweaks
           typeOfWeather.VanillaWeatherType = LevelWeatherType.None;
         }
 
-        var weatherWeight = weights[typeOfWeather.VanillaWeatherType];
+        var weatherWeight = weights.TryGetValue(typeOfWeather.VanillaWeatherType, out int weight) ? weight : 25;
 
         if (ConfigManager.ScaleDownClearWeather.Value && typeOfWeather.VanillaWeatherType == LevelWeatherType.None)
         {
@@ -447,7 +447,7 @@ namespace WeatherTweaks
             .ToList()
             .ForEach(randomWeather =>
             {
-              possibleWeathersWeightSum += weights[randomWeather.weatherType];
+              possibleWeathersWeightSum += weights.TryGetValue(randomWeather.weatherType, out int weight) ? weight : 25;
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
@@ -465,7 +465,9 @@ namespace WeatherTweaks
 
           if (combinedWeather.CanWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(weights[typeOfWeather.VanillaWeatherType] * combinedWeather.weightModify);
+            weatherWeight = Mathf.RoundToInt(
+              weights.TryGetValue(typeOfWeather.VanillaWeatherType, out int localWeight) ? localWeight : 25 * combinedWeather.weightModify
+            );
           }
           else
           {
@@ -489,7 +491,9 @@ namespace WeatherTweaks
             continue;
           }
 
-          weatherWeight = Mathf.RoundToInt(weights[typeOfWeather.VanillaWeatherType] * progressingWeather.weightModify);
+          weatherWeight = Mathf.RoundToInt(
+            weights.TryGetValue(typeOfWeather.VanillaWeatherType, out int localWeight) ? localWeight : 25 * progressingWeather.weightModify
+          );
         }
 
         if (difficulty != 0 && typeOfWeather.VanillaWeatherType == LevelWeatherType.None)

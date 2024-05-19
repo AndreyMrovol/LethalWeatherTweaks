@@ -30,6 +30,17 @@ namespace WeatherTweaks
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, startOfRound);
       Dictionary<string, WeatherType> currentWeather = [];
 
+      List<LevelWeatherType> VanillaWeatherTypes =
+      [
+        LevelWeatherType.None,
+        LevelWeatherType.DustClouds,
+        LevelWeatherType.Rainy,
+        LevelWeatherType.Stormy,
+        LevelWeatherType.Foggy,
+        LevelWeatherType.Flooded,
+        LevelWeatherType.Eclipsed,
+      ];
+
       CompanyMoon = StartOfRound.Instance.levels.ToList().Find(level => level.PlanetName == "71 Gordion");
 
       List<SelectableLevel> levels = Variables.GetGameLevels();
@@ -141,6 +152,20 @@ namespace WeatherTweaks
         // add None to the list of possible weathers
         // List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
 
+        Dictionary<LevelWeatherType, int> weights = [];
+        if (!VanillaWeatherTypes.Contains(previousDayWeather[level.PlanetName]))
+        {
+          Plugin.logger.LogDebug(
+            $"Previous weather was {previousDayWeather[level.PlanetName]}, which is not vanilla - using predefined weights"
+          );
+
+          weights = ConfigManager.Weights[LevelWeatherType.Rainy];
+        }
+        else
+        {
+          weights = ConfigManager.Weights[previousDayWeather[level.PlanetName]];
+        }
+
         // get the weighted list of weathers from config
         var weatherWeights = Variables.GetPlanetWeightedList(
           level,
@@ -154,7 +179,6 @@ namespace WeatherTweaks
           currentWeather[level.PlanetName] = Variables.NoneWeather;
           continue;
         }
-
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 
         if (weather == Variables.NoneWeather && canBeDustClouds)
