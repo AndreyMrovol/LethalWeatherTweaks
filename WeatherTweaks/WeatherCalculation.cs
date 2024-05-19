@@ -26,7 +26,20 @@ namespace WeatherTweaks
       System.Random random = new System.Random(seed);
 
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = VanillaWeathers(0, startOfRound);
-      Dictionary<string, LevelWeatherType> currentWeather = new Dictionary<string, LevelWeatherType>();
+      Dictionary<string, LevelWeatherType> currentWeather = [];
+
+      List<LevelWeatherType> VanillaWeatherTypes =
+      [
+        LevelWeatherType.None,
+        LevelWeatherType.DustClouds,
+        LevelWeatherType.Rainy,
+        LevelWeatherType.Stormy,
+        LevelWeatherType.Foggy,
+        LevelWeatherType.Flooded,
+        LevelWeatherType.Eclipsed,
+      ];
+
+      // CompanyMoon = StartOfRound.Instance.levels.ToList().Find(level => level.PlanetName == "71 Gordion");
 
       List<SelectableLevel> levels = Variables.GetGameLevels();
       int day = startOfRound.gameStats.daysSpent;
@@ -138,12 +151,22 @@ namespace WeatherTweaks
           .Append(LevelWeatherType.None)
           .ToList();
 
+        Dictionary<LevelWeatherType, int> weights = [];
+        if (!VanillaWeatherTypes.Contains(previousDayWeather[level.PlanetName]))
+        {
+          Plugin.logger.LogDebug(
+            $"Previous weather was {previousDayWeather[level.PlanetName]}, which is not vanilla - using predefined weights"
+          );
+
+          weights = ConfigManager.Weights[LevelWeatherType.Rainy];
+        }
+        else
+        {
+          weights = ConfigManager.Weights[previousDayWeather[level.PlanetName]];
+        }
+
         // get the weighted list of weathers from config
-        var weatherWeights = Variables.GetPlanetWeightedList(
-          level,
-          ConfigManager.Weights[previousDayWeather[level.PlanetName]],
-          difficultyMultiplier
-        );
+        var weatherWeights = Variables.GetPlanetWeightedList(level, weights, difficultyMultiplier);
         var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
 
         if (weather == LevelWeatherType.None && canBeDustClouds)

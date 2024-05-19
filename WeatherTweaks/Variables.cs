@@ -68,7 +68,7 @@ namespace WeatherTweaks
       foreach (var weather in GetPlanetPossibleWeathers(level))
       {
         var weatherType = weather;
-        var weatherWeight = weights[weatherType];
+        var weatherWeight = weights.TryGetValue(weatherType, out int weight) ? weight : 25;
 
         if (ConfigManager.ScaleDownClearWeather.Value && weatherType == LevelWeatherType.None)
         {
@@ -82,7 +82,7 @@ namespace WeatherTweaks
             .ToList()
             .ForEach(randomWeather =>
             {
-              possibleWeathersWeightSum = possibleWeathersWeightSum + weights[randomWeather.weatherType];
+              possibleWeathersWeightSum += weights.TryGetValue(randomWeather.weatherType, out int weight) ? weight : 25;
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
