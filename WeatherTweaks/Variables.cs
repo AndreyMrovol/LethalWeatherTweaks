@@ -52,7 +52,6 @@ namespace WeatherTweaks
       Plugin.logger.LogDebug($"Getting game levels, {includeCompanyMoon}");
       List<SelectableLevel> GameLevels = MrovLib.API.SharedMethods.GetGameLevels();
 
-
       if (!includeCompanyMoon)
       {
         GameLevels = GameLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
@@ -305,8 +304,12 @@ namespace WeatherTweaks
       List<WeatherType> weatherTypes = GetPlanetWeatherTypes(level);
       foreach (var weather in weatherTypes)
       {
+        Plugin.logger.LogDebug($"Weather: {weather.Name}");
+
         var weatherType = weather;
-        var weatherWeight = weights[weather.weatherType];
+        Plugin.logger.LogDebug($"Weather: {weather.Name}");
+        var weatherWeight = weights.TryGetValue(weather.weatherType, out int weight) ? weight : 25;
+        Plugin.logger.LogDebug($"Weather: {weather.Name}");
 
         if (ConfigManager.ScaleDownClearWeather.Value && weather.weatherType == LevelWeatherType.None)
         {
@@ -320,7 +323,7 @@ namespace WeatherTweaks
             .ToList()
             .ForEach(randomWeather =>
             {
-              possibleWeathersWeightSum += weights[randomWeather.weatherType];
+              possibleWeathersWeightSum += weights.TryGetValue(randomWeather.weatherType, out int weight) ? weight : 25;
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
@@ -338,7 +341,9 @@ namespace WeatherTweaks
 
           if (combinedWeather.CanCombinedWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * combinedWeather.weightModify);
+            weatherWeight = Mathf.RoundToInt(
+              (weights.TryGetValue(weather.weatherType, out int localWeight) ? localWeight : 25) * combinedWeather.weightModify
+            );
           }
           else
           {
@@ -362,7 +367,9 @@ namespace WeatherTweaks
             continue;
           }
 
-          weatherWeight = Mathf.RoundToInt(weights[weather.weatherType] * progressingWeather.weightModify);
+          weatherWeight = Mathf.RoundToInt(
+            weights.TryGetValue(weather.weatherType, out int localWeight) ? localWeight : 25 * progressingWeather.weightModify
+          );
         }
 
         if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)
