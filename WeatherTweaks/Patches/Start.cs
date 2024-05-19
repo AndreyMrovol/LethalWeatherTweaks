@@ -11,6 +11,7 @@ namespace WeatherTweaks.Patches
   {
     [HarmonyPostfix]
     [HarmonyPatch("Start")]
+    [HarmonyPriority(100000)]
     public static void Postfix(Terminal __instance)
     {
       Plugin.logger.LogInfo("Terminal Start Patch");
@@ -30,7 +31,7 @@ namespace WeatherTweaks.Patches
 
       Weather noneWeather = new Weather("None", new Definitions.WeatherEffect(null, null))
       {
-        // WeatherType = Definitions.Type.Clear,
+        Type = Definitions.Type.Clear,
         Color = new Color(0, 0, 0, 0),
         VanillaWeatherType = LevelWeatherType.None
       };
@@ -50,11 +51,18 @@ namespace WeatherTweaks.Patches
         Weather weather =
           new(weatherType.ToString(), weatherEffect)
           {
-            // WeatherType = Definitions.Type.Vanilla,
+            Type = Definitions.Type.Vanilla,
             Color = Color.magenta,
             VanillaWeatherType = weatherType,
           };
       }
+
+      // if (Plugin.LethalLibPatch.IsModPresent)
+      // {
+      //   Plugin.logger.LogWarning("Getting LethalLib Weathers");
+
+      //   List<Weather> lethalLibWeathers = LethalLibPatch.ConvertLLWeathers();
+      // }
 
       for (int i = 0; i < Variables.RegisteredWeathers.Count; i++)
       {

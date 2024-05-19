@@ -22,6 +22,7 @@ namespace WeatherTweaks
     internal static bool IsLLLPresent = false;
 
     internal static GeneralImprovementsWeather GeneralImprovements;
+    internal static LethalLibPatch LethalLibPatch;
     private void Awake()
     {
       logger = Logger;
@@ -70,6 +71,8 @@ namespace WeatherTweaks
       {
         Patches.Malfunctions.Init();
       }
+
+      LethalLibPatch = new LethalLibPatch("evaisa.lethallib");
 
       logger.LogInfo(
         @"

@@ -74,6 +74,9 @@ namespace WeatherTweaks.Definitions
 
     public string SunAnimatorBool;
 
+    public int DefaultVariable1 = 0;
+    public int DefaultVariable2 = 0;
+
     public bool EffectEnabled
     {
       get { return _effectEnabled; }
@@ -97,9 +100,6 @@ namespace WeatherTweaks.Definitions
         EffectObject?.SetActive(false);
       }
     }
-
-    public int DefaultVariable1;
-    public int DefaultVariable2;
 
     public WeatherEffect(GameObject effectObject, GameObject worldObject)
     {
