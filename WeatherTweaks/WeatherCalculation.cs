@@ -167,11 +167,7 @@ namespace WeatherTweaks
         }
 
         // get the weighted list of weathers from config
-        var weatherWeights = Variables.GetPlanetWeightedList(
-          level,
-          ConfigManager.Weights[previousDayWeather[level.PlanetName]],
-          difficultyMultiplier
-        );
+        var weatherWeights = Variables.GetPlanetWeightedList(level, weights, difficultyMultiplier);
 
         if (weatherWeights.Count == 0)
         {

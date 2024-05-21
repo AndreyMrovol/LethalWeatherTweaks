@@ -24,7 +24,7 @@ namespace WeatherTweaks.Definitions
     public Type Type = Type.Modded;
 
     [JsonIgnore]
-    public List<LevelWeatherVariables> WeatherVariables;
+    public Dictionary<SelectableLevel, LevelWeatherVariables> WeatherVariables = [];
 
     [JsonIgnore]
     public WeatherEffect Effect;

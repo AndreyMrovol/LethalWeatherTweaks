@@ -42,8 +42,11 @@ namespace WeatherTweaks
 
     private static string GetColoredString(SelectableLevel level)
     {
-      WeatherType currentWeather = Variables.GetPlanetCurrentWeatherType(level);
+      Weather currentWeather = Variables.GetPlanetCurrentWeatherType(level).Weather;
       string currentWeatherString = Variables.GetPlanetCurrentWeather(level);
+
+      Color weatherColor = currentWeather.Color;
+      string weatherColorString = ColorUtility.ToHtmlStringRGB(weatherColor);
 
       bool uncertain = currentWeather.Name == currentWeatherString;
 
@@ -68,19 +71,14 @@ namespace WeatherTweaks
         {
           string newWord = word.Trim();
 
+          // Plugin.logger.LogDebug($"newWord: {newWord}");
+
           // create a method to resolve each individual word to a weather color
           // without using LevelWeatherType *because* it's not gonna resolve when the word is not a weather
 
           string pickedColor = newWord switch
           {
             "Testing" => "BA089C",
-            "Eclipsed" => "FF0000",
-            "Flooded" => "FF9300",
-            "Stormy" => "FF9300",
-            "Foggy" => "FFDC00",
-            "Rainy" => "FFDC00",
-            "DustClouds" => "69FF6B",
-            "None" => "69FF6B",
             "+" => "FFFFFF",
             ">" => "FFFFFF",
             "/" => "FFFFFF",
@@ -88,15 +86,15 @@ namespace WeatherTweaks
             _ => "000000",
           };
 
-          // if (word == ">")
-          // {
-          //   newWord = "⇨";
-          //   sectionToReplace = new(@">");
-          // }
+          if (newWord == currentWeather.Name)
+          {
+            pickedColor = weatherColorString;
+          }
 
-          // outputString = outputString.Replace(word, pickedColor != "000000" ? $"<color=#{pickedColor}>{newWord}</color>" : $"{word}");
           outputString += pickedColor != "000000" ? $"<color=#{pickedColor}>{word}</color>" : $"{newWord}";
         });
+
+      Plugin.logger.LogWarning($"Output string: {outputString}");
 
       return outputString;
     }

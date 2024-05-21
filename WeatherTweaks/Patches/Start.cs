@@ -11,7 +11,7 @@ namespace WeatherTweaks.Patches
   {
     [HarmonyPostfix]
     [HarmonyPatch("Start")]
-    [HarmonyPriority(100000)]
+    [HarmonyPriority(Priority.Last)]
     public static void Postfix(Terminal __instance)
     {
       Plugin.logger.LogInfo("Terminal Start Patch");
@@ -27,12 +27,35 @@ namespace WeatherTweaks.Patches
         Plugin.logger.LogWarning($"Effects: {effects.Count()}");
       }
 
+      List<LevelWeatherType> VanillaWeathers =
+      [
+        LevelWeatherType.None,
+        LevelWeatherType.DustClouds,
+        LevelWeatherType.Foggy,
+        LevelWeatherType.Rainy,
+        LevelWeatherType.Stormy,
+        LevelWeatherType.Flooded,
+        LevelWeatherType.Eclipsed
+      ];
+
+      Dictionary<LevelWeatherType, Color> VanillaWeatherColors =
+        new()
+        {
+          { LevelWeatherType.None, new Color(0.41f, 1f, 0.42f, 1f) },
+          { LevelWeatherType.DustClouds, new Color(0.41f, 1f, 0.42f, 1f) },
+          { LevelWeatherType.Foggy, new Color(1f, 0.86f, 0f, 1f) },
+          { LevelWeatherType.Rainy, new Color(1f, 0.86f, 0f, 1f) },
+          { LevelWeatherType.Stormy, new Color(1f, 0.57f, 0f, 1f) },
+          { LevelWeatherType.Flooded, new Color(1f, 0.57f, 0f, 1f) },
+          { LevelWeatherType.Eclipsed, new Color(1f, 0f, 0f, 1f) }
+        };
+
       Plugin.logger.LogMessage("Creating NoneWeather type");
 
       Weather noneWeather = new Weather("None", new Definitions.WeatherEffect(null, null))
       {
         Type = Definitions.Type.Clear,
-        Color = new Color(0, 0, 0, 0),
+        Color = VanillaWeatherColors[LevelWeatherType.None],
         VanillaWeatherType = LevelWeatherType.None
       };
 
@@ -44,6 +67,10 @@ namespace WeatherTweaks.Patches
         Plugin.logger.LogWarning($"Effect: {effect.name}");
 
         LevelWeatherType weatherType = (LevelWeatherType)i;
+        bool isVanilla = VanillaWeathers.Contains(weatherType);
+
+        Type weatherTypeType = isVanilla ? Definitions.Type.Vanilla : Definitions.Type.Modded;
+        Color weatherColor = isVanilla ? VanillaWeatherColors[weatherType] : Color.blue;
 
         Definitions.WeatherEffect weatherEffect =
           new(effect.effectObject, effect.effectPermanentObject) { SunAnimatorBool = effect.sunAnimatorBool, };
@@ -51,8 +78,8 @@ namespace WeatherTweaks.Patches
         Weather weather =
           new(weatherType.ToString(), weatherEffect)
           {
-            Type = Definitions.Type.Vanilla,
-            Color = Color.magenta,
+            Type = weatherTypeType,
+            Color = weatherColor,
             VanillaWeatherType = weatherType,
           };
       }
@@ -127,9 +154,8 @@ namespace WeatherTweaks.Patches
 
           Variables.LevelWeathers.Add(levelWeather);
           levelWeatherVariables.Add(levelWeather.Variables);
+          weather.WeatherVariables.Add(level, levelWeather.Variables);
         }
-
-        weather.WeatherVariables = levelWeatherVariables;
       }
 
       Variables.IsSetupFinished = true;
