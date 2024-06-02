@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherAPI;
+using WeatherTweaks.Definitions;
 using WeatherTweaks.Patches;
 using static WeatherTweaks.Modules.Types;
 
@@ -14,14 +16,16 @@ namespace WeatherTweaks
   {
     internal static List<SelectableLevel> GameLevels = [];
 
+    internal static bool IsSetupFinished = false;
+
     internal static WeatherType NoneWeather;
     public static List<WeatherType> WeatherTypes = [];
 
-    public static List<CombinedWeatherType> CombinedWeatherTypes = [];
-    public static List<ProgressingWeatherType> ProgressingWeatherTypes = [];
+    public static List<Definitions.Types.CombinedWeatherType> CombinedWeatherTypes = [];
+    public static List<Definitions.Types.ProgressingWeatherType> ProgressingWeatherTypes = [];
 
     public static Dictionary<SelectableLevel, WeatherType> CurrentWeathers = [];
-    public static List<WeatherEffect> CurrentEffects = [];
+    public static List<ImprovedWeatherEffect> CurrentEffects = [];
 
     public static WeatherType CurrentLevelWeather;
 
@@ -95,7 +99,7 @@ namespace WeatherTweaks
 
       foreach (WeatherType weather in WeatherTypes)
       {
-        if (randomWeathers.Contains(weather.weatherType) && weather.Type == CustomWeatherType.Vanilla)
+        if (randomWeathers.Contains(weather.weatherType) && weather.Type == CustomWeatherType.Normal)
         {
           possibleTypes.Add(weather);
         }
@@ -103,14 +107,14 @@ namespace WeatherTweaks
         switch (weather.Type)
         {
           case CustomWeatherType.Combined:
-            CombinedWeatherType combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
-            if (combinedWeather.CanCombinedWeatherBeApplied(level))
+            Definitions.Types.CombinedWeatherType combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
+            if (combinedWeather.CanWeatherBeApplied(level))
             {
               possibleTypes.Add(weather);
             }
             break;
           case CustomWeatherType.Progressing:
-            ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
+            Definitions.Types.ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
             if (progressingWeather.Enabled.Value == false)
             {
               Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
@@ -162,15 +166,12 @@ namespace WeatherTweaks
         Plugin.logger.LogWarning("Effects are null");
       }
 
-      NoneWeather = new("None", LevelWeatherType.None, [LevelWeatherType.None], CustomWeatherType.Vanilla) { Effects = [] };
+      NoneWeather = new("None", CustomWeatherType.Normal) { Weather = WeatherManager.NoneWeather, weatherType = LevelWeatherType.None, };
       WeatherTypes.Add(NoneWeather);
 
-      for (int i = 0; i < effects.Length; i++)
+      foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
       {
-        WeatherEffect effect = effects[i];
-
-        LevelWeatherType weatherType = (LevelWeatherType)i;
-        WeatherType newWeather = new(weatherType.ToString(), weatherType, [weatherType], CustomWeatherType.Vanilla) { Effects = [effect] };
+        WeatherType newWeather = new(weather.name, CustomWeatherType.Normal) { Weather = weather, weatherType = weather.VanillaWeatherType, };
 
         WeatherTypes.Add(newWeather);
       }
@@ -184,16 +185,7 @@ namespace WeatherTweaks
         }
         Plugin.logger.LogDebug($"Adding combined weather: {combinedWeather.Name}");
 
-        combinedWeather.Effects.Clear();
-        combinedWeather.Weathers.ForEach(weather =>
-        {
-          // Plugin.logger.LogWarning($"Adding weather effect: {weather}");
-          combinedWeather.Effects.Add(TimeOfDay.Instance.effects[(int)weather]);
-        });
-        combinedWeather.WeatherType.Effects = combinedWeather.Effects;
-        combinedWeather.WeatherType.Weathers = combinedWeather.Weathers;
-
-        WeatherTypes.Add(combinedWeather.WeatherType);
+        WeatherTypes.Add(combinedWeather);
       });
 
       ProgressingWeatherTypes.ForEach(progressingWeather =>
@@ -206,7 +198,7 @@ namespace WeatherTweaks
 
         Plugin.logger.LogDebug($"Adding progressing weather: {progressingWeather.Name}");
 
-        WeatherTypes.Add(progressingWeather.WeatherType);
+        WeatherTypes.Add(progressingWeather);
       });
     }
 
@@ -272,7 +264,7 @@ namespace WeatherTweaks
         return LevelWeatherType.None;
       }
 
-      if (CurrentWeathers[level].Weathers.Contains(weatherType))
+      if (CurrentWeathers[level].Weather.VanillaWeatherType == weatherType)
       {
         Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
         return weatherType;
@@ -283,7 +275,7 @@ namespace WeatherTweaks
 
     internal static WeatherType GetVanillaWeatherType(LevelWeatherType weatherType)
     {
-      return WeatherTypes.Find(x => x.weatherType == weatherType && x.Type == CustomWeatherType.Vanilla);
+      return WeatherTypes.Find(x => x.weatherType == weatherType && x.Type == CustomWeatherType.Normal);
     }
 
     internal static WeatherType GetFullWeatherType(WeatherType weatherType)
@@ -339,7 +331,7 @@ namespace WeatherTweaks
         {
           var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weatherType.Name);
 
-          if (combinedWeather.CanCombinedWeatherBeApplied(level))
+          if (combinedWeather.CanWeatherBeApplied(level))
           {
             weatherWeight = Mathf.RoundToInt(
               (weights.TryGetValue(weather.weatherType, out int localWeight) ? localWeight : 25) * combinedWeather.weightModify

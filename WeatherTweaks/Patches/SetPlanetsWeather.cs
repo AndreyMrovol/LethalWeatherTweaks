@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
@@ -15,6 +16,12 @@ namespace WeatherTweaks
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
+
+      if (!Variables.IsSetupFinished)
+      {
+        Plugin.logger.LogWarning("Setup not finished");
+        return true;
+      }
 
       if (__instance == null)
       {

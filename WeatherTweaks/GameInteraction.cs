@@ -5,6 +5,8 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
+using WeatherAPI;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
@@ -49,7 +51,7 @@ namespace WeatherTweaks
       logger.LogDebug($"Setting weather for {level.PlanetName} to {weatherType.Name}");
     }
 
-    internal static void SetWeatherEffects(TimeOfDay timeOfDay, List<WeatherEffect> weatherEffects)
+    internal static void SetWeatherEffects(TimeOfDay timeOfDay, List<ImprovedWeatherEffect> weatherEffects)
     {
       // timeOfDay.globalTimeSpeedMultiplier = 0.001f;
 
@@ -61,75 +63,43 @@ namespace WeatherTweaks
       }
 
       Variables.CurrentEffects = weatherEffects;
-      List<LevelWeatherType> sunBools = new List<LevelWeatherType>();
+      List<LevelWeatherType> sunBools = [];
 
-      foreach (WeatherEffect timeOfDayEffect in timeOfDay.effects)
+      foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
       {
-        int index = timeOfDay.effects.ToList().IndexOf(timeOfDayEffect);
-        RandomWeatherWithVariables weatherVariables = StartOfRound
-          .Instance.currentLevel.randomWeathers.ToList()
-          .Find(x => x.weatherType == (LevelWeatherType)index);
+        ImprovedWeatherEffect Effect = weather.Effect;
 
-        // logger.LogDebug($"Effect: {timeOfDayEffect.name}");
-        // logger.LogWarning($"Is player inside: {EntranceTeleportPatch.isPlayerInside}");
-
-        if (weatherEffects.Contains(timeOfDayEffect))
+        if (weatherEffects.Contains(Effect))
         {
-          logger.LogDebug($"Enabling effect: {timeOfDayEffect.name}");
+          logger.LogDebug($"Enabling effect from weather: {weather.Name}");
 
           if (!EntranceTeleportPatch.isPlayerInside)
           {
-            timeOfDayEffect.effectEnabled = true;
-            if (timeOfDayEffect.effectObject != null)
-            {
-              timeOfDayEffect.effectObject.SetActive(true);
-            }
-
-            if (timeOfDayEffect.effectPermanentObject != null)
-            {
-              timeOfDayEffect.effectPermanentObject.SetActive(true);
-            }
+            weather.Effect.EffectEnabled = true;
           }
           else
           {
             logger.LogWarning($"Player is inside, skipping effect object activation");
-            if (timeOfDayEffect.effectObject != null)
-            {
-              timeOfDayEffect.effectObject.SetActive(false);
-            }
-
-            if (timeOfDayEffect.effectPermanentObject != null)
-            {
-              timeOfDayEffect.effectPermanentObject.SetActive(false);
-            }
+            weather.Effect.DisableEffect(true);
           }
 
-          if (timeOfDayEffect.sunAnimatorBool != "" && timeOfDayEffect.sunAnimatorBool != null)
+          if (Effect.SunAnimatorBool != "" && Effect.SunAnimatorBool != null)
           {
-            sunBools.Add(weatherVariables.weatherType);
+            sunBools.Add(weather.VanillaWeatherType);
           }
         }
         else
         {
-          logger.LogDebug($"Disabling effect: {timeOfDayEffect.name}");
-          timeOfDayEffect.effectEnabled = false;
+          logger.LogDebug($"Disabling effect: {weather.Name}");
 
-          if (timeOfDayEffect.effectObject != null)
-          {
-            timeOfDayEffect.effectObject.SetActive(false);
-          }
-
-          if (timeOfDayEffect.effectPermanentObject != null)
-          {
-            timeOfDayEffect.effectPermanentObject.SetActive(false);
-          }
+          weather.Effect.DisableEffect(true);
 
           try
           {
-            if (!String.IsNullOrEmpty(timeOfDayEffect.sunAnimatorBool))
+            if (!String.IsNullOrEmpty(Effect.SunAnimatorBool))
             {
-              logger.LogDebug($"Removing sun animator bool, weather: {weatherVariables.weatherType}, bool: {timeOfDayEffect.sunAnimatorBool}");
-              sunBools.Remove(weatherVariables.weatherType);
+              logger.LogDebug($"Removing sun animator bool, weather: {weather.Name}, bool: {Effect.SunAnimatorBool}");
+              sunBools.Remove(weather.VanillaWeatherType);
             }
           }
           catch (Exception e)
@@ -139,14 +109,14 @@ namespace WeatherTweaks
         }
       }
 
-      if (sunBools.Count == 0)
-      {
-        SunAnimator.OverrideSunAnimator(LevelWeatherType.None);
-      }
-      else
-      {
-        sunBools.Distinct().ToList().ForEach(loopWeatherType => SunAnimator.OverrideSunAnimator(loopWeatherType));
-      }
+      // if (sunBools.Count == 0)
+      // {
+      //   SunAnimator.OverrideSunAnimator(LevelWeatherType.None);
+      // }
+      // else
+      // {
+      //   sunBools.Distinct().ToList().ForEach(loopWeatherType => SunAnimator.OverrideSunAnimator(loopWeatherType));
+      // }
     }
   }
 }

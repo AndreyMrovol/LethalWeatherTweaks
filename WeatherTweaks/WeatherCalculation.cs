@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
@@ -102,7 +103,7 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
           currentWeather[level.PlanetName] = Variables.WeatherTypes.Find(x =>
-            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
+            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Normal
           );
           continue;
         }
@@ -236,7 +237,7 @@ namespace WeatherTweaks
         {
           Plugin.logger.LogDebug($"Override weather present, changing weather to {level.overrideWeatherType}");
           selectedWeathers[level.PlanetName] = Variables.WeatherTypes.Find(x =>
-            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Vanilla
+            x.weatherType == level.overrideWeatherType && x.Type == CustomWeatherType.Normal
           );
           continue;
         }
@@ -246,7 +247,7 @@ namespace WeatherTweaks
           .Where(randomWeather =>
             randomWeather.weatherType != LevelWeatherType.None
             && randomWeather.weatherType != LevelWeatherType.DustClouds
-            && randomWeather.Type == CustomWeatherType.Vanilla
+            && randomWeather.Type == CustomWeatherType.Normal
           )
           .ToList();
 
@@ -292,7 +293,7 @@ namespace WeatherTweaks
         }
 
         WeatherType selectedWeather = Variables.WeatherTypes.Find(x =>
-          x.weatherType == selectedRandom.weatherType && x.Type == CustomWeatherType.Vanilla
+          x.weatherType == selectedRandom.weatherType && x.Type == CustomWeatherType.Normal
         );
         selectedWeathers[planetName] = selectedWeather;
         Variables.CurrentWeathers[level] = selectedWeather;

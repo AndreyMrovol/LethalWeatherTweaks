@@ -1,51 +1,59 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using WeatherAPI;
+using WeatherTweaks.Definitions;
 
-namespace WeatherTweaks
+namespace WeatherTweaks.Definitions
 {
   public enum CustomWeatherType
   {
-    Vanilla,
-    Modded,
-    Custom,
+    Normal,
     Combined,
     Progressing
   }
 
   [JsonObject(MemberSerialization.OptIn)]
-  public class WeatherType(string name, LevelWeatherType weatherType, List<LevelWeatherType> weathers, CustomWeatherType type)
+  public class WeatherType
   {
     [JsonProperty]
-    public string Name = name;
-
-    // public RandomWeatherWithVariables Weather;
-    [JsonProperty]
-    public LevelWeatherType weatherType = weatherType;
-
-    [JsonIgnore]
-    public List<WeatherEffect> Effects;
+    public string Name;
 
     [JsonProperty]
-    public List<LevelWeatherType> Weathers = weathers;
+    public virtual Weather Weather { get; set; }
+
+    public LevelWeatherType weatherType;
 
     [JsonProperty]
-    public CustomWeatherType Type = type;
+    public CustomWeatherType Type;
+
+    public virtual bool CanWeatherBeApplied(SelectableLevel level)
+    {
+      return true;
+    }
+
+    public virtual float weightModify { get; set; } = 1f;
+
+    public WeatherType(string name, CustomWeatherType type)
+    {
+      Plugin.logger.LogWarning($"Creating WeatherType: {name}");
+
+      Name = name;
+      Type = type;
+    }
   }
 
-  // [JsonObject(MemberSerialization.OptIn)]
-  // public class ExtendedWeatherEffect : WeatherEffect
-  // {
-  //   [JsonProperty]
-  //   public int variable1 = 1;
+  [JsonObject(MemberSerialization.OptIn)]
+  public class RegisteredWeatherType
+  {
+    [JsonProperty]
+    public string Name;
 
-  //   [JsonProperty]
-  //   public int variable2 = 1;
-  // }
+    [JsonProperty]
+    public LevelWeatherType weatherType;
 
-  // public class CustomWeatherEffect : WeatherEffect
-  // {
-  //   public int variable1 = 1;
-  //   public int variable2 = 1;
-  // }
+    public CustomWeatherType Type;
+
+    public float WeightModify = 1f;
+  }
 }

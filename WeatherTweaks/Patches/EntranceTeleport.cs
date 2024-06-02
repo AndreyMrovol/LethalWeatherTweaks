@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
+using WeatherAPI;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
@@ -28,50 +31,74 @@ namespace WeatherTweaks
       {
         logger.LogDebug("Player is outside");
 
-        List<WeatherEffect> weatherEffects = Variables.GetCurrentWeather().Effects;
+        List<ImprovedWeatherEffect> weatherEffects = [];
+        WeatherType currentWeather = Variables.GetCurrentWeather();
+
+        if (currentWeather.Type == CustomWeatherType.Combined)
+        {
+          Definitions.Types.CombinedWeatherType currentWeatherCombined = (Definitions.Types.CombinedWeatherType)currentWeather;
+          weatherEffects = currentWeatherCombined.Weathers.Select(weather => weather.Effect).ToList();
+        }
+        else
+        {
+          weatherEffects = [currentWeather.Weather.Effect];
+        }
 
         weatherEffects.Do(effect =>
         {
-          logger.LogDebug($"Effect: {effect.name}");
-          logger.LogDebug($"Effect Enabled: {effect.effectEnabled}");
+          logger.LogDebug($"Effect Enabled: {effect.EffectEnabled}");
         });
 
-        foreach (WeatherEffect timeOfDayEffect in TimeOfDay.Instance.effects)
+        foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
         {
-          logger.LogDebug($"Effect: {timeOfDayEffect.name}");
-          logger.LogDebug($"Effect Enabled: {timeOfDayEffect.effectEnabled}");
-          // logger.LogDebug($"Effect Object Enabled: {timeOfDayEffect.effectObject.activeSelf}");
-          logger.LogInfo($"Contains: {weatherEffects.Contains(timeOfDayEffect)}");
+          logger.LogDebug($"Weather: {weather.Name}");
 
-          if (weatherEffects.Contains(timeOfDayEffect))
+          if (weatherEffects.Contains(weather.Effect))
           {
-            timeOfDayEffect.effectEnabled = true;
-
-            if (timeOfDayEffect.effectObject != null)
-            {
-              timeOfDayEffect.effectObject.SetActive(true);
-            }
-
-            if (timeOfDayEffect.effectPermanentObject != null)
-            {
-              timeOfDayEffect.effectPermanentObject.SetActive(true);
-            }
+            weather.Effect.EffectEnabled = true;
           }
-          // else
-          // {
-          //   timeOfDayEffect.effectEnabled = false;
-
-          //   if (timeOfDayEffect.effectObject != null)
-          //   {
-          //     timeOfDayEffect.effectObject.SetActive(false);
-          //   }
-
-          //   if (timeOfDayEffect.effectPermanentObject != null)
-          //   {
-          //     timeOfDayEffect.effectPermanentObject.SetActive(false);
-          //   }
-          // }
+          else
+          {
+            weather.Effect.DisableEffect();
+          }
         }
+
+        // foreach (WeatherEffect timeOfDayEffect in TimeOfDay.Instance.effects)
+        // {
+        //   logger.LogDebug($"Effect: {timeOfDayEffect.name}");
+        //   logger.LogDebug($"Effect Enabled: {timeOfDayEffect.effectEnabled}");
+        //   // logger.LogDebug($"Effect Object Enabled: {timeOfDayEffect.effectObject.activeSelf}");
+        //   logger.LogInfo($"Contains: {weatherEffects.Contains(timeOfDayEffect)}");
+
+        //   if (weatherEffects.Contains(timeOfDayEffect))
+        //   {
+        //     timeOfDayEffect.effectEnabled = true;
+
+        //     if (timeOfDayEffect.effectObject != null)
+        //     {
+        //       timeOfDayEffect.effectObject.SetActive(true);
+        //     }
+
+        //     if (timeOfDayEffect.effectPermanentObject != null)
+        //     {
+        //       timeOfDayEffect.effectPermanentObject.SetActive(true);
+        //     }
+        //   }
+        //   // else
+        //   // {
+        //   //   timeOfDayEffect.effectEnabled = false;
+
+        //   //   if (timeOfDayEffect.effectObject != null)
+        //   //   {
+        //   //     timeOfDayEffect.effectObject.SetActive(false);
+        //   //   }
+
+        //   //   if (timeOfDayEffect.effectPermanentObject != null)
+        //   //   {
+        //   //     timeOfDayEffect.effectPermanentObject.SetActive(false);
+        //   //   }
+        //   // }
+        // }
       }
     }
   }
