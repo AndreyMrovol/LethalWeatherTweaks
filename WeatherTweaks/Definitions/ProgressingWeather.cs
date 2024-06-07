@@ -3,7 +3,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Newtonsoft.Json;
-using WeatherAPI;
+using WeatherRegistry;
 
 namespace WeatherTweaks.Definitions
 {
@@ -23,7 +23,7 @@ namespace WeatherTweaks.Definitions
 
       internal WeatherType GetWeatherType()
       {
-        Weather vanillaWeather = WeatherAPI.WeatherManager.GetWeather(Weather);
+        Weather vanillaWeather = WeatherRegistry.WeatherManager.GetWeather(Weather);
         return Variables.WeatherTypes.First(weatherType =>
           weatherType.Weather == vanillaWeather && weatherType.Type == CustomWeatherType.Normal
         );
@@ -70,6 +70,11 @@ namespace WeatherTweaks.Definitions
         return remainingWeathers.Count == 0;
       }
 
+      public bool DoesHaveWeatherHappening(LevelWeatherType weatherType)
+      {
+        return WeatherEntries.Any(entry => entry.Weather == weatherType);
+      }
+
       public ProgressingWeatherType(string name, LevelWeatherType baseWeather, List<ProgressingWeatherEntry> weatherEntries)
         : base(name, CustomWeatherType.Progressing)
       {
@@ -85,6 +90,8 @@ namespace WeatherTweaks.Definitions
         WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
 
         StartingWeather = baseWeather;
+        Weather = WeatherRegistry.WeatherManager.GetWeather(baseWeather);
+        weatherType = baseWeather;
 
         Variables.ProgressingWeatherTypes.Add(this);
       }

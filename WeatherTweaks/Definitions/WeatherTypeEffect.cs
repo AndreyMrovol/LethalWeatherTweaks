@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Definitions

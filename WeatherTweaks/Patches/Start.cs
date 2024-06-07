@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using UnityEngine;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
 
@@ -14,7 +14,7 @@ namespace WeatherTweaks.Patches
     [HarmonyPostfix]
     [HarmonyPatch("Start")]
     [HarmonyPriority(Priority.Last)]
-    [HarmonyAfter("WeatherAPI")]
+    [HarmonyAfter("mrov.WeatherRegistry")]
     public static void Postfix(Terminal __instance)
     {
       Variables.PopulateWeathers(StartOfRound.Instance);
@@ -24,7 +24,7 @@ namespace WeatherTweaks.Patches
         List<Weather> weathers = [];
         foreach (LevelWeatherType levelWeather in combined.Weathers)
         {
-          weathers.Add(WeatherAPI.WeatherManager.GetWeather(levelWeather));
+          weathers.Add(WeatherRegistry.WeatherManager.GetWeather(levelWeather));
         }
 
         CombinedWeatherType combinedWeather = new CombinedWeatherType(combined.Name, weathers) { weightModify = combined.WeightModify, };
@@ -39,7 +39,7 @@ namespace WeatherTweaks.Patches
         List<Weather> weathers = [];
         foreach (ProgressingWeatherEntry entry in weatherEntries)
         {
-          weathers.Add(WeatherAPI.WeatherManager.GetWeather(entry.Weather));
+          weathers.Add(WeatherRegistry.WeatherManager.GetWeather(entry.Weather));
         }
 
         ProgressingWeatherType progressingWeather = new ProgressingWeatherType(progressing.Name, progressing.StartingWeather, weatherEntries)
@@ -50,7 +50,15 @@ namespace WeatherTweaks.Patches
         Variables.WeatherTypes.Add(progressingWeather);
       }
 
+      WeatherRegistry.Settings.ScreenMapColors.Add("+", Color.white);
+      WeatherRegistry.Settings.ScreenMapColors.Add("/", Color.white);
+      WeatherRegistry.Settings.ScreenMapColors.Add(">", Color.white);
+      WeatherRegistry.Settings.ScreenMapColors.Add("?", Color.white);
+      WeatherRegistry.Settings.ScreenMapColors.Add("[UNKNOWN]", new Color(0.29f, 0.29f, 0.29f));
+
       Variables.IsSetupFinished = true;
+      StartOfRound.Instance.SetPlanetsWeather();
+      StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
   }
 }

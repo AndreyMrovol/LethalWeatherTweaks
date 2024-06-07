@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <AssemblyName>WeatherTweaks</AssemblyName>
         <Description>A template for Lethal Company</Description>
         <Version>0.0.1</Version>
@@ -9,7 +9,75 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GameDirectory>V:\Steam\steamapps\common\Lethal Company</GameDirectory>
+    </PropertyGroup>
+
     <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="TeamBMX.LobbyCompatibility" Version="1.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="50.0.1-ngd.0" Publicize="true"/>
+
+        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
+        <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*"/>
+        <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.1.0" />
+
+        <PackageReference Include="Evaisa.LethalLib" Version="0.16.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+
+        <Reference Include="LethalLevelLoader" PrivateAssets="All">
+            <HintPath>../lib/LethalLevelLoader.dll</HintPath>
+        </Reference>
+
+        <Reference Include="MrovLib" PrivateAssets="All">
+            <HintPath>../lib/MrovLib.dll</HintPath>
+        </Reference>
+
+        <Reference Include="MoreShipUpgrades" PrivateAssets="All">
+            <HintPath>../lib/MoreShipUpgrades.dll</HintPath>
+        </Reference>
+
+        <Reference Include="MeteoMultiplier" PrivateAssets="All">
+            <HintPath>../lib/MeteoMultiplier.dll</HintPath>
+        </Reference>
+
+        <Reference Include="Malfunctions" PrivateAssets="All">
+            <HintPath>../lib/Malfunctions.dll</HintPath>
+        </Reference>
+
+        <Reference Include="LethalLib" PrivateAssets="All">
+            <HintPath>../lib/LethalLib.dll</HintPath>
+        </Reference>
+
+        <Reference Include="WeatherRegistry" Publicize="true">
+            <HintPath>../lib/WeatherRegistry.dll</HintPath>
+        </Reference>
+
+        </ItemGroup>
+
+
+    <!-- <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
         <PackageReference Include="BepInEx.Core" Version="5.*" />
         <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*"/>
@@ -20,14 +88,8 @@
 
         <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.1.0" />
 
-        <Reference Include="LethalLevelLoader" PrivateAssets="All">
-            <HintPath>../lib/LethalLevelLoader.dll</HintPath>
-        </Reference>
-
-        <Reference Include="MrovLib" PrivateAssets="All">
-            <HintPath>../lib/MrovLib.dll</HintPath>
-        </Reference>
-    </ItemGroup>
+        
+    </ItemGroup> -->
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>

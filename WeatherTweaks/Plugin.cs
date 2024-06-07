@@ -9,7 +9,7 @@ namespace WeatherTweaks
 {
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
   [BepInDependency("MrovLib", BepInDependency.DependencyFlags.HardDependency)]
-  [BepInDependency("WeatherAPI", BepInDependency.DependencyFlags.HardDependency)]
+  [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
   // [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
@@ -34,10 +34,32 @@ namespace WeatherTweaks
       ConfigManager.Init(Config);
       UncertainWeather.Init();
 
-      // if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
-      // {
-      //   Patches.LLL.Init();
-      // }
+      new CombinedEclipsedFlooded();
+      new CombinedFoggyRainy();
+      new CombinedStormyFlooded();
+      new CombinedStormyRainy();
+      new CombinedEclipsedRainy();
+      new CombinedMadness();
+      new CombinedFoggyFlooded();
+      new CombinedFoggyEclipsed();
+      new CombinedStormyRainyEclipsed();
+      new CombinedStormyRainyFlooded();
+
+      new ProgressingNoneFoggy();
+      new ProgressingNoneStormy();
+      new ProgressingEclipsedFoggy();
+      new ProgressingFoggyNone();
+      new ProgressingHiddenEclipsed();
+      new ProgressingStormyRainy();
+      new ProgressingRainyEclipsed();
+      new ProgressingMadness();
+
+      // new SuperFoggy();
+
+      // new ProgressingTesting();
+
+      WeatherRegistry.Settings.SelectWeathers = false;
+
       if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
       {
         Patches.LLL.Init();
@@ -53,17 +75,17 @@ namespace WeatherTweaks
         Patches.LateGameUpgrades.Init();
       }
 
-      if (Chainloader.PluginInfos.ContainsKey("com.github.fredolx.meteomultiplier"))
-      {
-        Patches.MeteoMultiplierPatches.Init();
-      }
+      // if (Chainloader.PluginInfos.ContainsKey("com.github.fredolx.meteomultiplier"))
+      // {
+      //   Patches.MeteoMultiplierPatches.Init();
+      // }
 
       if (Chainloader.PluginInfos.ContainsKey("xxxstoner420bongmasterxxx.open_monitors"))
       {
         Patches.OpenMonitorsPatch.Init();
       }
 
-      SunAnimator.Init();
+      // SunAnimator.Init();
       // BasegameWeatherPatch.FogPatchInit();
 
       if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))

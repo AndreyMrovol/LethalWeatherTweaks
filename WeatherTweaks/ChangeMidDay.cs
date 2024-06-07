@@ -127,6 +127,8 @@ namespace WeatherTweaks
       currentEntry = entry;
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Weather.Effect]);
+      BasegameWeatherPatch.ChangeFog();
+
       // TODO account for player being dead
     }
   }

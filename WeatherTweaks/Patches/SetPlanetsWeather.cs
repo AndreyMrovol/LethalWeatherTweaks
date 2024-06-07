@@ -36,7 +36,7 @@ namespace WeatherTweaks
         return true;
       }
 
-      Variables.PopulateWeathers(__instance);
+      // Variables.PopulateWeathers(__instance);
       ChangeMidDay.lastCheckedEntry = 0;
       EntranceTeleportPatch.isPlayerInside = false;
 

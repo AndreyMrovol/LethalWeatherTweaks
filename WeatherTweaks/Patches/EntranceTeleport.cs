@@ -4,8 +4,9 @@ using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
+using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
@@ -49,7 +50,7 @@ namespace WeatherTweaks
           logger.LogDebug($"Effect Enabled: {effect.EffectEnabled}");
         });
 
-        foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
+        foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
         {
           logger.LogDebug($"Weather: {weather.Name}");
 

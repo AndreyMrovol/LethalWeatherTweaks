@@ -41,7 +41,7 @@ namespace WeatherTweaks
       ChangeMidDay.currentEntry = null;
       // LLLDungeonExitPatch.RemoveListener();
 
-      // WeatherAPI.Patches.SunAnimator.Clear();
+      // WeatherRegistry.Patches.SunAnimator.Clear();
 
       if (StartOfRound.Instance.IsHost)
       {

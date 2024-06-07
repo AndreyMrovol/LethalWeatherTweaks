@@ -5,10 +5,11 @@ using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 using WeatherTweaks.Patches;
 using static WeatherTweaks.Modules.Types;
+using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
@@ -169,7 +170,7 @@ namespace WeatherTweaks
       NoneWeather = new("None", CustomWeatherType.Normal) { Weather = WeatherManager.NoneWeather, weatherType = LevelWeatherType.None, };
       WeatherTypes.Add(NoneWeather);
 
-      foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
+      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
       {
         WeatherType newWeather = new(weather.name, CustomWeatherType.Normal) { Weather = weather, weatherType = weather.VanillaWeatherType, };
 
@@ -255,6 +256,28 @@ namespace WeatherTweaks
       return randomWeather.weatherVariable;
     }
 
+    // public static LevelWeatherType LevelHasWeather(LevelWeatherType weatherType)
+    // {
+    //   Weather currentWeather = WeatherManager.GetWeather(weatherType);
+    //   SelectableLevel level = StartOfRound.Instance.currentLevel;
+
+    //   if (StartOfRound.Instance == null || level == null)
+    //   {
+    //     Plugin.logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
+    //     return LevelWeatherType.None;
+    //   }
+
+    //   LevelWeatherVariables weatherVariables = currentWeather.WeatherVariables.GetValueOrDefault(level);
+
+    //   if (weatherVariables != null)
+    //   {
+    //     Plugin.logger.LogDebug($"Weather variable: {weatherVariables}");
+    //     return weatherType;
+    //   }
+
+    //   return LevelWeatherType.None;
+    // }
+
     public static LevelWeatherType LevelHasWeather(LevelWeatherType weatherType)
     {
       SelectableLevel level = StartOfRound.Instance.currentLevel;
@@ -264,12 +287,38 @@ namespace WeatherTweaks
         return LevelWeatherType.None;
       }
 
-      if (CurrentWeathers[level].Weather.VanillaWeatherType == weatherType)
-      {
-        Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
-        return weatherType;
-      }
+      WeatherType currentWeather = GetFullWeatherType(CurrentWeathers.TryGetValue(level, out WeatherType weather) ? weather : NoneWeather);
 
+      Plugin.logger.LogDebug(currentWeather.GetType().ToString());
+
+      switch (currentWeather.GetType().ToString())
+      {
+        case "WeatherTweaks.Definitions.Types+CombinedWeatherType":
+          Definitions.Types.CombinedWeatherType combinedWeather = (Definitions.Types.CombinedWeatherType)currentWeather;
+          if (combinedWeather.Weathers.Any(x => x.VanillaWeatherType == weatherType))
+          {
+            Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
+            return weatherType;
+          }
+          break;
+        case "WeatherTweaks.Definitions.Types+ProgressingWeatherType":
+          Definitions.Types.ProgressingWeatherType progressingWeather = (Definitions.Types.ProgressingWeatherType)currentWeather;
+
+          if (progressingWeather.DoesHaveWeatherHappening(weatherType))
+          {
+            Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
+            return weatherType;
+          }
+          break;
+
+        default:
+          if (currentWeather.Weather.VanillaWeatherType == weatherType)
+          {
+            Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
+            return weatherType;
+          }
+          break;
+      }
       return LevelWeatherType.None;
     }
 

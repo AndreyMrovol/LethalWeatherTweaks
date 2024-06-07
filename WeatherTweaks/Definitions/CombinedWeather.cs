@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using HarmonyLib;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Definitions
@@ -36,6 +36,11 @@ namespace WeatherTweaks.Definitions
       public CombinedWeatherType(string name, List<Weather> weathers)
         : base(name, CustomWeatherType.Combined)
       {
+        if (weathers.Count == 0)
+        {
+          return;
+        }
+
         Plugin.logger.LogDebug($"Creating CombinedWeatherType: {Name}");
 
         // Weathers = weathers.Append(baseWeather).Distinct().ToList();
@@ -49,6 +54,7 @@ namespace WeatherTweaks.Definitions
 
         Name = name;
         Weathers = weathers.Distinct().ToList();
+        weatherType = weathers[0].VanillaWeatherType;
 
         // TODO
         // create configFile bindings

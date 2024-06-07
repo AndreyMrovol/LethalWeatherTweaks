@@ -5,8 +5,9 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
+using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
@@ -65,8 +66,13 @@ namespace WeatherTweaks
       Variables.CurrentEffects = weatherEffects;
       List<LevelWeatherType> sunBools = [];
 
-      foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
+      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
       {
+        if (weather.Effect == null)
+        {
+          continue;
+        }
+
         ImprovedWeatherEffect Effect = weather.Effect;
 
         if (weatherEffects.Contains(Effect))
@@ -94,29 +100,29 @@ namespace WeatherTweaks
 
           weather.Effect.DisableEffect(true);
 
-          try
-          {
-            if (!String.IsNullOrEmpty(Effect.SunAnimatorBool))
-            {
-              logger.LogDebug($"Removing sun animator bool, weather: {weather.Name}, bool: {Effect.SunAnimatorBool}");
-              sunBools.Remove(weather.VanillaWeatherType);
-            }
-          }
-          catch (Exception e)
-          {
-            logger.LogInfo($"Cannot remove sun animator bool: {e.Message}");
-          }
+          // try
+          // {
+          //   if (!String.IsNullOrEmpty(Effect.SunAnimatorBool))
+          //   {
+          //     logger.LogDebug($"Removing sun animator bool, weather: {weather.Name}, bool: {Effect.SunAnimatorBool}");
+          //     sunBools.Remove(weather.VanillaWeatherType);
+          //   }
+          // }
+          // catch (Exception e)
+          // {
+          //   logger.LogInfo($"Cannot remove sun animator bool: {e.Message}");
+          // }
         }
       }
 
-      // if (sunBools.Count == 0)
-      // {
-      //   SunAnimator.OverrideSunAnimator(LevelWeatherType.None);
-      // }
-      // else
-      // {
-      //   sunBools.Distinct().ToList().ForEach(loopWeatherType => SunAnimator.OverrideSunAnimator(loopWeatherType));
-      // }
+      if (sunBools.Count == 0)
+      {
+        WeatherRegistry.Patches.SunAnimator.OverrideSunAnimator(LevelWeatherType.None);
+      }
+      else
+      {
+        sunBools.Distinct().ToList().ForEach(loopWeatherType => WeatherRegistry.Patches.SunAnimator.OverrideSunAnimator(loopWeatherType));
+      }
     }
   }
 }

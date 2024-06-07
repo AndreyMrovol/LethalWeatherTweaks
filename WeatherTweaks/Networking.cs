@@ -3,10 +3,11 @@ using System.Linq;
 using Dissonance;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
-using WeatherAPI;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
+using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
@@ -45,7 +46,7 @@ namespace WeatherTweaks
         return;
       }
 
-      Variables.PopulateWeathers(StartOfRound.Instance);
+      // Variables.PopulateWeathers(StartOfRound.Instance);
 
       Plugin.logger.LogInfo($"Received weather data {weatherData} from server, applying");
 
@@ -94,39 +95,26 @@ namespace WeatherTweaks
     public static void WeatherEffectsReceived(string weatherEffects)
     {
       List<Weather> effectsDeserialized = JsonConvert.DeserializeObject<List<Weather>>(weatherEffects);
+      Plugin.logger.LogDebug($"Received weather effects: {effectsDeserialized}");
+
       List<ImprovedWeatherEffect> currentEffects = [];
       if (currentEffects == null)
       {
         return;
       }
 
-      // if (StartOfRound.Instance.IsHost)
-      // {
-      //   return;
-      // }
-
-      // foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
-      // {
-      //   Plugin.logger.LogDebug($"Checking effect {effect.name} ({TimeOfDay.Instance.effects.ToList().IndexOf(effect)})");
-
-      //   if (effectsDeserialized.Contains((LevelWeatherType)TimeOfDay.Instance.effects.ToList().IndexOf(effect)))
-      //   {
-      //     currentEffects.Add(effect);
-
-      //     Plugin.logger.LogDebug($"Adding effect {effect.name}");
-      //   }
-      // }
-
-      foreach (Weather weather in WeatherAPI.WeatherManager.Weathers)
+      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
       {
         // check if the weather name (not the full object) is in the deserizlied list
-        if (effectsDeserialized.Select(weather => weather.Name).Contains(weather.Name))
+        if (effectsDeserialized.Select(deserialized => deserialized.VanillaWeatherType).Contains(weather.VanillaWeatherType))
         {
           currentEffects.Add(weather.Effect);
         }
       }
 
       Plugin.logger.LogInfo($"Received weather effects data {weatherEffects} from server, applying");
+
+      currentEffects.ForEach(effect => Plugin.logger.LogDebug($"Effect: {effect}"));
 
       GameInteraction.SetWeatherEffects(TimeOfDay.Instance, currentEffects);
     }
@@ -196,6 +184,8 @@ namespace WeatherTweaks
 
     public static void SetWeatherEffects(List<Weather> weathers)
     {
+      Plugin.logger.LogDebug($"Setting weather effects: {weathers}");
+
       if (weathers == null)
       {
         return;
