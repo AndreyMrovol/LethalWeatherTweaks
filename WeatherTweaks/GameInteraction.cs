@@ -23,6 +23,7 @@ namespace WeatherTweaks
       foreach (SelectableLevel level in levels)
       {
         string levelName = level.PlanetName;
+        logger.LogDebug($"Setting weather for {levelName}");
 
         if (weatherData.ContainsKey(levelName))
         {
