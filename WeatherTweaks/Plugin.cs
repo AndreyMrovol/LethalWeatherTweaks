@@ -10,6 +10,7 @@ namespace WeatherTweaks
   [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
   [BepInDependency("MrovLib", BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.HardDependency)]
+  [BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
   // [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
@@ -91,6 +92,11 @@ namespace WeatherTweaks
       if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
       {
         Patches.Malfunctions.Init();
+      }
+
+      if (Chainloader.PluginInfos.ContainsKey("BMX.LobbyCompatibility"))
+      {
+        LobbyCompatibilityCompatibility.Init();
       }
 
       logger.LogInfo(
