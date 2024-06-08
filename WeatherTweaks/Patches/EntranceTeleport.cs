@@ -45,14 +45,19 @@ namespace WeatherTweaks
           weatherEffects = [currentWeather.Weather.Effect];
         }
 
-        weatherEffects.Do(effect =>
-        {
-          logger.LogDebug($"Effect Enabled: {effect.EffectEnabled}");
-        });
+        // weatherEffects.Do(effect =>
+        // {
+        //   logger.LogDebug($"Effect Enabled: {effect.EffectEnabled}");
+        // });
 
         foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
         {
           logger.LogDebug($"Weather: {weather.Name}");
+
+          if (weather.Type == WeatherRegistry.WeatherType.Clear)
+          {
+            continue;
+          }
 
           if (weatherEffects.Contains(weather.Effect))
           {
