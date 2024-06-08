@@ -37,8 +37,8 @@ namespace WeatherTweaks
 
       Variables.CurrentLevelWeather = currentWeather;
 
-      Plugin.logger.LogError(
-        $"Landing at {TimeOfDay.Instance.currentLevel.PlanetName} with weather {JsonConvert.SerializeObject(
+      Plugin.logger.LogWarning(
+        $"Landing at {MrovLib.API.SharedMethods.GetNumberlessPlanetName(TimeOfDay.Instance.currentLevel)} with weather {JsonConvert.SerializeObject(
         currentWeather,
         Formatting.None,
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
@@ -54,7 +54,7 @@ namespace WeatherTweaks
     {
       foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
       {
-        Plugin.logger.LogError($"Effect {effect} enabled: {effect.effectEnabled}");
+        Plugin.logger.LogWarning($"Effect {effect.name} enabled: {effect.effectEnabled}");
       }
     }
 

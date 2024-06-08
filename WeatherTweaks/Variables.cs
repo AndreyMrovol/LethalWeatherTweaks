@@ -329,6 +329,7 @@ namespace WeatherTweaks
 
     internal static WeatherType GetFullWeatherType(WeatherType weatherType)
     {
+      Plugin.logger.LogDebug($"Getting full weather type for {weatherType.Name}");
       return WeatherTypes.Find(x => x.Name == weatherType.Name);
     }
 
