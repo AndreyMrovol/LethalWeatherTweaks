@@ -57,7 +57,7 @@ namespace WeatherTweaks.Definitions
       {
         var randomWeathers = level.randomWeathers;
         List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.Weather).Append(StartingWeather).Distinct().ToList();
-        remainingWeathers.RemoveAll(weather => weather != LevelWeatherType.None);
+        remainingWeathers.RemoveAll(weather => weather == LevelWeatherType.None);
 
         foreach (RandomWeatherWithVariables weather in randomWeathers)
         {
