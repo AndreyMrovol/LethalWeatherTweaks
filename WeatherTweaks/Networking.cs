@@ -94,8 +94,8 @@ namespace WeatherTweaks
 
     public static void WeatherEffectsReceived(string weatherEffects)
     {
+      Plugin.logger.LogDebug($"Received weather effects: {weatherEffects}");
       List<Weather> effectsDeserialized = JsonConvert.DeserializeObject<List<Weather>>(weatherEffects);
-      Plugin.logger.LogDebug($"Received weather effects: {effectsDeserialized}");
 
       List<ImprovedWeatherEffect> currentEffects = [];
       if (currentEffects == null)
@@ -190,6 +190,8 @@ namespace WeatherTweaks
       {
         return;
       }
+
+      weathers.ForEach(weather => Plugin.logger.LogDebug($"Weather: {weather}"));
 
       weathers.Select(weather => weather.VanillaWeatherType != LevelWeatherType.None);
       Variables.CurrentEffects.RemoveAll(effect => effect == null);
