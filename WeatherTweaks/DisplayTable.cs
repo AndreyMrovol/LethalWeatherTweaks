@@ -10,6 +10,11 @@ namespace WeatherTweaks
   {
     public static void DisplayWeathersTable()
     {
+      if (!Variables.IsSetupFinished)
+      {
+        return;
+      }
+
       var table = new ConsoleTables.ConsoleTable("Planet", "Level weather", "Uncertain weather");
 
       Plugin.logger.LogWarning($"Displaying weathers table, instance: {StartOfRound.Instance}");
