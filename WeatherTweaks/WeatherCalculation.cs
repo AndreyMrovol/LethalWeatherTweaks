@@ -214,8 +214,6 @@ namespace WeatherTweaks
     {
       Plugin.logger.LogInfo("First day, setting predefined weather conditions");
 
-      var possibleWeathersTable = new ConsoleTables.ConsoleTable("planet", "randomWeathers");
-
       // from all levels, 2 cannot have a weather condition (41 Experimentation and 56 Vow)
       // if there are more than 9 levels (vanilla amount), make it 3 without weather
 
@@ -254,7 +252,6 @@ namespace WeatherTweaks
         // var randomWeathers = level.randomWeathers.ToList();
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
-        possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
 
         randomWeathers.RemoveAll(x => x.weatherType == LevelWeatherType.Eclipsed);
 
@@ -304,7 +301,6 @@ namespace WeatherTweaks
         selectedWeathers[CompanyMoon.PlanetName] = Variables.NoneWeather;
       }
 
-      Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
       return selectedWeathers;
     }
 
