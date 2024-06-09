@@ -66,29 +66,9 @@ namespace WeatherTweaks
       return GameLevels;
     }
 
-    internal static List<LevelWeatherType> GetPlanetPossibleWeathers(SelectableLevel level)
-    {
-      if (level.randomWeathers == null || level.randomWeathers.Count() == 0)
-      {
-        Plugin.logger.LogError("Random weathers are null");
-        return [];
-      }
-
-      List<LevelWeatherType> weathersToChooseFrom = level
-        .randomWeathers.Where(randomWeather =>
-          randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
-        )
-        .ToList()
-        .Select(x => x.weatherType)
-        .Append(LevelWeatherType.None)
-        .ToList();
-
-      return weathersToChooseFrom;
-    }
-
     internal static List<WeatherType> GetPlanetWeatherTypes(SelectableLevel level)
     {
-      List<LevelWeatherType> randomWeathers = GetPlanetPossibleWeathers(level);
+      List<LevelWeatherType> randomWeathers = WeatherRegistry.WeatherManager.GetPlanetPossibleWeathers(level);
 
       if (randomWeathers.Count() == 0)
       {
