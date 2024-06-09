@@ -308,10 +308,6 @@ namespace WeatherTweaks
       return selectedWeathers;
     }
 
-    //
-    //
-    //
-
     private static Dictionary<string, LevelWeatherType> VanillaWeathers(int connectedPlayersOnServer, StartOfRound startOfRound)
     {
       Dictionary<string, LevelWeatherType> vanillaSelectedWeather = new Dictionary<string, LevelWeatherType>();
