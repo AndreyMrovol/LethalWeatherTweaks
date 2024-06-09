@@ -346,12 +346,8 @@ namespace WeatherTweaks
       List<WeatherType> weatherTypes = GetPlanetWeatherTypes(level);
       foreach (var weather in weatherTypes)
       {
-        Plugin.logger.LogDebug($"Weather: {weather.Name}");
-
         var weatherType = weather;
-        Plugin.logger.LogDebug($"Weather: {weather.Name}");
-        var weatherWeight = weights.TryGetValue(weather.weatherType, out int weight) ? weight : 25;
-        Plugin.logger.LogDebug($"Weather: {weather.Name}");
+        var weatherWeight = weights.TryGetValue(weather.weatherType, out int weight) ? weight : weather.Weather.DefaultWeight;
 
         if (ConfigManager.ScaleDownClearWeather.Value && weather.weatherType == LevelWeatherType.None)
         {
@@ -365,7 +361,9 @@ namespace WeatherTweaks
             .ToList()
             .ForEach(randomWeather =>
             {
-              possibleWeathersWeightSum += weights.TryGetValue(randomWeather.weatherType, out int weight) ? weight : 25;
+              possibleWeathersWeightSum += weights.TryGetValue(randomWeather.weatherType, out int weight)
+                ? weight
+                : weather.Weather.DefaultWeight;
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
@@ -384,7 +382,8 @@ namespace WeatherTweaks
           if (combinedWeather.CanWeatherBeApplied(level))
           {
             weatherWeight = Mathf.RoundToInt(
-              (weights.TryGetValue(weather.weatherType, out int localWeight) ? localWeight : 25) * combinedWeather.weightModify
+              (weights.TryGetValue(weather.weatherType, out int localWeight) ? localWeight : weather.Weather.DefaultWeight)
+                * combinedWeather.weightModify
             );
           }
           else
@@ -410,7 +409,9 @@ namespace WeatherTweaks
           }
 
           weatherWeight = Mathf.RoundToInt(
-            weights.TryGetValue(weather.weatherType, out int localWeight) ? localWeight : 25 * progressingWeather.weightModify
+            weights.TryGetValue(weather.weatherType, out int localWeight)
+              ? localWeight
+              : weather.Weather.DefaultWeight * progressingWeather.weightModify
           );
         }
 
