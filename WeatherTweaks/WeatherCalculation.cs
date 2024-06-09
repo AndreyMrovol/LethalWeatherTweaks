@@ -252,8 +252,6 @@ namespace WeatherTweaks
           .ToList();
 
         // var randomWeathers = level.randomWeathers.ToList();
-        Plugin.logger.LogDebug($"randomWeathers count: {randomWeathers.Count}");
-        randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.Name}"));
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
         possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
