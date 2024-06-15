@@ -342,7 +342,7 @@ namespace WeatherTweaks
             });
           // proportion from clearWeatherWeight / fullWeightsSum
 
-          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / fullWeightSum);
+          double noWetherFinalWeight = (double)(clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / Math.Max(fullWeightSum, 1));
           weatherWeight = Convert.ToInt32(noWetherFinalWeight);
 
           Plugin.logger.LogDebug(
@@ -406,6 +406,12 @@ namespace WeatherTweaks
         {
           weatherList.Add(weather);
         }
+      }
+
+      if (weatherList.Count == 0)
+      {
+        Plugin.logger.LogWarning($"Final weather list is empty, setting weather forcefully to None");
+        weatherList = [NoneWeather];
       }
 
       return weatherList;
