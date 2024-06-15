@@ -17,6 +17,11 @@ namespace WeatherTweaks.Definitions
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {
+        if (!Enabled.Value)
+        {
+          return false;
+        }
+
         var randomWeathers = level.randomWeathers;
         List<LevelWeatherType> remainingWeathers = Weathers.Select(weather => weather.VanillaWeatherType).ToList();
 

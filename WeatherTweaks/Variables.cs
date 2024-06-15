@@ -94,14 +94,9 @@ namespace WeatherTweaks
               possibleTypes.Add(weather);
             }
             break;
+
           case CustomWeatherType.Progressing:
             Definitions.Types.ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
-            if (progressingWeather.Enabled.Value == false)
-            {
-              Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
-              continue;
-            }
-
             if (progressingWeather.CanWeatherBeApplied(level))
             {
               possibleTypes.Add(weather);
@@ -358,6 +353,11 @@ namespace WeatherTweaks
         if (weatherType.Type == CustomWeatherType.Combined)
         {
           var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weatherType.Name);
+          if (combinedWeather.Enabled.Value == false)
+          {
+            Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} is disabled");
+            continue;
+          }
 
           if (combinedWeather.CanWeatherBeApplied(level))
           {
