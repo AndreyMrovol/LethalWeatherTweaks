@@ -17,6 +17,12 @@ namespace WeatherTweaks.Patches
     [HarmonyAfter("mrov.WeatherRegistry")]
     public static void Postfix(Terminal __instance)
     {
+      Variables.CombinedWeatherTypes.Clear();
+      Variables.ProgressingWeatherTypes.Clear();
+      Variables.WeatherTypes.Clear();
+      Variables.CurrentEffects.Clear();
+      Variables.CurrentWeathers.Clear();
+
       Variables.PopulateWeathers(StartOfRound.Instance);
 
       foreach (Modules.Types.CombinedWeatherType combined in CustomWeatherHandler.RegisteredCombinedWeathers)
