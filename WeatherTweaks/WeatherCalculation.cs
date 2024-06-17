@@ -234,7 +234,6 @@ namespace WeatherTweaks
         randomWeathers.Do(x => Plugin.logger.LogDebug($"randomWeathers: {x.weatherType}"));
 
         var stringifiedRandomWeathers = JsonConvert.SerializeObject(randomWeathers.Select(x => x.weatherType.ToString()).ToList());
-        possibleWeathersTable.AddRow(level.PlanetName, stringifiedRandomWeathers);
 
         randomWeathers.RemoveAll(x => x.weatherType == LevelWeatherType.Eclipsed);
 
@@ -273,7 +272,6 @@ namespace WeatherTweaks
         selectedWeathers[planetName] = randomWeathers[random.Next(0, randomWeathers.Count)].weatherType;
       }
 
-      Plugin.logger.LogInfo("Possible weathers:\n" + possibleWeathersTable.ToMinimalString());
       return selectedWeathers;
     }
 

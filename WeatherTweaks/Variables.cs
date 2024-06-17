@@ -65,7 +65,7 @@ namespace WeatherTweaks
 
       difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
 
-      foreach (var weather in GetPlanetPossibleWeathers(level))
+      foreach (var weather in WeatherRegistry.WeatherManager.GetPlanetPossibleWeathers(level))
       {
         var weatherType = weather;
         var weatherWeight = weights.TryGetValue(weatherType, out int weight) ? weight : 25;
