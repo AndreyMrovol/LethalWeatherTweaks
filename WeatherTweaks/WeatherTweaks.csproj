@@ -37,6 +37,8 @@
         <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.1.0" />
 
         <PackageReference Include="Evaisa.LethalLib" Version="0.16.0" />
+
+        <PackageReference Include="mrov.WeatherRegistry" Version="*" PrivateAssets="all" Publicize="true"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -62,10 +64,6 @@
 
         <Reference Include="LethalLib" PrivateAssets="All">
             <HintPath>$(LibraryDirectory)/LethalLib.dll</HintPath>
-        </Reference>
-
-        <Reference Include="WeatherRegistry" Publicize="true">
-            <HintPath>$(LibraryDirectory)/WeatherRegistry.dll</HintPath>
         </Reference>
 
         </ItemGroup>
