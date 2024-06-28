@@ -38,10 +38,10 @@ namespace WeatherTweaks
       }
 
       ChangeMidDay.lastCheckedEntry = 0;
-      ChangeMidDay.currentEntry = null;
       // LLLDungeonExitPatch.RemoveListener();
 
-      // WeatherRegistry.Patches.SunAnimator.Clear();
+      ChangeMidDay.currentEntry = null;
+      ChangeMidDay.nextEntry = null;
 
       if (StartOfRound.Instance.IsHost)
       {

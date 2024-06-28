@@ -16,10 +16,11 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(TimeOfDay))]
   public static class ChangeMidDay
   {
-    // internal static List<ProgressingWeatherEntry> weatherEntries = [];
     internal static float lastCheckedEntry = 0.0f;
     internal static System.Random random;
+
     internal static ProgressingWeatherEntry currentEntry;
+    internal static ProgressingWeatherEntry nextEntry;
 
     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks ChangeMidDay");
 
@@ -27,9 +28,7 @@ namespace WeatherTweaks
     [HarmonyPatch("MoveTimeOfDay")]
     internal static void MoveTimeOfDayPatch(TimeOfDay __instance)
     {
-      WeatherType currentWeather = Variables.CurrentLevelWeather;
-
-      if (currentWeather.Type != CustomWeatherType.Progressing)
+      if (Variables.CurrentLevelWeather.Type != CustomWeatherType.Progressing)
       {
         return;
       }
@@ -40,6 +39,18 @@ namespace WeatherTweaks
       }
 
       float normalizedTimeOfDay = __instance.normalizedTimeOfDay;
+      float nextEntryTime = nextEntry != null ? nextEntry.DayTime : 0f;
+
+      if (normalizedTimeOfDay >= nextEntryTime)
+      {
+        RunProgressingEntryActions(normalizedTimeOfDay);
+      }
+    }
+
+    internal static void RunProgressingEntryActions(float normalizedTimeOfDay)
+    {
+      WeatherType currentWeather = Variables.CurrentLevelWeather;
+
       if (random == null)
       {
         random = new System.Random(StartOfRound.Instance.randomMapSeed);
@@ -60,8 +71,10 @@ namespace WeatherTweaks
       Definitions.Types.ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather =>
         weather.Name == currentWeather.Name
       );
-      List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries.ToList();
+      List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries;
       weatherEntries.RemoveAll(entry => entry.DayTime < lastCheckedEntry);
+
+      nextEntry = weatherEntries.FirstOrDefault(entry => entry.DayTime > lastCheckedEntry);
 
       // the plan:
       // all entries should be sorted by the Time float
