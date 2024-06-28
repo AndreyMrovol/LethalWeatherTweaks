@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using WeatherRegistry;
 using WeatherTweaks.Patches;
 
 namespace WeatherTweaks
@@ -60,6 +61,8 @@ namespace WeatherTweaks
       // new ProgressingTesting();
 
       WeatherRegistry.Settings.SelectWeathers = false;
+
+      WeatherRegistry.EventManager.DisableAllWeathers.AddListener(() => DisableAllWeathers.DisableAllWeather());
 
       if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
       {
