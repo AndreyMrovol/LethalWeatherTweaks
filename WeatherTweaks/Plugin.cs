@@ -102,6 +102,29 @@ namespace WeatherTweaks
         LobbyCompatibilityCompatibility.Init();
       }
 
+      Weather cloudyWeather =
+        new("Cloudy", new(null, null) { SunAnimatorBool = "overcast" })
+        {
+          Color = new(r: 0, g: 0.62f, b: 0.55f, a: 1),
+          ScrapAmountMultiplier = 1.6f,
+          ScrapValueMultiplier = 0.8f,
+          DefaultWeatherToWeatherWeights = ["Eclipsed@200", "Stormy@80"],
+          DefaultWeight = 10,
+        };
+
+      Weather Madness =
+        new("Impossible", new(null, null) { SunAnimatorBool = "eclipsed" })
+        {
+          Color = new(r: 1, g: 0, b: 1, a: 1),
+          ScrapAmountMultiplier = 5f,
+          ScrapValueMultiplier = 0.5f,
+          DefaultWeatherToWeatherWeights = ["Eclipsed@10000"],
+          DefaultWeight = 0,
+        };
+
+      WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
+      WeatherRegistry.WeatherManager.RegisterWeather(Madness);
+
       logger.LogInfo(
         @"
                   .::.                  
