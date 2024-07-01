@@ -112,18 +112,7 @@ namespace WeatherTweaks
           DefaultWeight = 10,
         };
 
-      Weather Madness =
-        new("Impossible", new(null, null) { SunAnimatorBool = "eclipsed" })
-        {
-          Color = new(r: 1, g: 0, b: 1, a: 1),
-          ScrapAmountMultiplier = 5f,
-          ScrapValueMultiplier = 0.5f,
-          DefaultWeatherToWeatherWeights = ["Eclipsed@10000"],
-          DefaultWeight = 0,
-        };
-
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
-      WeatherRegistry.WeatherManager.RegisterWeather(Madness);
 
       logger.LogInfo(
         @"
