@@ -7,7 +7,7 @@ namespace WeatherTweaks
 {
   public static class DisableAllWeathers
   {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks TimeOfDay");
+    internal static MrovLib.Logger logger = new("WeatherTweaks TimeOfDay", ConfigManager.LogLogs);
 
     internal static void DisableAllWeather()
     {

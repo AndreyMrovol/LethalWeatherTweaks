@@ -11,7 +11,7 @@ namespace WeatherTweaks.Patches
 {
   public static class LLL
   {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks LLL");
+    internal static MrovLib.Logger logger = new("WeatherTweaks LLL", ConfigManager.LogLogs);
 
     internal static void Init()
     {

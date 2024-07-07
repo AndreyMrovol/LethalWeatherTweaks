@@ -51,7 +51,7 @@ namespace WeatherTweaks.Definitions
       public List<ProgressingWeatherEntry> WeatherEntries = [];
       public LevelWeatherType StartingWeather;
 
-      public new float weightModify = 0.6f;
+      public new float weightModify = 0.45f;
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {

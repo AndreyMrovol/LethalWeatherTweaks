@@ -9,7 +9,7 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(Terminal))]
   public static class TextPostProcessPatch
   {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks Terminal");
+    internal static MrovLib.Logger logger = new("WeatherTweaks Terminal", ConfigManager.LogLogs);
 
     [HarmonyPatch("TextPostProcess")]
     [HarmonyPrefix]

@@ -48,9 +48,15 @@ namespace WeatherTweaks
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
 
-      if (day == 0)
+      if (day == 0 && ConfigManager.FirstDaySpecial.Value)
       {
         seed = ConfigManager.FirstDaySeed.Value;
+
+        if (ConfigManager.FirstDayRandomSeed.Value)
+        {
+          seed = random.Next(0, 10000000);
+        }
+
         random = new System.Random(seed);
 
         List<string> noWeatherOnStartPlanets = ["41 Experimentation", "56 Vow"];
@@ -125,60 +131,21 @@ namespace WeatherTweaks
 
         currentWeather[level.PlanetName] = Variables.NoneWeather;
 
-        // and now the fun part
-        // rework mechanic to use weighted lists
+        // List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
 
-        // get all possible random weathers
-
-        // var possibleWeathers = level
-        //   .randomWeathers.Where(randomWeather =>
-        //     randomWeather.weatherType != LevelWeatherType.None && randomWeather.weatherType != LevelWeatherType.DustClouds
-        //   )
-        //   .ToList();
-
-        List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
-
-        bool canBeDustClouds = level.randomWeathers.Any(randomWeather => randomWeather.weatherType == LevelWeatherType.DustClouds);
-
-        // var stringifiedPossibleWeathers = JsonConvert.SerializeObject(possibleWeathers.Select(x => x.weatherType.ToString()).ToList());
-        // Plugin.logger.LogDebug($"possibleWeathers: {stringifiedPossibleWeathers}");
-
-        if (possibleWeathers.Count == 0)
-        {
-          Plugin.logger.LogDebug("No possible weathers, setting to None");
-          currentWeather[level.PlanetName] = Variables.NoneWeather;
-          continue;
-        }
+        // if (possibleWeathers.Count == 0)
+        // {
+        //   Plugin.logger.LogDebug("No possible weathers, setting to None");
+        //   currentWeather[level.PlanetName] = Variables.NoneWeather;
+        //   continue;
+        // }
 
         // add None to the list of possible weathers
-        List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
+        // List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
 
-        Dictionary<LevelWeatherType, int> weights = [];
-        if (!VanillaWeatherTypes.Contains(previousDayWeather[level.PlanetName]))
-        {
-          Plugin.logger.LogDebug(
-            $"Previous weather was {previousDayWeather[level.PlanetName]}, which is not vanilla - using predefined weights"
-          );
-
-          weights = ConfigManager.Weights[LevelWeatherType.Rainy];
-        }
-        else
-        {
-          weights = ConfigManager.Weights[previousDayWeather[level.PlanetName]];
-        }
-
-        // get the weighted list of weathers from config
-        var weatherWeights = Variables.GetPlanetWeightedList(level, weights, difficultyMultiplier);
-        var weather = weatherWeights[random.Next(0, weatherWeights.Count)];
-
-        if (weather == Variables.NoneWeather && canBeDustClouds)
-        {
-          // fixed 25% chance for dust clouds (replacing None as closest non-weather weather)
-          if (random.Next(0, 100) < 25)
-          {
-            weather = Variables.WeatherTypes.Find(x => x.weatherType == LevelWeatherType.DustClouds);
-          }
-        }
+        // get the weighted list of weathers
+        MrovLib.WeightHandler<WeatherType> weights = Variables.GetPlanetWeightedList(level);
+        var weather = weights.Random();
 
         currentWeather[level.PlanetName] = weather;
         Variables.CurrentWeathers[level] = weather;
@@ -187,7 +154,7 @@ namespace WeatherTweaks
         try
         {
           Plugin.logger.LogDebug(
-            $"Chance for that was {weatherWeights.Where(x => x == weather).Count()} / {weatherWeights.Count} ({(float)weatherWeights.Where(x => x == weather).Count() / weatherWeights.Count * 100}%)"
+            $"Chance for that was {weights.Get(weather)} / {weights.Sum} ({(float)weights.Get(weather) / weights.Sum * 100}%)"
           );
         }
         catch { }
