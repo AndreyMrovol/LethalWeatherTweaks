@@ -27,13 +27,12 @@ namespace WeatherTweaks
     private void Awake()
     {
       logger = Logger;
+      ConfigManager.Init(Config);
 
       var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
-
       harmony.PatchAll();
 
       NetworkedConfig.Init();
-      ConfigManager.Init(Config);
       UncertainWeather.Init();
 
       new CombinedEclipsedFlooded();

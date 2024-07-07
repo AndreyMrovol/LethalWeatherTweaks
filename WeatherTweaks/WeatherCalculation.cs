@@ -125,17 +125,17 @@ namespace WeatherTweaks
 
         currentWeather[level.PlanetName] = Variables.NoneWeather;
 
-        List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
+        // List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
 
-        if (possibleWeathers.Count == 0)
-        {
-          Plugin.logger.LogDebug("No possible weathers, setting to None");
-          currentWeather[level.PlanetName] = Variables.NoneWeather;
-          continue;
-        }
+        // if (possibleWeathers.Count == 0)
+        // {
+        //   Plugin.logger.LogDebug("No possible weathers, setting to None");
+        //   currentWeather[level.PlanetName] = Variables.NoneWeather;
+        //   continue;
+        // }
 
         // add None to the list of possible weathers
-        List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
+        // List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
 
         // get the weighted list of weathers
         MrovLib.WeightHandler<WeatherType> weights = Variables.GetPlanetWeightedList(level);

@@ -205,6 +205,8 @@ namespace WeatherTweaks
 
     public static float GetLevelWeatherVariable(LevelWeatherType weatherType, bool variable2 = false)
     {
+      MrovLib.Logger logger = new("WeatherTweaks Variables", ConfigManager.LogWeatherVariables);
+
       if (StartOfRound.Instance == null)
       {
         Plugin.logger.LogError("StartOfRound is null");
@@ -216,11 +218,11 @@ namespace WeatherTweaks
 
       if (randomWeather == null || StartOfRound.Instance == null || level == null)
       {
-        Plugin.logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
+        logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
         return 0;
       }
 
-      Plugin.logger.LogDebug(
+      logger.LogDebug(
         $"Got weather variables for {level.PlanetName}:{weatherType} with variables {randomWeather.weatherVariable} {randomWeather.weatherVariable2}"
       );
 
@@ -311,34 +313,40 @@ namespace WeatherTweaks
 
     internal static int GetWeatherLevelWeight(SelectableLevel level, LevelWeatherType weatherType)
     {
-      Weather weather = WeatherRegistry.WeatherManager.GetWeather(weatherType);
-
-      return weather.GetWeight(level);
+      return WeatherRegistry.WeatherManager.GetWeather(weatherType).GetWeight(level);
     }
 
     internal static MrovLib.WeightHandler<WeatherType> GetPlanetWeightedList(SelectableLevel level, float difficulty = 0)
     {
+      MrovLib.Logger Logger = new("WeatherTweaks WeatherSelection", ConfigManager.LogWeatherSelection);
+
       MrovLib.WeightHandler<WeatherType> weights = new();
       WeightHandler<LevelWeatherType> weatherTypeWeights = new();
 
       difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
-
       int possibleWeathersWeightSum = 0;
-      level
-        .randomWeathers.ToList()
-        .ForEach(randomWeather =>
-        {
-          int localWeight = GetWeatherLevelWeight(level, randomWeather.weatherType);
-          possibleWeathersWeightSum += localWeight;
-          weatherTypeWeights.Add(randomWeather.weatherType, localWeight);
-        });
 
       List<WeatherType> weatherTypes = GetPlanetWeatherTypes(level);
+
+      Variables
+        .WeatherTypes.Where(weatherType => weatherType.Type == CustomWeatherType.Normal)
+        .ToList()
+        .ForEach(weatherType =>
+        {
+          int localWeight = GetWeatherLevelWeight(level, weatherType.weatherType);
+          weatherTypeWeights.Add(weatherType.weatherType, localWeight);
+
+          if (weatherTypes.Contains(weatherType))
+          {
+            possibleWeathersWeightSum += localWeight;
+          }
+        });
+
+      weatherTypeWeights.Add(LevelWeatherType.None, GetWeatherLevelWeight(level, LevelWeatherType.None));
+
       foreach (var weatherType in weatherTypes)
       {
-        var weatherWeight = 0;
-        Plugin.logger.LogFatal($"i'm here with weather {weatherType.Name} and weight {weatherWeight}");
-
+        var weatherWeight = weatherTypeWeights.Get(weatherType.weatherType);
         if (ConfigManager.ScaleDownClearWeather.Value && weatherType.weatherType == LevelWeatherType.None)
         {
           int clearWeatherWeight = NoneWeather.Weather.GetWeight(level);
@@ -348,7 +356,7 @@ namespace WeatherTweaks
           double noWeatherFinalWeight = (double)(clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / Math.Max(fullWeightSum, 1));
           weatherWeight = Convert.ToInt32(noWeatherFinalWeight);
 
-          Plugin.logger.LogDebug(
+          Logger.LogDebug(
             $"Scaling down clear weather weight from {clearWeatherWeight} to {weatherWeight} : ({clearWeatherWeight} * {possibleWeathersWeightSum} / {fullWeightSum}) == {weatherWeight}"
           );
         }
@@ -356,41 +364,32 @@ namespace WeatherTweaks
         if (weatherType.Type == CustomWeatherType.Combined)
         {
           var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weatherType.Name);
-          if (combinedWeather.Enabled.Value == false)
-          {
-            Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} is disabled");
-            continue;
-          }
 
           if (combinedWeather.CanWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(
-              weatherTypeWeights.Get(combinedWeather.weatherType) * (combinedWeather.weightModify / combinedWeather.Weathers.Count)
-            );
+            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(combinedWeather.weatherType) * combinedWeather.weightModify);
+            Logger.LogDebug($"Weight of combined weather: {combinedWeather.Name} is {weatherWeight}");
           }
           else
           {
-            Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} can't be applied");
+            Logger.LogDebug($"Combined weather: {combinedWeather.Name} can't be applied");
             continue;
           }
         }
-
-        if (weatherType.Type == CustomWeatherType.Progressing)
+        else if (weatherType.Type == CustomWeatherType.Progressing)
         {
           var progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weatherType.Name);
-          if (progressingWeather.Enabled.Value == false)
+          if (progressingWeather.CanWeatherBeApplied(level))
           {
-            Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
+            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(weatherType.weatherType) * progressingWeather.weightModify);
+
+            Logger.LogDebug($"Weight of progressing weather: {progressingWeather.Name} is {weatherWeight}");
+          }
+          else
+          {
+            Logger.LogDebug($"Progressing weather: {progressingWeather.Name} can't be applied");
             continue;
           }
-
-          if (progressingWeather.CanWeatherBeApplied(level) == false)
-          {
-            Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} can't be applied");
-            continue;
-          }
-
-          weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(weatherType.weatherType) * progressingWeather.weightModify);
         }
 
         if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)
@@ -398,11 +397,9 @@ namespace WeatherTweaks
           weatherWeight = (int)(weatherWeight * (1 - difficulty));
         }
 
-        Plugin.logger.LogDebug($"{weatherType.Name} has weight {weatherWeight}");
+        Logger.LogDebug($"{weatherType.Name} has weight {weatherWeight}");
 
         weights.Add(weatherType, weatherWeight);
-
-        Plugin.logger.LogFatal($"i'm here as well with weather {weatherType.Name} and weight {weatherWeight}");
       }
 
       return weights;
