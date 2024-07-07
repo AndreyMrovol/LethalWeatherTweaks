@@ -48,9 +48,15 @@ namespace WeatherTweaks
       int quota = TimeOfDay.Instance.timesFulfilledQuota;
       int dayInQuota = day % 3;
 
-      if (day == 0)
+      if (day == 0 && ConfigManager.FirstDaySpecial.Value)
       {
         seed = ConfigManager.FirstDaySeed.Value;
+
+        if (ConfigManager.FirstDayRandomSeed.Value)
+        {
+          seed = random.Next(0, 10000000);
+        }
+
         random = new System.Random(seed);
 
         List<string> noWeatherOnStartPlanets = ["41 Experimentation", "56 Vow"];

@@ -21,6 +21,8 @@ namespace WeatherTweaks
     public static ConfigEntry<bool> LogLogs { get; private set; }
 
     public static ConfigEntry<int> FirstDaySeed { get; private set; }
+    public static ConfigEntry<bool> FirstDaySpecial { get; private set; }
+    public static ConfigEntry<bool> FirstDayRandomSeed { get; private set; }
 
     public static ConfigEntry<bool> UncertainWeatherEnabled { get; private set; }
 
@@ -69,6 +71,8 @@ namespace WeatherTweaks
       );
 
       FirstDaySeed = configFile.Bind("3> First day", "FirstDaySeed", 0, "Seed for the first day's weather");
+      FirstDaySpecial = configFile.Bind("3> First day", "FirstDaySpecial", true, "Enable special weather picking algorithm for the first day");
+      FirstDayRandomSeed = configFile.Bind("3> First day", "FirstDayRandomSeed", true, "Use random seed for the first day's weather");
 
       AlwaysUncertain = configFile.Bind("4> Special modes", "AlwaysUncertain", false, "Always make weather uncertain");
       AlwaysUnknown = configFile.Bind("4> Special modes", "AlwaysUnknown", false, "Always make weather unknown");
