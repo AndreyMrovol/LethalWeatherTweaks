@@ -16,6 +16,10 @@ namespace WeatherTweaks
 
     // i love creating config hell
 
+    public static ConfigEntry<bool> LogWeatherSelection { get; private set; }
+    public static ConfigEntry<bool> LogWeatherVariables { get; private set; }
+    public static ConfigEntry<bool> LogLogs { get; private set; }
+
     public static ConfigEntry<int> FirstDaySeed { get; private set; }
 
     public static ConfigEntry<bool> UncertainWeatherEnabled { get; private set; }
@@ -36,6 +40,10 @@ namespace WeatherTweaks
       configFile = config;
 
       // create config entries
+
+      LogWeatherSelection = configFile.Bind("0> Debug", "LogWeatherSelection", true, "Log weather selection");
+      LogWeatherVariables = configFile.Bind("0> Debug", "LogWeatherVariables", true, "Log resolving weather variables");
+      LogLogs = configFile.Bind("0> Debug", "Logs", true, "Log logging logs");
 
       UncertainWeatherEnabled = configFile.Bind("1> Uncertain weather", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
 

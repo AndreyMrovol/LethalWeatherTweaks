@@ -13,7 +13,7 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(EntranceTeleport))]
   internal class EntranceTeleportPatch
   {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks EntranceTeleport");
+    internal static MrovLib.Logger logger = new("WeatherTweaks EntranceTeleport", ConfigManager.LogLogs);
     internal static bool isPlayerInside = false;
 
     [HarmonyPostfix]

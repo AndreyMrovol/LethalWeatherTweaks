@@ -21,7 +21,7 @@ namespace WeatherTweaks.Patches
 
     static int frame = 0;
 
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks GI");
+    internal static MrovLib.Logger logger = new("WeatherTweaks GI", ConfigManager.LogLogs);
 
     public static void Init()
     {

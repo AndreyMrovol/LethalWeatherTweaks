@@ -13,7 +13,7 @@ namespace WeatherTweaks
 {
   internal class GameInteraction
   {
-    internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks GameInteraction");
+    internal static MrovLib.Logger logger = new("WeatherTweaks GameInteraction", ConfigManager.LogLogs);
 
     internal static void SetWeather(Dictionary<string, WeatherType> weatherData)
     {
