@@ -51,7 +51,24 @@ namespace WeatherTweaks.Definitions
       public List<ProgressingWeatherEntry> WeatherEntries = [];
       public LevelWeatherType StartingWeather;
 
-      public new float weightModify = 0.45f;
+      private Weather _weather = null;
+      public override Weather Weather
+      {
+        get
+        {
+          Plugin.logger.LogFatal($"Getting Weather for {Name}: {_weather} (null? : {_weather == null})");
+
+          if (_weather == null)
+          {
+            _weather = WeatherRegistry.WeatherManager.GetWeather(weatherType);
+          }
+
+          return _weather;
+        }
+        set { _weather = value; }
+      }
+
+      public new float WeightModify = 0.45f;
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {
@@ -80,7 +97,12 @@ namespace WeatherTweaks.Definitions
         return WeatherEntries.Any(entry => entry.Weather == weatherType);
       }
 
-      public ProgressingWeatherType(string name, LevelWeatherType baseWeather, List<ProgressingWeatherEntry> weatherEntries)
+      public ProgressingWeatherType(
+        string name,
+        LevelWeatherType baseWeather,
+        List<ProgressingWeatherEntry> weatherEntries,
+        float weightModifier = 0.45f
+      )
         : base(name, CustomWeatherType.Progressing)
       {
         Name = name;
@@ -95,8 +117,9 @@ namespace WeatherTweaks.Definitions
         WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
 
         StartingWeather = baseWeather;
-        Weather = WeatherRegistry.WeatherManager.GetWeather(baseWeather);
         weatherType = baseWeather;
+
+        WeightModify = weightModifier;
 
         Variables.ProgressingWeatherTypes.Add(this);
       }

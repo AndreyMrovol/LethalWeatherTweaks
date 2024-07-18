@@ -7,13 +7,33 @@ using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Definitions
 {
-  partial class Types
+  public partial class Types
   {
     public class CombinedWeatherType : WeatherType
     {
-      public List<Weather> Weathers = [];
+      private List<LevelWeatherType> _levelweathertypes = [];
+      public List<LevelWeatherType> LevelWeatherTypes
+      {
+        get { return _levelweathertypes; }
+        private set { _levelweathertypes = value; }
+      }
 
-      public new float weightModify = 0.15f;
+      private List<Weather> _weathers = [];
+      public List<Weather> Weathers
+      {
+        get
+        {
+          if (_weathers.Count == 0)
+          {
+            _weathers = LevelWeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
+          }
+
+          return _weathers;
+        }
+        private set { _weathers = value; }
+      }
+
+      public new float WeightModify = 0.15f;
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {
@@ -38,7 +58,7 @@ namespace WeatherTweaks.Definitions
 
       public ConfigEntry<bool> Enabled;
 
-      public CombinedWeatherType(string name, List<Weather> weathers)
+      public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.15f)
         : base(name, CustomWeatherType.Combined)
       {
         if (weathers.Count == 0)
@@ -57,9 +77,12 @@ namespace WeatherTweaks.Definitions
 
         // WeatherType = new(Name, (LevelWeatherType)baseWeather, Weathers, CustomWeatherType.Combined) { Effects = [], };
 
+        LevelWeatherTypes = weathers.Distinct().ToList();
+
         Name = name;
-        Weathers = weathers.Distinct().ToList();
-        weatherType = weathers[0].VanillaWeatherType;
+        weatherType = weathers[0];
+
+        WeightModify = weightModifier;
 
         // TODO
         // create configFile bindings

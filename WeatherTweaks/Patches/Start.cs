@@ -17,43 +17,22 @@ namespace WeatherTweaks.Patches
     [HarmonyAfter("mrov.WeatherRegistry")]
     public static void Postfix(Terminal __instance)
     {
-      Variables.CombinedWeatherTypes.Clear();
-      Variables.ProgressingWeatherTypes.Clear();
+      // Variables.CombinedWeatherTypes.Clear();
+      // Variables.ProgressingWeatherTypes.Clear();
       Variables.WeatherTypes.Clear();
       Variables.CurrentEffects.Clear();
       Variables.CurrentWeathers.Clear();
 
       Variables.PopulateWeathers(StartOfRound.Instance);
 
-      foreach (Modules.Types.CombinedWeatherType combined in CustomWeatherHandler.RegisteredCombinedWeathers)
+      foreach (Definitions.Types.CombinedWeatherType combined in Variables.CombinedWeatherTypes)
       {
-        List<Weather> weathers = [];
-        foreach (LevelWeatherType levelWeather in combined.Weathers)
-        {
-          weathers.Add(WeatherRegistry.WeatherManager.GetWeather(levelWeather));
-        }
-
-        CombinedWeatherType combinedWeather = new CombinedWeatherType(combined.Name, weathers) { weightModify = combined.WeightModify, };
-
-        Variables.CombinedWeatherTypes.Add(combinedWeather);
-        Variables.WeatherTypes.Add(combinedWeather);
+        Variables.WeatherTypes.Add(combined);
       }
 
-      foreach (Modules.Types.ProgressingWeatherType progressing in CustomWeatherHandler.RegisteredProgressingWeathers)
+      foreach (Definitions.Types.ProgressingWeatherType progressing in Variables.ProgressingWeatherTypes)
       {
-        List<ProgressingWeatherEntry> weatherEntries = progressing.WeatherEntries;
-        List<Weather> weathers = [];
-        foreach (ProgressingWeatherEntry entry in weatherEntries)
-        {
-          weathers.Add(WeatherRegistry.WeatherManager.GetWeather(entry.Weather));
-        }
-
-        ProgressingWeatherType progressingWeather = new ProgressingWeatherType(progressing.Name, progressing.StartingWeather, weatherEntries)
-        {
-          weightModify = progressing.WeightModify,
-        };
-
-        Variables.WeatherTypes.Add(progressingWeather);
+        Variables.WeatherTypes.Add(progressing);
       }
 
       WeatherRegistry.Settings.ScreenMapColors.Add("+", Color.white);

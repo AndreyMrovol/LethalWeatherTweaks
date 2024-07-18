@@ -32,7 +32,7 @@ namespace WeatherTweaks.Definitions
       return true;
     }
 
-    public virtual float weightModify { get; set; } = 1f;
+    public virtual float WeightModify { get; set; } = 1f;
 
     public WeatherType(string name, CustomWeatherType type)
     {
@@ -41,19 +41,5 @@ namespace WeatherTweaks.Definitions
       Name = name;
       Type = type;
     }
-  }
-
-  [JsonObject(MemberSerialization.OptIn)]
-  public class RegisteredWeatherType
-  {
-    [JsonProperty]
-    public string Name;
-
-    [JsonProperty]
-    public LevelWeatherType weatherType;
-
-    public CustomWeatherType Type;
-
-    public float WeightModify = 1f;
   }
 }

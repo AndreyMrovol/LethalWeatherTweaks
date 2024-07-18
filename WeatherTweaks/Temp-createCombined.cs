@@ -1,33 +1,35 @@
 using System.Collections.Generic;
 using System.Linq;
+using WeatherTweaks;
+using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
 {
-  internal class CombinedEclipsedFlooded : Modules.Types.CombinedWeatherType
+  internal class CombinedEclipsedFlooded : Definitions.Types.CombinedWeatherType
   {
     public CombinedEclipsedFlooded()
       : base("Eclipsed + Flooded", [LevelWeatherType.Eclipsed, LevelWeatherType.Flooded]) { }
   }
 
-  internal class CombinedFoggyRainy : Modules.Types.CombinedWeatherType
+  internal class CombinedFoggyRainy : Definitions.Types.CombinedWeatherType
   {
     public CombinedFoggyRainy()
       : base("Foggy + Rainy", [LevelWeatherType.Foggy, LevelWeatherType.Rainy]) { }
   }
 
-  internal class CombinedEclipsedRainy : Modules.Types.CombinedWeatherType
+  internal class CombinedEclipsedRainy : Definitions.Types.CombinedWeatherType
   {
     public CombinedEclipsedRainy()
       : base("Eclipsed + Rainy", [LevelWeatherType.Eclipsed, LevelWeatherType.Rainy]) { }
   }
 
-  internal class CombinedStormyRainy : Modules.Types.CombinedWeatherType
+  internal class CombinedStormyRainy : Definitions.Types.CombinedWeatherType
   {
     public CombinedStormyRainy()
       : base("Stormy + Rainy", [LevelWeatherType.Stormy, LevelWeatherType.Rainy]) { }
   }
 
-  internal class CombinedStormyFlooded : Modules.Types.CombinedWeatherType
+  internal class CombinedStormyFlooded : Definitions.Types.CombinedWeatherType
   {
     public CombinedStormyFlooded()
       : base("Stormy + Flooded", [LevelWeatherType.Stormy, LevelWeatherType.Flooded])
@@ -36,37 +38,37 @@ namespace WeatherTweaks
     }
   }
 
-  internal class CombinedFoggyFlooded : Modules.Types.CombinedWeatherType
+  internal class CombinedFoggyFlooded : Definitions.Types.CombinedWeatherType
   {
     public CombinedFoggyFlooded()
       : base("Foggy + Flooded", [LevelWeatherType.Foggy, LevelWeatherType.Flooded]) { }
   }
 
-  internal class CombinedFoggyEclipsed : Modules.Types.CombinedWeatherType
+  internal class CombinedFoggyEclipsed : Definitions.Types.CombinedWeatherType
   {
     public CombinedFoggyEclipsed()
       : base("Foggy + Eclipsed", [LevelWeatherType.Foggy, LevelWeatherType.Eclipsed]) { }
   }
 
-  internal class CombinedStormyRainyEclipsed : Modules.Types.CombinedWeatherType
+  internal class CombinedStormyRainyEclipsed : Definitions.Types.CombinedWeatherType
   {
     public CombinedStormyRainyEclipsed()
       : base("Stormy + Rainy + Eclipsed", [LevelWeatherType.Stormy, LevelWeatherType.Rainy, LevelWeatherType.Eclipsed]) { }
   }
 
-  internal class CombinedStormyRainyFlooded : Modules.Types.CombinedWeatherType
+  internal class CombinedStormyRainyFlooded : Definitions.Types.CombinedWeatherType
   {
     public CombinedStormyRainyFlooded()
       : base("Stormy + Rainy + Flooded", [LevelWeatherType.Stormy, LevelWeatherType.Rainy, LevelWeatherType.Flooded]) { }
   }
 
-  // internal class SuperFoggy : Modules.Types.CombinedWeatherType
+  // internal class SuperFoggy : Definitions.Types.CombinedWeatherType
   // {
   //   public SuperFoggy()
   //     : base("Super Foggy", [LevelWeatherType.Foggy, LevelWeatherType.DustClouds], 0.3f) { }
   // }
 
-  internal class CombinedMadness : Modules.Types.CombinedWeatherType
+  internal class CombinedMadness : Definitions.Types.CombinedWeatherType
   {
     public CombinedMadness()
       : base(
@@ -76,7 +78,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingNoneFoggy : Modules.Types.ProgressingWeatherType
+  internal class ProgressingNoneFoggy : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingNoneFoggy()
       : base(
@@ -99,7 +101,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingNoneStormy : Modules.Types.ProgressingWeatherType
+  internal class ProgressingNoneStormy : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingNoneStormy()
       : base(
@@ -122,7 +124,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingEclipsedFoggy : Modules.Types.ProgressingWeatherType
+  internal class ProgressingEclipsedFoggy : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingEclipsedFoggy()
       : base(
@@ -145,7 +147,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingFoggyNone : Modules.Types.ProgressingWeatherType
+  internal class ProgressingFoggyNone : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingFoggyNone()
       : base(
@@ -162,7 +164,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingHiddenEclipsed : Modules.Types.ProgressingWeatherType
+  internal class ProgressingHiddenEclipsed : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingHiddenEclipsed()
       : base(
@@ -179,7 +181,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingStormyRainy : Modules.Types.ProgressingWeatherType
+  internal class ProgressingStormyRainy : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingStormyRainy()
       : base(
@@ -196,7 +198,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingRainyEclipsed : Modules.Types.ProgressingWeatherType
+  internal class ProgressingRainyEclipsed : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingRainyEclipsed()
       : base(
@@ -213,7 +215,7 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingMadness : Modules.Types.ProgressingWeatherType
+  internal class ProgressingMadness : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingMadness()
       : base(
@@ -239,11 +241,11 @@ namespace WeatherTweaks
             Weather = LevelWeatherType.Stormy
           }
         ],
-        weightModify: 0.1f
+        weightModifier: 0.1f
       ) { }
   }
 
-  internal class ProgressingTesting : Modules.Types.ProgressingWeatherType
+  internal class ProgressingTesting : Definitions.Types.ProgressingWeatherType
   {
     public ProgressingTesting()
       : base(
@@ -257,7 +259,7 @@ namespace WeatherTweaks
             Weather = LevelWeatherType.None
           },
         ],
-        weightModify: 500f
+        weightModifier: 500f
       ) { }
   }
 }
