@@ -11,6 +11,7 @@
 
     <PropertyGroup>
         <GameDirectory>V:\Steam\steamapps\common\Lethal Company</GameDirectory>
+        <LibraryDirectory>V:\LC-ModLibraries</LibraryDirectory>
     </PropertyGroup>
 
     <ItemGroup>
@@ -46,27 +47,27 @@
     <ItemGroup>
 
         <Reference Include="LethalLevelLoader" PrivateAssets="All">
-            <HintPath>../lib/LethalLevelLoader.dll</HintPath>
+            <HintPath>$(LibraryDirectory)/LethalLevelLoader.dll</HintPath>
         </Reference>
 
         <Reference Include="MrovLib" PrivateAssets="All">
-            <HintPath>../lib/MrovLib.dll</HintPath>
+            <HintPath>$(LibraryDirectory)/MrovLib.dll</HintPath>
         </Reference>
 
         <Reference Include="MoreShipUpgrades" PrivateAssets="All">
-            <HintPath>../lib/MoreShipUpgrades.dll</HintPath>
+            <HintPath>$(LibraryDirectory)/MoreShipUpgrades.dll</HintPath>
         </Reference>
 
         <Reference Include="MeteoMultiplier" PrivateAssets="All">
-            <HintPath>../lib/MeteoMultiplier.dll</HintPath>
+            <HintPath>$(LibraryDirectory)/MeteoMultiplier.dll</HintPath>
         </Reference>
 
         <Reference Include="Malfunctions" PrivateAssets="All">
-            <HintPath>../lib/Malfunctions.dll</HintPath>
+            <HintPath>$(LibraryDirectory)/Malfunctions.dll</HintPath>
         </Reference>
 
         <Reference Include="LethalLib" PrivateAssets="All">
-            <HintPath>../lib/LethalLib.dll</HintPath>
+            <HintPath>$(LibraryDirectory)/LethalLib.dll</HintPath>
         </Reference>
 
         </ItemGroup>
