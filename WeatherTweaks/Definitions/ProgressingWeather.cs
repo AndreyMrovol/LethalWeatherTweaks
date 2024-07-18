@@ -56,8 +56,6 @@ namespace WeatherTweaks.Definitions
       {
         get
         {
-          Plugin.logger.LogFatal($"Getting Weather for {Name}: {_weather} (null? : {_weather == null})");
-
           if (_weather == null)
           {
             _weather = WeatherRegistry.WeatherManager.GetWeather(weatherType);
