@@ -56,7 +56,7 @@ namespace WeatherTweaks
     internal static List<SelectableLevel> GetGameLevels(bool includeCompanyMoon = false)
     {
       Plugin.logger.LogDebug($"Getting game levels, {includeCompanyMoon}");
-      List<SelectableLevel> GameLevels = MrovLib.API.SharedMethods.GetGameLevels();
+      List<SelectableLevel> GameLevels = MrovLib.SharedMethods.GetGameLevels();
 
       if (!includeCompanyMoon)
       {
@@ -267,19 +267,19 @@ namespace WeatherTweaks
 
       WeatherType currentWeather = GetFullWeatherType(CurrentWeathers.TryGetValue(level, out WeatherType weather) ? weather : NoneWeather);
 
-      Plugin.logger.LogDebug(currentWeather.GetType().ToString());
+      Plugin.logger.LogDebug(currentWeather.Type);
 
-      switch (currentWeather.GetType().ToString())
+      switch (currentWeather.Type)
       {
-        case "WeatherTweaks.Definitions.Types+CombinedWeatherType":
+        case CustomWeatherType.Combined:
           Definitions.Types.CombinedWeatherType combinedWeather = (Definitions.Types.CombinedWeatherType)currentWeather;
-          if (combinedWeather.Weathers.Any(x => x.VanillaWeatherType == weatherType))
+          if (combinedWeather.LevelWeatherTypes.Any(x => x == weatherType))
           {
             Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
             return weatherType;
           }
           break;
-        case "WeatherTweaks.Definitions.Types+ProgressingWeatherType":
+        case CustomWeatherType.Progressing:
           Definitions.Types.ProgressingWeatherType progressingWeather = (Definitions.Types.ProgressingWeatherType)currentWeather;
 
           if (progressingWeather.DoesHaveWeatherHappening(weatherType))
@@ -367,7 +367,7 @@ namespace WeatherTweaks
 
           if (combinedWeather.CanWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(combinedWeather.weatherType) * combinedWeather.weightModify);
+            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(combinedWeather.weatherType) * combinedWeather.WeightModify);
             Logger.LogDebug($"Weight of combined weather: {combinedWeather.Name} is {weatherWeight}");
           }
           else
@@ -381,7 +381,7 @@ namespace WeatherTweaks
           var progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weatherType.Name);
           if (progressingWeather.CanWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(weatherType.weatherType) * progressingWeather.weightModify);
+            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(weatherType.weatherType) * progressingWeather.WeightModify);
 
             Logger.LogDebug($"Weight of progressing weather: {progressingWeather.Name} is {weatherWeight}");
           }
