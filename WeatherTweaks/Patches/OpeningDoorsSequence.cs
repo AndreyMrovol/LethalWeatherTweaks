@@ -4,22 +4,20 @@ using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Newtonsoft.Json;
+using WeatherRegistry;
 using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
-  [HarmonyPatch(typeof(WeatherRegistry.OpeningDoorsSequencePatch))]
   internal class OpeningDoorsSequencePatch
   {
-    [HarmonyPatch(nameof(WeatherRegistry.OpeningDoorsSequencePatch.SetWeatherEffects))]
-    [HarmonyPrefix]
-    internal static bool SetWeatherEffects()
+    internal static void SetWeatherEffects(SelectableLevel level, Weather weather)
     {
-      WeatherType currentWeather = Variables.GetFullWeatherType(Variables.CurrentWeathers[TimeOfDay.Instance.currentLevel]);
+      WeatherType currentWeather = Variables.GetFullWeatherType(Variables.CurrentWeathers[level]);
 
       if (StartOfRound.Instance.IsHost)
       {
-        if (currentWeather.GetType() == typeof(WeatherTweaks.Definitions.Types.CombinedWeatherType))
+        if (currentWeather.Type == Definitions.CustomWeatherType.Combined)
         {
           Plugin.logger.LogWarning($"WeatherType is CombinedWeatherType");
 
@@ -38,24 +36,12 @@ namespace WeatherTweaks
       Variables.CurrentLevelWeather = currentWeather;
 
       Plugin.logger.LogWarning(
-        $"Landing at {MrovLib.API.SharedMethods.GetNumberlessPlanetName(TimeOfDay.Instance.currentLevel)} with weather {JsonConvert.SerializeObject(
+        $"Landing at {MrovLib.SharedMethods.GetNumberlessPlanetName(TimeOfDay.Instance.currentLevel)} with weather {JsonConvert.SerializeObject(
         currentWeather,
         Formatting.None,
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
       )}"
       );
-
-      return false;
-    }
-
-    [HarmonyPatch(nameof(WeatherRegistry.OpeningDoorsSequencePatch.SetWeatherEffects))]
-    [HarmonyPostfix]
-    internal static void LogEffectsEnabled()
-    {
-      foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
-      {
-        Plugin.logger.LogWarning($"Effect {effect.name} enabled: {effect.effectEnabled}");
-      }
     }
 
     [HarmonyPatch(nameof(WeatherRegistry.OpeningDoorsSequencePatch.RunWeatherPatches))]

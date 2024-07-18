@@ -62,6 +62,7 @@ namespace WeatherTweaks
       WeatherRegistry.Settings.SelectWeathers = false;
 
       WeatherRegistry.EventManager.DisableAllWeathers.AddListener(() => DisableAllWeathers.DisableAllWeather());
+      WeatherRegistry.EventManager.ShipLanding.AddListener((data) => OpeningDoorsSequencePatch.SetWeatherEffects(data.level, data.weather));
 
       if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
       {
