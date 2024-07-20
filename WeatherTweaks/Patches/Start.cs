@@ -8,14 +8,9 @@ using static WeatherTweaks.Definitions.Types;
 
 namespace WeatherTweaks.Patches
 {
-  [HarmonyPatch(typeof(Terminal))]
   public class TerminalStartPatch
   {
-    [HarmonyPostfix]
-    [HarmonyPatch("Start")]
-    [HarmonyPriority(Priority.Last)]
-    [HarmonyAfter("mrov.WeatherRegistry")]
-    public static void Postfix(Terminal __instance)
+    public static void Start()
     {
       // Variables.CombinedWeatherTypes.Clear();
       // Variables.ProgressingWeatherTypes.Clear();
@@ -23,17 +18,19 @@ namespace WeatherTweaks.Patches
       Variables.CurrentEffects.Clear();
       Variables.CurrentWeathers.Clear();
 
-      Variables.PopulateWeathers(StartOfRound.Instance);
+      Plugin.logger.LogWarning("Terminal start start");
 
-      foreach (Definitions.Types.CombinedWeatherType combined in Variables.CombinedWeatherTypes)
-      {
-        Variables.WeatherTypes.Add(combined);
-      }
+      Variables.PopulateWeathers();
 
-      foreach (Definitions.Types.ProgressingWeatherType progressing in Variables.ProgressingWeatherTypes)
-      {
-        Variables.WeatherTypes.Add(progressing);
-      }
+      // foreach (Definitions.Types.CombinedWeatherType combined in Variables.CombinedWeatherTypes)
+      // {
+      //   Variables.WeatherTypes.Add(combined);
+      // }
+
+      // foreach (Definitions.Types.ProgressingWeatherType progressing in Variables.ProgressingWeatherTypes)
+      // {
+      //   Variables.WeatherTypes.Add(progressing);
+      // }
 
       WeatherRegistry.Settings.ScreenMapColors.Add("+", Color.white);
       WeatherRegistry.Settings.ScreenMapColors.Add("/", Color.white);

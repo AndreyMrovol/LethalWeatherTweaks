@@ -124,7 +124,7 @@ namespace WeatherTweaks
       return weathers;
     }
 
-    internal static void PopulateWeathers(StartOfRound startOfRound)
+    internal static void PopulateWeathers()
     {
       Plugin.logger.LogDebug("Populating weathers");
 

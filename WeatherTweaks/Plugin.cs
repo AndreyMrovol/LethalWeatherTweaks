@@ -64,6 +64,12 @@ namespace WeatherTweaks
       WeatherRegistry.EventManager.DisableAllWeathers.AddListener(() => DisableAllWeathers.DisableAllWeather());
       WeatherRegistry.EventManager.ShipLanding.AddListener((data) => OpeningDoorsSequencePatch.SetWeatherEffects(data.level, data.weather));
 
+      WeatherRegistry.EventManager.SetupFinished.AddListener(() => TerminalStartPatch.Start());
+      WeatherRegistry.EventManager.SetupFinished.AddListener(() => Variables.PopulateWeathers());
+
+      MrovLib.EventManager.TerminalStart.AddListener((terminal) => TerminalPatch.Postfix());
+      MrovLib.EventManager.LobbyDisabled.AddListener((startofround) => Reset.ResetThings());
+
       if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
       {
         Patches.LLL.Init();
@@ -137,10 +143,8 @@ namespace WeatherTweaks
     }
   }
 
-  [HarmonyPatch(typeof(Terminal), "Start")]
   public static class TerminalPatch
   {
-    [HarmonyPostfix]
     public static void Postfix()
     {
       if (Plugin.GeneralImprovements.IsModPresent)

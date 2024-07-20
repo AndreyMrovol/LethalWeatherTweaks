@@ -10,9 +10,9 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(StartOfRound))]
   public static class SetPlanetsWeatherPatch
   {
-    [HarmonyAfter("imabatby.lethallevelloader")]
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
+    [HarmonyAfter([WeatherRegistry.Plugin.GUID, "imabatby.lethallevelloader"])]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
