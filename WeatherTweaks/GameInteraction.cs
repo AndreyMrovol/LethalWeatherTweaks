@@ -57,6 +57,12 @@ namespace WeatherTweaks
     {
       // timeOfDay.globalTimeSpeedMultiplier = 0.001f;
 
+      if (!Variables.IsSetupFinished)
+      {
+        logger.LogDebug("Setup not finished, skipping setting weather effects");
+        return;
+      }
+
       logger.LogDebug($"Setting weather effects for {timeOfDay.currentLevel.PlanetName}: {weatherEffects.Count} effects");
       if (weatherEffects == null)
       {
