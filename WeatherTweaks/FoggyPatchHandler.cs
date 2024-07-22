@@ -26,7 +26,7 @@ namespace WeatherTweaks.Modules
 
       LevelsToIgnore.Add(level);
 
-      ConfigManager.FoggyIgnoreLevels.SetNewLevelsToIgnore(LevelsToIgnore.ToArray());
+      ConfigManager.FoggyIgnoreLevels.SetNewLevelsToIgnore(LevelsToIgnore.Distinct().ToArray());
     }
   }
 }
