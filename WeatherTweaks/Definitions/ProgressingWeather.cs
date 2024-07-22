@@ -109,7 +109,7 @@ namespace WeatherTweaks.Definitions
 
         // TODO
         // create configFile bindings
-        Enabled = ConfigManager.Instance.configFile.Bind("1c> Changing mechanics", $"{Name} Enabled", true, $"Enable {Name} changing weather");
+        Enabled = ConfigManager.configFile.Bind("1c> Changing mechanics", $"{Name} Enabled", true, $"Enable {Name} changing weather");
 
         WeatherEntries = weatherEntries;
         WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));

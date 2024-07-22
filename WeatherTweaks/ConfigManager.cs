@@ -12,7 +12,7 @@ namespace WeatherTweaks
       Instance = new ConfigManager(config);
     }
 
-    internal readonly ConfigFile configFile;
+    internal static ConfigFile configFile;
 
     // i love creating config hell
 

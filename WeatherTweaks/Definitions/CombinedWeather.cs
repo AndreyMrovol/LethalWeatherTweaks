@@ -86,7 +86,7 @@ namespace WeatherTweaks.Definitions
 
         // TODO
         // create configFile bindings
-        Enabled = ConfigManager.Instance.configFile.Bind("1b> Combined mechanics", $"{Name} Enabled", true, $"Enable {Name} combined weather");
+        Enabled = ConfigManager.configFile.Bind("1b> Combined mechanics", $"{Name} Enabled", true, $"Enable {Name} combined weather");
         // Weight = ConfigManager.Instance.configFile.Bind(
         //   "1b> Combined mechanics",
         //   $"{Name} Weight",
