@@ -29,7 +29,7 @@ namespace WeatherTweaks
 
     public void SetNewLevelsToIgnore(SelectableLevel[] levels)
     {
-      string newValue = string.Join(";", levels.Select(level => MrovLib.StringResolver.GetNumberlessName(level)));
+      string newValue = $"{string.Join(";", levels.Select(level => MrovLib.StringResolver.GetNumberlessName(level)))};";
 
       DefaultValue = newValue;
       ConfigEntry.Value = newValue;
