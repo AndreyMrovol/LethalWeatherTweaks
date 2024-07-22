@@ -31,7 +31,7 @@ namespace WeatherTweaks
 
     public static WeatherType CurrentLevelWeather;
 
-    internal static WeatherType GetCurrentWeather()
+    public static WeatherType GetCurrentWeather()
     {
       if (CurrentLevelWeather.Type == CustomWeatherType.Progressing)
       {
