@@ -36,6 +36,8 @@ namespace WeatherTweaks
     public static ConfigEntry<float> MaxMultiplier { get; private set; }
     public static ConfigEntry<bool> ScaleDownClearWeather { get; private set; }
 
+    public static LevelListConfigHandler FoggyIgnoreLevels;
+
     private ConfigManager(ConfigFile config)
     {
       // god forgive me for this
@@ -77,6 +79,12 @@ namespace WeatherTweaks
       AlwaysUncertain = configFile.Bind("4> Special modes", "AlwaysUncertain", false, "Always make weather uncertain");
       AlwaysUnknown = configFile.Bind("4> Special modes", "AlwaysUnknown", false, "Always make weather unknown");
       AlwaysClear = configFile.Bind("4> Special modes", "AlwaysClear", false, "Always make weather clear - good for testing");
+
+      FoggyIgnoreLevels = new LevelListConfigHandler(
+        "",
+        "FoggyIgnoreLevels",
+        new ConfigDescription("Levels to ignore applying foggy weather patch on")
+      );
     }
   }
 }

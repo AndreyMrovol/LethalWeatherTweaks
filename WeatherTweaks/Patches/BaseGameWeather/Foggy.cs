@@ -30,6 +30,11 @@ namespace WeatherTweaks
     {
       // Get fog and call ChangeFog
 
+      if (ConfigManager.FoggyIgnoreLevels.Value.Contains(StartOfRound.Instance.currentLevel))
+      {
+        return;
+      }
+
       LocalVolumetricFog Fog = Resources
         .FindObjectsOfTypeAll<LocalVolumetricFog>()
         .ToList()
