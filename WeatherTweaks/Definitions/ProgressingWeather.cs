@@ -23,10 +23,15 @@ namespace WeatherTweaks.Definitions
 
       internal WeatherType GetWeatherType()
       {
-        Weather vanillaWeather = WeatherRegistry.WeatherManager.GetWeather(Weather);
+        Weather vanillaWeather = GetWeather();
         return Variables.WeatherTypes.First(weatherType =>
           weatherType.Weather == vanillaWeather && weatherType.Type == CustomWeatherType.Normal
         );
+      }
+
+      internal Weather GetWeather()
+      {
+        return WeatherRegistry.WeatherManager.GetWeather(Weather);
       }
 
       internal List<DialogueSegment> GetDialogueSegment()
@@ -88,6 +93,32 @@ namespace WeatherTweaks.Definitions
         }
 
         return remainingWeathers.Count == 0;
+      }
+
+      public override (float valueMultiplier, float amountMultiplier) GetMultiplierData()
+      {
+        WeatherMultiplierData Data = new(this.weatherType, 0, 0);
+
+        float sumMultiplier = 0;
+        float sumSpawnMultiplier = 0;
+
+        float sumChances = 0;
+
+        foreach (ProgressingWeatherEntry entry in this.WeatherEntries)
+        {
+          Weather weather = entry.GetWeather();
+
+          WeatherMultiplierData data = new(weather.VanillaWeatherType, weather.ScrapValueMultiplier, weather.ScrapAmountMultiplier);
+
+          sumMultiplier += data.valueMultiplier * entry.Chance;
+          sumSpawnMultiplier += data.spawnMultiplier * entry.Chance;
+          sumChances += entry.Chance;
+        }
+
+        Data.valueMultiplier = sumMultiplier / sumChances;
+        Data.spawnMultiplier = sumSpawnMultiplier / sumChances;
+
+        return (Data.valueMultiplier, Data.spawnMultiplier);
       }
 
       public bool DoesHaveWeatherHappening(LevelWeatherType weatherType)

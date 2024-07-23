@@ -56,6 +56,20 @@ namespace WeatherTweaks.Definitions
         return remainingWeathers.Count == 0;
       }
 
+      public override (float valueMultiplier, float amountMultiplier) GetMultiplierData()
+      {
+        WeatherMultiplierData Data = new(this.weatherType, 0, 0);
+
+
+        foreach (Weather weather in this.Weathers)
+        {
+          Data.valueMultiplier += weather.ScrapValueMultiplier * 0.45f;
+          Data.spawnMultiplier += weather.ScrapAmountMultiplier * 0.45f;
+        }
+
+        return (Data.valueMultiplier, Data.spawnMultiplier);
+      }
+
       public ConfigEntry<bool> Enabled;
 
       public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.15f)

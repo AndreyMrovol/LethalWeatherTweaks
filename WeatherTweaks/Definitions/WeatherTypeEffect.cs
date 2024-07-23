@@ -32,6 +32,11 @@ namespace WeatherTweaks.Definitions
       return true;
     }
 
+    public virtual (float valueMultiplier, float amountMultiplier) GetMultiplierData()
+    {
+      return (Weather?.ScrapValueMultiplier ?? 1f, Weather?.ScrapAmountMultiplier ?? 1f);
+    }
+
     public virtual float WeightModify { get; set; } = 1f;
 
     public WeatherType(string name, CustomWeatherType type)
@@ -41,5 +46,18 @@ namespace WeatherTweaks.Definitions
       Name = name;
       Type = type;
     }
+  }
+
+  [JsonObject(MemberSerialization.OptIn)]
+  internal class WeatherMultiplierData(LevelWeatherType weatherType, float valueMultiplier, float spawnMultiplier)
+  {
+    [JsonProperty]
+    public LevelWeatherType weatherType = weatherType;
+
+    [JsonProperty]
+    public float valueMultiplier = valueMultiplier;
+
+    [JsonProperty]
+    public float spawnMultiplier = spawnMultiplier;
   }
 }
