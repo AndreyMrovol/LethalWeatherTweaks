@@ -48,7 +48,7 @@ namespace WeatherTweaks
     [HarmonyPostfix]
     internal static void RunWeatherPatches()
     {
-      BasegameWeatherPatch.ChangeFog();
+      // BasegameWeatherPatch.ChangeFog();
     }
   }
 }
