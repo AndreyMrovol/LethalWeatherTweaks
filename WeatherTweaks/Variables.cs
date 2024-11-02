@@ -146,7 +146,7 @@ namespace WeatherTweaks
       NoneWeather = new("None", CustomWeatherType.Normal) { Weather = WeatherManager.NoneWeather, weatherType = LevelWeatherType.None, };
       WeatherTypes.Add(NoneWeather);
 
-      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
+      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers.Where(weather => weather.Type != WeatherRegistry.WeatherType.Clear))
       {
         WeatherType newWeather = new(weather.name, CustomWeatherType.Normal) { Weather = weather, weatherType = weather.VanillaWeatherType, };
 

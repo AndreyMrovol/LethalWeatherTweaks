@@ -94,8 +94,9 @@ namespace WeatherTweaks
 
     public static void WeatherEffectsReceived(string weatherEffects)
     {
+      // input type: LevelWeatherType[]
       Plugin.logger.LogDebug($"Received weather effects: {weatherEffects}");
-      List<Weather> effectsDeserialized = JsonConvert.DeserializeObject<List<Weather>>(weatherEffects);
+      List<LevelWeatherType> effectsDeserialized = JsonConvert.DeserializeObject<List<LevelWeatherType>>(weatherEffects);
 
       List<ImprovedWeatherEffect> currentEffects = [];
       if (currentEffects == null)
@@ -106,7 +107,7 @@ namespace WeatherTweaks
       foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
       {
         // check if the weather name (not the full object) is in the deserizlied list
-        if (effectsDeserialized.Select(deserialized => deserialized.VanillaWeatherType).Contains(weather.VanillaWeatherType))
+        if (effectsDeserialized.Contains(weather.VanillaWeatherType))
         {
           currentEffects.Add(weather.Effect);
         }
@@ -197,7 +198,7 @@ namespace WeatherTweaks
       Variables.CurrentEffects.RemoveAll(effect => effect == null);
 
       string serialized = JsonConvert.SerializeObject(
-        weathers,
+        weathers.Select(weather => weather.VanillaWeatherType),
         Formatting.None,
         new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
       );

@@ -19,9 +19,10 @@ namespace WeatherTweaks.Definitions
     [JsonProperty]
     public string Name;
 
-    [JsonProperty]
+    [JsonIgnore]
     public virtual Weather Weather { get; set; }
 
+    [JsonProperty]
     public LevelWeatherType weatherType;
 
     [JsonProperty]
