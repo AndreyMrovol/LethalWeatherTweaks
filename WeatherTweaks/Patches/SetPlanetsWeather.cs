@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks
@@ -17,7 +18,9 @@ namespace WeatherTweaks
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
 
-      if (!Variables.IsSetupFinished)
+      Plugin.logger.LogWarning($"Is setup finished: {Variables.IsSetupFinished}");
+
+      if (!Variables.IsSetupFinished || !WeatherManager.IsSetupFinished)
       {
         Plugin.logger.LogWarning("Setup not finished");
         return true;
@@ -60,17 +63,17 @@ namespace WeatherTweaks
 
       if (__instance.IsHost)
       {
-        Variables.CurrentWeathers = [];
+        // Variables.CurrentWeathers = [];
 
-        Dictionary<string, WeatherType> newWeathers = WeatherCalculation.NewWeathers(__instance);
+        // Dictionary<string, WeatherType> newWeathers = WeatherCalculation.NewWeathers(connectedPlayersOnServer, __instance);
 
         // newWeathers.Do(entry =>
         // {
         //   Plugin.logger.LogDebug($"{entry.Key} :: {entry.Value}");
         // });
 
-        GameInteraction.SetWeather(newWeathers);
-        NetworkedConfig.SetWeather(newWeathers);
+        // GameInteraction.SetWeather(newWeathers);
+        // NetworkedConfig.SetWeather(newWeathers);
 
         Dictionary<string, string> uncertainWeathers = UncertainWeather.GenerateUncertainty();
 
@@ -100,7 +103,7 @@ namespace WeatherTweaks
           }
         }
 
-        Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherDictionarySynced.Value}");
+        // Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherDictionarySynced.Value}");
       }
 
       return false;

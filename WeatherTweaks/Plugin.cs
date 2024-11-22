@@ -36,37 +36,11 @@ namespace WeatherTweaks
       NetworkedConfig.Init();
       UncertainWeather.Init();
 
-      new CombinedEclipsedFlooded();
-      new CombinedFoggyRainy();
-      new CombinedStormyFlooded();
-      new CombinedStormyRainy();
-      new CombinedEclipsedRainy();
-      new CombinedMadness();
-      new CombinedFoggyFlooded();
-      new CombinedFoggyEclipsed();
-      new CombinedStormyRainyEclipsed();
-      new CombinedStormyRainyFlooded();
-
-      new ProgressingNoneFoggy();
-      new ProgressingNoneStormy();
-      new ProgressingEclipsedFoggy();
-      new ProgressingFoggyNone();
-      new ProgressingHiddenEclipsed();
-      new ProgressingStormyRainy();
-      new ProgressingRainyEclipsed();
-      new ProgressingMadness();
-
       // new SuperFoggy();
-
-      // new ProgressingTesting();
-
-      WeatherRegistry.Settings.SelectWeathers = false;
-
       WeatherRegistry.EventManager.DisableAllWeathers.AddListener(() => DisableAllWeathers.DisableAllWeather());
-      WeatherRegistry.EventManager.ShipLanding.AddListener((data) => OpeningDoorsSequencePatch.SetWeatherEffects(data.level, data.weather));
 
       WeatherRegistry.EventManager.SetupFinished.AddListener(() => TerminalStartPatch.Start());
-      WeatherRegistry.EventManager.SetupFinished.AddListener(() => Variables.PopulateWeathers());
+      // WeatherRegistry.EventManager.SetupFinished.AddListener(() => Variables.PopulateWeathers());
 
       MrovLib.EventManager.TerminalStart.AddListener((terminal) => TerminalPatch.Postfix());
       MrovLib.EventManager.LobbyDisabled.AddListener((startofround) => Reset.ResetThings());
@@ -91,9 +65,6 @@ namespace WeatherTweaks
         Patches.OpenMonitorsPatch.Init();
       }
 
-      // SunAnimator.Init();
-      // BasegameWeatherPatch.FogPatchInit();
-
       if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
       {
         Patches.Malfunctions.Init();
@@ -107,14 +78,36 @@ namespace WeatherTweaks
       Weather cloudyWeather =
         new("Cloudy", new(null, null) { SunAnimatorBool = "overcast" })
         {
-          Color = new(r: 0, g: 0.62f, b: 0.55f, a: 1),
-          ScrapAmountMultiplier = 1.6f,
-          ScrapValueMultiplier = 0.8f,
-          DefaultWeatherToWeatherWeights = ["Eclipsed@200", "Stormy@80"],
-          DefaultWeight = 10,
+          Color = new(r: 0, g: 1f, b: 0.55f, a: 1),
+          Config =
+          {
+            ScrapAmountMultiplier = new(1.6f),
+            ScrapValueMultiplier = new(0.8f),
+            WeatherToWeatherWeights = new(["Eclipsed@200", "Stormy@80"]),
+            DefaultWeight = new(25),
+          },
         };
-
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
+
+      Weather weatherTweaksWeather =
+        new("WeatherTweaks", new(null, null))
+        {
+          Color = new(r: 0.3f, g: 1f, b: 1f, a: 0.7f),
+          Config = new()
+          {
+            DefaultWeight = new(0, false),
+            ScrapAmountMultiplier = new(0, false),
+            ScrapValueMultiplier = new(0, false),
+            LevelWeights = new("", false),
+            WeatherToWeatherWeights = new("", false),
+            LevelFilters = new("", false),
+            FilteringOption = new(false, false),
+          }
+        };
+      WeatherRegistry.WeatherManager.RegisterWeather(weatherTweaksWeather);
+      Variables.WeatherTweaksWeather = weatherTweaksWeather;
+
+      WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
 
       logger.LogInfo(
         @"

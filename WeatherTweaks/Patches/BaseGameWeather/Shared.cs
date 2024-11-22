@@ -29,7 +29,7 @@ namespace WeatherTweaks
 
       codeMatcher = codeMatcher.MatchForward(
         false,
-        new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(TimeOfDay), "Instance")),
+        new CodeMatch(OpCodes.Call, AccessTools.Field(typeof(TimeOfDay), "Instance")),
         variable1 ? var1 : var2 // var1 for variable1, var2 for variable2
       );
       logger.LogDebug($"Matched Ldfld for {wherefrom} for {weatherType}");

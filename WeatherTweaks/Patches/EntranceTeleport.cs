@@ -6,7 +6,6 @@ using HarmonyLib;
 using UnityEngine;
 using WeatherRegistry;
 using WeatherTweaks.Definitions;
-using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
@@ -33,16 +32,16 @@ namespace WeatherTweaks
         logger.LogDebug("Player is outside");
 
         List<ImprovedWeatherEffect> weatherEffects = [];
-        WeatherType currentWeather = Variables.GetCurrentWeather();
+        WeatherTweaksWeather currentWeather = Variables.CurrentLevelWeather;
 
-        if (currentWeather.Type == CustomWeatherType.Combined)
+        if (currentWeather.CustomType == CustomWeatherType.Combined)
         {
           Definitions.Types.CombinedWeatherType currentWeatherCombined = (Definitions.Types.CombinedWeatherType)currentWeather;
           weatherEffects = currentWeatherCombined.Weathers.Select(weather => weather.Effect).ToList();
         }
         else
         {
-          weatherEffects = [currentWeather.Weather.Effect];
+          weatherEffects = [currentWeather.Effect];
         }
 
         // weatherEffects.Do(effect =>
