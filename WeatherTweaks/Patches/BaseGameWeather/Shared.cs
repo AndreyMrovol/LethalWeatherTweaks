@@ -22,10 +22,10 @@ namespace WeatherTweaks
     )
     {
       logger.LogInfo($"Patching {wherefrom} for {weatherType}");
-      CodeMatcher codeMatcher = new CodeMatcher(instructions);
+      CodeMatcher codeMatcher = new(instructions);
 
-      CodeMatch var1 = new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(TimeOfDay), "currentWeatherVariable"));
-      CodeMatch var2 = new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(TimeOfDay), "currentWeatherVariable2"));
+      CodeMatch var1 = new(OpCodes.Ldfld, AccessTools.Field(typeof(TimeOfDay), "currentWeatherVariable"));
+      CodeMatch var2 = new(OpCodes.Ldfld, AccessTools.Field(typeof(TimeOfDay), "currentWeatherVariable2"));
 
       codeMatcher = codeMatcher.MatchForward(
         false,

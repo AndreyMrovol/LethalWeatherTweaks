@@ -7,22 +7,13 @@ namespace WeatherTweaks
 {
   public static class DisableAllWeathers
   {
-    internal static MrovLib.Logger logger = new("WeatherTweaks TimeOfDay", ConfigManager.LogLogs);
-
     internal static void DisableAllWeather()
     {
-      ChangeMidDay.lastCheckedEntry = 0;
-
-      ChangeMidDay.currentEntry = null;
-      ChangeMidDay.nextEntry = null;
+      ChangeMidDay.Reset();
 
       if (StartOfRound.Instance.IsHost)
       {
-        NetworkedConfig.SetWeatherEffects([]);
-        NetworkedConfig.SetWeatherType(null);
         NetworkedConfig.SetProgressingWeatherEntry(null);
-
-        ChangeMidDay.random = null;
       }
     }
   }

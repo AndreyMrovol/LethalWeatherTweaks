@@ -12,22 +12,22 @@ namespace WeatherTweaks.Patches
   {
     public static void Start()
     {
-      // Variables.CombinedWeatherTypes.Clear();
-      // Variables.ProgressingWeatherTypes.Clear();
-      Variables.WeatherTypes.Clear();
+      // Variables.CombinedWeathers.Clear();
+      // Variables.ProgressingWeathers.Clear();
+      // Variables.WeatherTypes.Clear();
       Variables.CurrentEffects.Clear();
-      Variables.CurrentWeathers.Clear();
+      // Variables.CurrentWeathers.Clear();
 
       Plugin.logger.LogWarning("Terminal start start");
 
-      Variables.PopulateWeathers();
+      // Variables.PopulateWeathers();
 
-      // foreach (Definitions.Types.CombinedWeatherType combined in Variables.CombinedWeatherTypes)
+      // foreach (Definitions.Types.CombinedWeatherType combined in Variables.CombinedWeathers)
       // {
       //   Variables.WeatherTypes.Add(combined);
       // }
 
-      // foreach (Definitions.Types.ProgressingWeatherType progressing in Variables.ProgressingWeatherTypes)
+      // foreach (Definitions.Types.ProgressingWeatherType progressing in Variables.ProgressingWeathers)
       // {
       //   Variables.WeatherTypes.Add(progressing);
       // }
@@ -37,6 +37,8 @@ namespace WeatherTweaks.Patches
       WeatherRegistry.Settings.ScreenMapColors.Add(">", Color.white);
       WeatherRegistry.Settings.ScreenMapColors.Add("?", Color.white);
       WeatherRegistry.Settings.ScreenMapColors.Add("[UNKNOWN]", new Color(0.29f, 0.29f, 0.29f));
+
+      Variables.WeatherTweaksTypes.ForEach(weatherType => { });
 
       Variables.IsSetupFinished = true;
       StartOfRound.Instance.SetPlanetsWeather();

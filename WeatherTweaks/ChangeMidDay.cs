@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+using WeatherRegistry;
 using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
 using static WeatherTweaks.Modules.Types;
@@ -16,11 +17,17 @@ namespace WeatherTweaks
   [HarmonyPatch(typeof(TimeOfDay))]
   public static class ChangeMidDay
   {
-    internal static float lastCheckedEntry = 0.0f;
     internal static System.Random random;
 
-    internal static ProgressingWeatherEntry currentEntry;
-    internal static ProgressingWeatherEntry nextEntry;
+    internal static ProgressingWeatherType currentWeather = null;
+    internal static List<ProgressingWeatherEntry> weatherEntries = [];
+
+    internal static float LastCheckedEntry = 0;
+
+    internal static ProgressingWeatherEntry CurrentEntry = null;
+    internal static ProgressingWeatherEntry NextEntry => weatherEntries.FirstOrDefault();
+
+    internal static float NextEntryTime => NextEntry != null ? NextEntry.DayTime : 0f;
 
     internal static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource("WeatherTweaks ChangeMidDay");
 
@@ -28,20 +35,19 @@ namespace WeatherTweaks
     [HarmonyPatch("MoveTimeOfDay")]
     internal static void MoveTimeOfDayPatch(TimeOfDay __instance)
     {
-      if (Variables.CurrentLevelWeather.Type != CustomWeatherType.Progressing)
-      {
-        return;
-      }
-
       if (!StartOfRound.Instance.IsHost)
       {
         return;
       }
 
-      float normalizedTimeOfDay = __instance.normalizedTimeOfDay;
-      float nextEntryTime = nextEntry != null ? nextEntry.DayTime : 0f;
+      if (currentWeather == null)
+      {
+        return;
+      }
 
-      if (normalizedTimeOfDay >= nextEntryTime)
+      float normalizedTimeOfDay = __instance.normalizedTimeOfDay;
+      // logger.LogDebug($"Normalized time of day: {normalizedTimeOfDay}");
+      if (normalizedTimeOfDay >= NextEntryTime)
       {
         RunProgressingEntryActions(normalizedTimeOfDay);
       }
@@ -49,35 +55,10 @@ namespace WeatherTweaks
 
     internal static void RunProgressingEntryActions(float normalizedTimeOfDay)
     {
-      WeatherType currentWeather = Variables.CurrentLevelWeather;
-
-      if (random == null)
-      {
-        random = new System.Random(StartOfRound.Instance.randomMapSeed);
-      }
-
-      // when this runs we know that weather is progressing *and* nothing else has been set as a current weather
-      // this allows us to not set the weather type at 0.0f time, instead uses the "base" weather as a 0.0 entry
-      if (currentEntry == null)
-      {
-        currentEntry = new ProgressingWeatherEntry()
-        {
-          DayTime = 0.0f,
-          Chance = 1.0f,
-          Weather = currentWeather.weatherType
-        };
-      }
-
-      Definitions.Types.ProgressingWeatherType progressingWeather = Variables.ProgressingWeatherTypes.First(weather =>
-        weather.Name == currentWeather.Name
-      );
-      List<ProgressingWeatherEntry> weatherEntries = progressingWeather.WeatherEntries;
-      weatherEntries.RemoveAll(entry => entry.DayTime < lastCheckedEntry);
-
-      nextEntry = weatherEntries.FirstOrDefault(entry => entry.DayTime > lastCheckedEntry);
+      weatherEntries.RemoveAll(entry => entry.DayTime < LastCheckedEntry);
 
       // the plan:
-      // all entries should be sorted by the Time float
+      // all entries are sorted by the Time float
       // we save the last time we've checked the list
       // if the new time is greater than an entry, we change the weather to that entry's weather
       // we then update the last time we've checked the list to the new time
@@ -86,10 +67,10 @@ namespace WeatherTweaks
 
       foreach (ProgressingWeatherEntry entry in weatherEntries)
       {
-        if (normalizedTimeOfDay > entry.DayTime && entry.DayTime > lastCheckedEntry)
+        if (normalizedTimeOfDay > entry.DayTime && entry.DayTime > LastCheckedEntry)
         // this means we've passed the time of day for this entry and we haven't checked it yet
         {
-          logger.LogInfo($"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}");
+          logger.LogInfo($"Changing weather to {entry.GetWeather().Name} at {entry.DayTime}");
 
           float randomRoll = (float)random.NextDouble();
           // entry.Chance = 1;
@@ -97,17 +78,15 @@ namespace WeatherTweaks
           if (randomRoll > entry.Chance)
           {
             logger.LogWarning($"Random roll failed - got {randomRoll}, needed {entry.Chance} or lower");
-            lastCheckedEntry = entry.DayTime;
+            LastCheckedEntry = entry.DayTime;
             break;
           }
 
           NetworkedConfig.SetProgressingWeatherEntry(entry);
-          NetworkedConfig.SetWeatherEffects([entry.GetWeatherType().Weather]);
-
           TimeOfDay.Instance.StartCoroutine(DoMidDayChange(entry));
 
-          lastCheckedEntry = entry.DayTime;
-          currentEntry = entry;
+          LastCheckedEntry = entry.DayTime;
+          CurrentEntry = entry;
           break;
         }
       }
@@ -121,27 +100,60 @@ namespace WeatherTweaks
         yield return null;
       }
 
-      logger.LogWarning(
-        $"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {EntranceTeleportPatch.isPlayerInside}"
+      logger.LogMessage(
+        $"Changing weather to {entry.GetWeather().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {WeatherRegistry.Patches.EntranceTeleportPatch.isPlayerInside}"
       );
 
       HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
 
       yield return new WaitForSeconds(3);
 
-      WeatherType fullWeatherType = Variables.GetFullWeatherType(entry.GetWeatherType());
+      WeatherTweaksWeather fullWeatherType = Variables.WeatherTweaksTypes.FirstOrDefault(type => type.Name == entry.GetWeather().Name);
 
-      logger.LogWarning($"{fullWeatherType.Name} {fullWeatherType.Type} {fullWeatherType.weatherType}");
+      logger.LogWarning($"{fullWeatherType.Name} {fullWeatherType.Type} {fullWeatherType.VanillaWeatherType}");
 
-      StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.weatherType;
-      TimeOfDay.Instance.currentLevelWeather = fullWeatherType.weatherType;
-      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.weatherType;
+      StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.VanillaWeatherType;
+      TimeOfDay.Instance.currentLevelWeather = fullWeatherType.VanillaWeatherType;
+      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.VanillaWeatherType;
 
-      currentEntry = entry;
+      CurrentEntry = entry;
 
-      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Weather.Effect]);
+      // GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Effect]);
+      WeatherController.SetWeatherEffects(fullWeatherType.VanillaWeatherType);
 
       // TODO account for player being dead
+    }
+
+    internal static void SetCurrentWeather(ProgressingWeatherType weather)
+    {
+      logger.LogInfo($"Setting current weather to {weather.Name}");
+
+      Reset();
+      random ??= new System.Random(StartOfRound.Instance.randomMapSeed);
+
+      currentWeather = weather;
+      weatherEntries = weather.WeatherEntries.ToList();
+
+      // when this runs we know that weather is progressing *and* nothing else has been set as a current weather
+      // this allows us to not set the weather type at 0.0f time, instead uses the "base" weather as a 0.0 entry
+      CurrentEntry = new ProgressingWeatherEntry()
+      {
+        DayTime = 0.0f,
+        Chance = 1.0f,
+        Weather = weather.StartingWeather
+      };
+
+      weatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
+
+      NetworkedConfig.SetProgressingWeatherEntry(CurrentEntry);
+      TimeOfDay.Instance.StartCoroutine(DoMidDayChange(CurrentEntry));
+    }
+
+    internal static void Reset()
+    {
+      currentWeather = null;
+      LastCheckedEntry = 0;
+      weatherEntries = [];
     }
   }
 }
