@@ -13,6 +13,7 @@ namespace WeatherTweaks.Patches
     [HarmonyPostfix]
     internal static void GetDisplayWeatherStringPatch(ref string __result, SelectableLevel level, Weather weather)
     {
+      Plugin.logger.LogDebug($"Getting display weather string for {level.PlanetName}");
       __result = Variables.GetPlanetCurrentWeather(level);
     }
 
@@ -22,6 +23,14 @@ namespace WeatherTweaks.Patches
     internal static void GetCurrentWeatherNamePatch(ref string __result, SelectableLevel level)
     {
       __result = Variables.GetPlanetCurrentWeather(level, false);
+    }
+
+    [HarmonyPatch(typeof(WeatherRegistry.Patches.SetPlanetsWeatherPatch))]
+    [HarmonyPatch("GameMethodPatch")]
+    [HarmonyPrefix]
+    internal static bool GameMethodPatch()
+    {
+      return Variables.IsSetupFinished;
     }
 
     [HarmonyPatch(typeof(WeatherRegistry.Patches.SpawnScrapInLevelPatches))]
@@ -34,18 +43,17 @@ namespace WeatherTweaks.Patches
         return;
       }
 
-      Definitions.WeatherType currentWeather = Variables.GetPlanetCurrentWeatherType(StartOfRound.Instance.currentLevel);
+      WeatherTweaksWeather currentWeather = Variables.GetPlanetCurrentWeatherType(StartOfRound.Instance.currentLevel);
       Plugin.DebugLogger.LogDebug($"Changing multipliers for weather {currentWeather.Name}");
-      (float valueMultiplier, float amountMultiplier) = currentWeather.GetMultiplierData();
+      (float valueMultiplier, float amountMultiplier) = currentWeather.GetDefaultMultiplierData();
 
-
-      switch (currentWeather.Type)
+      switch (currentWeather.CustomType)
       {
         case CustomWeatherType.Normal:
           break;
         case CustomWeatherType.Combined:
         case CustomWeatherType.Progressing:
-          __0.scrapValueMultiplier = valueMultiplier * 0.4f;
+          __0.scrapValueMultiplier = valueMultiplier;
           __0.scrapAmountMultiplier = amountMultiplier;
           break;
         default:

@@ -27,7 +27,10 @@ namespace WeatherTweaks
       List<SelectableLevel> levels = Variables.GetGameLevels();
       foreach (SelectableLevel level in levels)
       {
+        Plugin.logger.LogWarning($"Level: {level.PlanetName}, is null: {level == null}");
+
         bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
+        Plugin.logger.LogDebug($"Is uncertain weather: {isUncertainWeather}");
 
         table.AddRow(
           level.PlanetName,

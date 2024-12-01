@@ -7,7 +7,6 @@ using LethalNetworkAPI;
 using Newtonsoft.Json;
 using WeatherRegistry;
 using WeatherTweaks.Definitions;
-using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
@@ -15,7 +14,7 @@ namespace WeatherTweaks
   {
     internal static MrovLib.Logger logger = new("WeatherTweaks GameInteraction", ConfigManager.LogLogs);
 
-    internal static void SetWeather(Dictionary<string, WeatherType> weatherData)
+    internal static void SetWeather(Dictionary<string, WeatherTweaksWeather> weatherData)
     {
       Plugin.logger.LogMessage("Setting weather");
 
@@ -27,10 +26,10 @@ namespace WeatherTweaks
 
         if (weatherData.ContainsKey(levelName))
         {
-          WeatherType weatherType = Variables.GetFullWeatherType(weatherData[levelName]);
+          WeatherTweaksWeather weatherType = Variables.GetFullWeatherType(weatherData[levelName]);
 
-          level.currentWeather = weatherType.weatherType;
-          Variables.CurrentWeathers[level] = weatherType;
+          level.currentWeather = weatherType.VanillaWeatherType;
+          // Variables.CurrentWeathers[level] = weatherType;
 
           logger.LogDebug($"Setting weather for {levelName} to {weatherType.Name}");
         }
@@ -43,12 +42,12 @@ namespace WeatherTweaks
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
     }
 
-    internal static void SetWeather(WeatherType weatherType)
+    internal static void SetWeather(WeatherTweaksWeather weatherType)
     {
       SelectableLevel level = StartOfRound.Instance.currentLevel;
 
-      level.currentWeather = weatherType.weatherType;
-      Variables.CurrentWeathers[level] = weatherType;
+      level.currentWeather = weatherType.VanillaWeatherType;
+      // Variables.CurrentWeathers[level] = weatherType;
 
       logger.LogDebug($"Setting weather for {level.PlanetName} to {weatherType.Name}");
     }
@@ -73,6 +72,8 @@ namespace WeatherTweaks
       Variables.CurrentEffects = weatherEffects;
       List<LevelWeatherType> sunBools = [];
 
+      List<ImprovedWeatherEffect> effectsToEnable = [];
+
       foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
       {
         if (weather.Effect == null)
@@ -84,9 +85,22 @@ namespace WeatherTweaks
 
         if (weatherEffects.Contains(Effect))
         {
+          effectsToEnable.Add(Effect);
+        }
+
+        Plugin.logger.LogDebug($"Disabling effect from weather: {weather.Name}");
+        Effect.DisableEffect(true);
+      }
+
+      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
+      {
+        ImprovedWeatherEffect Effect = weather.Effect;
+
+        if (weatherEffects.Contains(Effect))
+        {
           logger.LogDebug($"Enabling effect from weather: {weather.Name}");
 
-          if (!EntranceTeleportPatch.isPlayerInside)
+          if (!WeatherRegistry.Patches.EntranceTeleportPatch.isPlayerInside)
           {
             weather.Effect.EffectEnabled = true;
           }
@@ -101,34 +115,6 @@ namespace WeatherTweaks
             sunBools.Add(weather.VanillaWeatherType);
           }
         }
-        else
-        {
-          logger.LogDebug($"Disabling effect: {weather.Name}");
-
-          weather.Effect.DisableEffect(true);
-
-          // try
-          // {
-          //   if (!String.IsNullOrEmpty(Effect.SunAnimatorBool))
-          //   {
-          //     logger.LogDebug($"Removing sun animator bool, weather: {weather.Name}, bool: {Effect.SunAnimatorBool}");
-          //     sunBools.Remove(weather.VanillaWeatherType);
-          //   }
-          // }
-          // catch (Exception e)
-          // {
-          //   logger.LogInfo($"Cannot remove sun animator bool: {e.Message}");
-          // }
-        }
-      }
-
-      if (sunBools.Count == 0)
-      {
-        WeatherRegistry.Patches.SunAnimator.OverrideSunAnimator(LevelWeatherType.None);
-      }
-      else
-      {
-        sunBools.Distinct().ToList().ForEach(loopWeatherType => WeatherRegistry.Patches.SunAnimator.OverrideSunAnimator(loopWeatherType));
       }
     }
   }

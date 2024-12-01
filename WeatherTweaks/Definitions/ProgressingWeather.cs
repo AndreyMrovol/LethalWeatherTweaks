@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
@@ -21,12 +22,10 @@ namespace WeatherTweaks.Definitions
       [JsonProperty]
       public LevelWeatherType Weather;
 
-      internal WeatherType GetWeatherType()
+      [Obsolete("Use GetWeather() instead")]
+      internal Weather GetWeatherType()
       {
-        Weather vanillaWeather = GetWeather();
-        return Variables.WeatherTypes.First(weatherType =>
-          weatherType.Weather == vanillaWeather && weatherType.Type == CustomWeatherType.Normal
-        );
+        return GetWeather();
       }
 
       internal Weather GetWeather()
@@ -41,29 +40,29 @@ namespace WeatherTweaks.Definitions
           new DialogueSegment
           {
             speakerText = "Weather Forecast",
-            bodyText = $"The weather will be changing to {GetWeatherType().Name}",
+            bodyText = $"The weather will be changing to {GetWeather().Name}",
             waitTime = 7f
           }
         ];
       }
     }
 
-    public class ProgressingWeatherType : WeatherType
+    public class ProgressingWeatherType : WeatherTweaksWeather
     {
       // public abstract string CreateChangingString(SelectableLevel level, System.Random random);
-      public ConfigEntry<bool> Enabled;
+      public bool Enabled => Config.EnableWeather.Value;
 
       public List<ProgressingWeatherEntry> WeatherEntries = [];
       public LevelWeatherType StartingWeather;
 
       private Weather _weather = null;
-      public override Weather Weather
+      public Weather Weather
       {
         get
         {
           if (_weather == null)
           {
-            _weather = WeatherRegistry.WeatherManager.GetWeather(weatherType);
+            _weather = WeatherRegistry.WeatherManager.GetWeather(this.VanillaWeatherType);
           }
 
           return _weather;
@@ -71,11 +70,16 @@ namespace WeatherTweaks.Definitions
         set { _weather = value; }
       }
 
-      public new float WeightModify = 0.45f;
+      public new float WeightModify => Config.WeightModify.Value;
+
+      public new WeatherTweaksConfig Config
+      {
+        get { return (WeatherTweaksConfig)base.Config; }
+      }
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {
-        if (!Enabled.Value)
+        if (!Enabled)
         {
           return false;
         }
@@ -95,9 +99,19 @@ namespace WeatherTweaks.Definitions
         return remainingWeathers.Count == 0;
       }
 
-      public override (float valueMultiplier, float amountMultiplier) GetMultiplierData()
+      public override void Init()
       {
-        WeatherMultiplierData Data = new(this.weatherType, 0, 0);
+        Weather baseWeather = WeatherManager.GetWeather(BaseWeatherType);
+        int newWeight = (int)(baseWeather.DefaultWeight * WeightModify);
+
+        Config.DefaultWeight = new(newWeight, false);
+
+        base.Init();
+      }
+
+      public override (float valueMultiplier, float amountMultiplier) GetDefaultMultiplierData()
+      {
+        WeatherMultiplierData Data = new(this.VanillaWeatherType, 0, 0);
 
         float sumMultiplier = 0;
         float sumSpawnMultiplier = 0;
@@ -126,31 +140,31 @@ namespace WeatherTweaks.Definitions
         return WeatherEntries.Any(entry => entry.Weather == weatherType);
       }
 
+      // public override List<LevelWeatherType> WeatherTypes { get; set; } = [];
+
       public ProgressingWeatherType(
         string name,
         LevelWeatherType baseWeather,
         List<ProgressingWeatherEntry> weatherEntries,
         float weightModifier = 0.45f
       )
-        : base(name, CustomWeatherType.Progressing)
+        : base(name, CustomWeatherType.Progressing, weatherEntries.Select(entry => entry.Weather).Append(baseWeather).Distinct().ToArray())
       {
         Name = name;
 
         Plugin.logger.LogDebug($"Creating ChangingWeatherType: {Name}");
 
-        // TODO
-        // create configFile bindings
-        Enabled = ConfigManager.configFile.Bind("1c> Changing mechanics", $"{Name} Enabled", true, $"Enable {Name} changing weather");
-
         WeatherEntries = weatherEntries;
         WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
 
+        Plugin.logger.LogWarning($"{Config} is null? {Config == null}");
+        Config.WeightModify = new(weightModifier);
+
         StartingWeather = baseWeather;
-        weatherType = baseWeather;
 
-        WeightModify = weightModifier;
-
-        Variables.ProgressingWeatherTypes.Add(this);
+        Variables.ProgressingWeathers.Add(this);
+        WeatherManager.RegisterWeather(this);
+        // this.Init();
       }
     }
   }

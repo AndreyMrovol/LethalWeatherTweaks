@@ -1,47 +1,82 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using HarmonyLib;
 using MrovLib;
 using Newtonsoft.Json;
 using UnityEngine;
 using WeatherRegistry;
 using WeatherTweaks.Definitions;
-using WeatherTweaks.Patches;
-using static WeatherTweaks.Modules.Types;
-using WeatherType = WeatherTweaks.Definitions.WeatherType;
 
 namespace WeatherTweaks
 {
   internal class Variables
   {
-    internal static List<SelectableLevel> GameLevels = [];
+    internal static List<SelectableLevel> GameLevels => MrovLib.LevelHelper.Levels;
 
     internal static bool IsSetupFinished = false;
 
-    internal static WeatherType NoneWeather;
-    public static List<WeatherType> WeatherTypes = [];
+    internal static Weather NoneWeather => WeatherRegistry.WeatherManager.NoneWeather;
 
-    public static List<Definitions.Types.CombinedWeatherType> CombinedWeatherTypes = [];
-    public static List<Definitions.Types.ProgressingWeatherType> ProgressingWeatherTypes = [];
+    public static List<Definitions.Types.CombinedWeatherType> CombinedWeathers = [];
+    public static List<LevelWeatherType> CombinedWeatherTypes => CombinedWeathers.Select(x => x.VanillaWeatherType).ToList();
 
-    public static Dictionary<SelectableLevel, WeatherType> CurrentWeathers = [];
+    public static List<Definitions.Types.ProgressingWeatherType> ProgressingWeathers = [];
+    public static List<LevelWeatherType> ProgressingWeatherTypes => ProgressingWeathers.Select(x => x.VanillaWeatherType).ToList();
+
+    public static List<Weather> WeatherTypes => WeatherRegistry.WeatherManager.Weathers;
+
+    private static List<WeatherTweaksWeather> _weatherTweaksTypes = [];
+    public static List<WeatherTweaksWeather> WeatherTweaksTypes
+    {
+      get
+      {
+        // cache the weather types on first call
+
+        if (_weatherTweaksTypes.Count == 0)
+        {
+          foreach (Weather weather in WeatherTypes)
+          {
+            if (weather == null)
+            {
+              continue;
+            }
+
+            // check if the weather is a WeatherTweaksWeather type already
+            if (weather is WeatherTweaksWeather tweaksWeather)
+            {
+              Plugin.logger.LogDebug($"Weather {weather.Name} is a WeatherTweaks weather");
+
+              _weatherTweaksTypes.Add(tweaksWeather);
+              continue;
+            }
+
+            _weatherTweaksTypes.Add(new WeatherTweaksWeather(weather));
+          }
+        }
+
+        return _weatherTweaksTypes;
+      }
+    }
+
+    public static List<WeatherTweaksWeather> SpecialWeathers =>
+      CombinedWeathers.Cast<WeatherTweaksWeather>().Concat(ProgressingWeathers).ToList();
+    public static List<LevelWeatherType> WeatherTweaksWeathers => SpecialWeathers.Select(x => x.VanillaWeatherType).ToList();
+
     public static List<ImprovedWeatherEffect> CurrentEffects = [];
 
-    public static WeatherType CurrentLevelWeather;
+    public static WeatherTweaksWeather CurrentLevelWeather => GetFullWeatherType(StartOfRound.Instance.currentLevel.currentWeather);
 
-    public static WeatherType GetCurrentWeather()
+    public static WeatherTweaksWeather GetCurrentWeather()
     {
-      if (CurrentLevelWeather.Type == CustomWeatherType.Progressing)
+      if (CurrentLevelWeather.CustomType == CustomWeatherType.Progressing)
       {
-        if (ChangeMidDay.currentEntry == null)
+        if (ChangeMidDay.CurrentEntry == null)
         {
           Plugin.logger.LogWarning("Current entry is null");
           return CurrentLevelWeather;
         }
 
-        return ChangeMidDay.currentEntry.GetWeatherType();
+        return (WeatherTweaksWeather)ChangeMidDay.CurrentEntry.GetWeather();
       }
 
       return CurrentLevelWeather;
@@ -55,19 +90,15 @@ namespace WeatherTweaks
 
     internal static List<SelectableLevel> GetGameLevels(bool includeCompanyMoon = false)
     {
-      Plugin.logger.LogDebug($"Getting game levels, {includeCompanyMoon}");
-      List<SelectableLevel> GameLevels = MrovLib.SharedMethods.GetGameLevels();
-
-      if (!includeCompanyMoon)
+      if (includeCompanyMoon)
       {
-        GameLevels = GameLevels.Where(level => level.PlanetName != "71 Gordion").ToList();
+        return GameLevels;
       }
 
-      Variables.GameLevels = GameLevels;
-      return GameLevels;
+      return GameLevels.Where(x => x != MrovLib.LevelHelper.CompanyMoon).ToList();
     }
 
-    internal static List<WeatherType> GetPlanetWeatherTypes(SelectableLevel level)
+    internal static List<WeatherTweaksWeather> GetPlanetWeatherTypes(SelectableLevel level, bool specialWeathers = false)
     {
       List<LevelWeatherType> randomWeathers = WeatherRegistry.WeatherManager.GetPlanetPossibleWeathers(level);
 
@@ -77,106 +108,43 @@ namespace WeatherTweaks
         return [];
       }
 
-      List<WeatherType> possibleTypes = [];
+      List<WeatherTweaksWeather> possibleTypes = [];
 
-      foreach (WeatherType weather in WeatherTypes)
+      foreach (WeatherTweaksWeather weather in WeatherTweaksTypes)
       {
-        if (randomWeathers.Contains(weather.weatherType) && weather.Type == CustomWeatherType.Normal)
+        if (randomWeathers.Contains(weather.VanillaWeatherType))
         {
           possibleTypes.Add(weather);
         }
+      }
 
-        switch (weather.Type)
+      if (specialWeathers)
+      {
+        foreach (WeatherTweaksWeather weather in SpecialWeathers)
         {
-          case CustomWeatherType.Combined:
-            Definitions.Types.CombinedWeatherType combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weather.Name);
-            if (combinedWeather.CanWeatherBeApplied(level))
-            {
-              possibleTypes.Add(weather);
-            }
-            break;
+          switch (weather.CustomType)
+          {
+            case CustomWeatherType.Combined:
+              Definitions.Types.CombinedWeatherType combinedWeather = CombinedWeathers.Find(x => x.Name == weather.Name);
+              if (combinedWeather.CanWeatherBeApplied(level))
+              {
+                possibleTypes.Add(weather);
+              }
+              break;
 
-          case CustomWeatherType.Progressing:
-            Definitions.Types.ProgressingWeatherType progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weather.Name);
-            if (progressingWeather.CanWeatherBeApplied(level))
-            {
-              possibleTypes.Add(weather);
-            }
-            break;
+            case CustomWeatherType.Progressing:
+              Definitions.Types.ProgressingWeatherType progressingWeather = ProgressingWeathers.Find(x => x.Name == weather.Name);
+              if (progressingWeather.CanWeatherBeApplied(level))
+              {
+                possibleTypes.Add(weather);
+              }
+              break;
+          }
         }
       }
 
       // Plugin.logger.LogDebug($"Possible types: {string.Join("; ", possibleTypes.Select(x => x.Name))}");
       return possibleTypes.Distinct().ToList();
-    }
-
-    internal static Dictionary<string, WeatherType> GetAllPlanetWeathersDictionary()
-    {
-      Dictionary<string, WeatherType> weathers = [];
-
-      CurrentWeathers
-        .ToList()
-        .ForEach(weather =>
-        {
-          weathers.Add(weather.Key.PlanetName, weather.Value);
-        });
-
-      return weathers;
-    }
-
-    internal static void PopulateWeathers()
-    {
-      Plugin.logger.LogDebug("Populating weathers");
-
-      if (TimeOfDay.Instance == null)
-      {
-        Plugin.logger.LogError("TimeOfDay is null");
-        return;
-      }
-
-      WeatherEffect[] effects = TimeOfDay.Instance.effects;
-
-      WeatherTypes.Clear();
-
-      if (effects == null || effects.Count() == 0)
-      {
-        Plugin.logger.LogWarning("Effects are null");
-      }
-
-      NoneWeather = new("None", CustomWeatherType.Normal) { Weather = WeatherManager.NoneWeather, weatherType = LevelWeatherType.None, };
-      WeatherTypes.Add(NoneWeather);
-
-      foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers.Where(weather => weather.Type != WeatherRegistry.WeatherType.Clear))
-      {
-        WeatherType newWeather = new(weather.name, CustomWeatherType.Normal) { Weather = weather, weatherType = weather.VanillaWeatherType, };
-
-        WeatherTypes.Add(newWeather);
-      }
-
-      CombinedWeatherTypes.ForEach(combinedWeather =>
-      {
-        if (combinedWeather.Enabled.Value == false)
-        {
-          Plugin.logger.LogDebug($"Combined weather: {combinedWeather.Name} is disabled");
-          return;
-        }
-        Plugin.logger.LogDebug($"Adding combined weather: {combinedWeather.Name}");
-
-        WeatherTypes.Add(combinedWeather);
-      });
-
-      ProgressingWeatherTypes.ForEach(progressingWeather =>
-      {
-        if (progressingWeather.Enabled.Value == false)
-        {
-          Plugin.logger.LogDebug($"Progressing weather: {progressingWeather.Name} is disabled");
-          return;
-        }
-
-        Plugin.logger.LogDebug($"Adding progressing weather: {progressingWeather.Name}");
-
-        WeatherTypes.Add(progressingWeather);
-      });
     }
 
     public static string GetPlanetCurrentWeather(SelectableLevel level, bool uncertain = true)
@@ -185,22 +153,23 @@ namespace WeatherTweaks
 
       if (isUncertainWeather && uncertain)
       {
+        Plugin.DebugLogger.LogDebug($"Getting uncertain weather for {level.PlanetName}");
         return UncertainWeather.uncertainWeathers[level.PlanetName];
       }
       else
       {
-        if (CurrentWeathers.ContainsKey(level) == false)
-        {
-          return level.currentWeather.ToString();
-        }
+        Plugin.DebugLogger.LogDebug($"Getting current weather for {level.PlanetName}");
 
-        return CurrentWeathers[level].Name;
+        Weather weather = WeatherManager.GetWeather(level.currentWeather);
+
+        Plugin.logger.LogWarning($"Current weather: {weather}");
+        return weather.Name;
       }
     }
 
-    public static WeatherType GetPlanetCurrentWeatherType(SelectableLevel level)
+    public static WeatherTweaksWeather GetPlanetCurrentWeatherType(SelectableLevel level)
     {
-      return GetFullWeatherType(CurrentWeathers.TryGetValue(level, out WeatherType weather) ? weather : NoneWeather);
+      return GetFullWeatherType(level.currentWeather);
     }
 
     public static float GetLevelWeatherVariable(LevelWeatherType weatherType, bool variable2 = false)
@@ -258,6 +227,8 @@ namespace WeatherTweaks
 
     public static LevelWeatherType LevelHasWeather(LevelWeatherType weatherType)
     {
+      Plugin.logger.LogDebug($"Checking if level has weather {weatherType}");
+
       SelectableLevel level = StartOfRound.Instance.currentLevel;
       if (StartOfRound.Instance == null || level == null)
       {
@@ -265,15 +236,14 @@ namespace WeatherTweaks
         return LevelWeatherType.None;
       }
 
-      WeatherType currentWeather = GetFullWeatherType(CurrentWeathers.TryGetValue(level, out WeatherType weather) ? weather : NoneWeather);
+      WeatherTweaksWeather currentWeather = GetPlanetCurrentWeatherType(level);
+      Plugin.logger.LogDebug($"Level has weather {currentWeather.Type}?");
 
-      Plugin.logger.LogDebug(currentWeather.Type);
-
-      switch (currentWeather.Type)
+      switch (currentWeather.CustomType)
       {
         case CustomWeatherType.Combined:
           Definitions.Types.CombinedWeatherType combinedWeather = (Definitions.Types.CombinedWeatherType)currentWeather;
-          if (combinedWeather.LevelWeatherTypes.Any(x => x == weatherType))
+          if (combinedWeather.WeatherTypes.Any(x => x == weatherType))
           {
             Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
             return weatherType;
@@ -290,7 +260,7 @@ namespace WeatherTweaks
           break;
 
         default:
-          if (currentWeather.Weather.VanillaWeatherType == weatherType)
+          if (currentWeather.VanillaWeatherType == weatherType)
           {
             Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
             return weatherType;
@@ -300,15 +270,21 @@ namespace WeatherTweaks
       return LevelWeatherType.None;
     }
 
-    internal static WeatherType GetVanillaWeatherType(LevelWeatherType weatherType)
+    internal static Weather GetVanillaWeatherType(LevelWeatherType weatherType)
     {
-      return WeatherTypes.Find(x => x.weatherType == weatherType && x.Type == CustomWeatherType.Normal);
+      return WeatherTypes.Find(x => x.VanillaWeatherType == weatherType);
     }
 
-    internal static WeatherType GetFullWeatherType(WeatherType weatherType)
+    internal static WeatherTweaksWeather GetFullWeatherType(Weather weatherType)
     {
-      Plugin.logger.LogDebug($"Getting full weather type for {weatherType.Name}");
-      return WeatherTypes.Find(x => x.Name == weatherType.Name);
+      return GetFullWeatherType(weatherType.VanillaWeatherType);
+    }
+
+    internal static WeatherTweaksWeather GetFullWeatherType(LevelWeatherType weatherType)
+    {
+      Plugin.logger.LogDebug($"Getting full weather type for {weatherType}");
+
+      return WeatherTweaksTypes.Find(x => x.VanillaWeatherType == weatherType);
     }
 
     internal static int GetWeatherLevelWeight(SelectableLevel level, LevelWeatherType weatherType)
@@ -316,25 +292,25 @@ namespace WeatherTweaks
       return WeatherRegistry.WeatherManager.GetWeather(weatherType).GetWeight(level);
     }
 
-    internal static MrovLib.WeightHandler<WeatherType> GetPlanetWeightedList(SelectableLevel level, float difficulty = 0)
+    internal static MrovLib.WeightHandler<Weather> GetPlanetWeightedList(SelectableLevel level, float difficulty = 0)
     {
       MrovLib.Logger Logger = new("WeatherTweaks WeatherSelection", ConfigManager.LogWeatherSelection);
 
-      MrovLib.WeightHandler<WeatherType> weights = new();
+      WeightHandler<Weather> weights = new();
       WeightHandler<LevelWeatherType> weatherTypeWeights = new();
 
       difficulty = Math.Clamp(difficulty, 0, ConfigManager.MaxMultiplier.Value);
       int possibleWeathersWeightSum = 0;
 
-      List<WeatherType> weatherTypes = GetPlanetWeatherTypes(level);
+      List<WeatherTweaksWeather> weatherTypes = GetPlanetWeatherTypes(level, true);
 
       Variables
-        .WeatherTypes.Where(weatherType => weatherType.Type == CustomWeatherType.Normal)
+        .WeatherTweaksTypes.Where(weatherType => weatherType.CustomType == CustomWeatherType.Normal)
         .ToList()
         .ForEach(weatherType =>
         {
-          int localWeight = GetWeatherLevelWeight(level, weatherType.weatherType);
-          weatherTypeWeights.Add(weatherType.weatherType, localWeight);
+          int localWeight = GetWeatherLevelWeight(level, weatherType.VanillaWeatherType);
+          weatherTypeWeights.Add(weatherType.VanillaWeatherType, localWeight);
 
           if (weatherTypes.Contains(weatherType))
           {
@@ -346,14 +322,14 @@ namespace WeatherTweaks
 
       foreach (var weatherType in weatherTypes)
       {
-        var weatherWeight = weatherTypeWeights.Get(weatherType.weatherType);
-        if (ConfigManager.ScaleDownClearWeather.Value && weatherType.weatherType == LevelWeatherType.None)
+        var weatherWeight = weatherTypeWeights.Get(weatherType.VanillaWeatherType);
+        if (ConfigManager.ScaleDownClearWeather.Value && weatherType.VanillaWeatherType == LevelWeatherType.None)
         {
-          int clearWeatherWeight = NoneWeather.Weather.GetWeight(level);
+          int clearWeatherWeight = NoneWeather.GetWeight(level);
           int fullWeightSum = weatherTypeWeights.Sum;
 
           // proportion from clearWeatherWeight / fullWeightsSum
-          double noWeatherFinalWeight = (double)(clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / Math.Max(fullWeightSum, 1));
+          double noWeatherFinalWeight = clearWeatherWeight * Math.Max(possibleWeathersWeightSum, 1) / Math.Max(fullWeightSum, 1);
           weatherWeight = Convert.ToInt32(noWeatherFinalWeight);
 
           Logger.LogDebug(
@@ -361,14 +337,13 @@ namespace WeatherTweaks
           );
         }
 
-        if (weatherType.Type == CustomWeatherType.Combined)
+        if (weatherType.CustomType == CustomWeatherType.Combined)
         {
-          var combinedWeather = CombinedWeatherTypes.Find(x => x.Name == weatherType.Name);
+          var combinedWeather = CombinedWeathers.Find(x => x.Name == weatherType.Name);
 
           if (combinedWeather.CanWeatherBeApplied(level))
           {
-            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(combinedWeather.weatherType) * combinedWeather.WeightModify);
-            Logger.LogDebug($"Weight of combined weather: {combinedWeather.Name} is {weatherWeight}");
+            weatherWeight = combinedWeather.DefaultWeight;
           }
           else
           {
@@ -376,23 +351,12 @@ namespace WeatherTweaks
             continue;
           }
         }
-        else if (weatherType.Type == CustomWeatherType.Progressing)
+        else if (weatherType.CustomType == CustomWeatherType.Progressing)
         {
-          var progressingWeather = ProgressingWeatherTypes.Find(x => x.Name == weatherType.Name);
-          if (progressingWeather.CanWeatherBeApplied(level))
-          {
-            weatherWeight = Mathf.RoundToInt(weatherTypeWeights.Get(weatherType.weatherType) * progressingWeather.WeightModify);
-
-            Logger.LogDebug($"Weight of progressing weather: {progressingWeather.Name} is {weatherWeight}");
-          }
-          else
-          {
-            Logger.LogDebug($"Progressing weather: {progressingWeather.Name} can't be applied");
-            continue;
-          }
+          weatherWeight = weatherType.DefaultWeight;
         }
 
-        if (difficulty != 0 && weatherType.weatherType == LevelWeatherType.None)
+        if (difficulty != 0 && weatherType.VanillaWeatherType == LevelWeatherType.None)
         {
           weatherWeight = (int)(weatherWeight * (1 - difficulty));
         }
