@@ -16,7 +16,7 @@ namespace WeatherTweaks
     [HarmonyPatch(typeof(RoundManager), "SpawnOutsideHazards")]
     static IEnumerable<CodeInstruction> SpawnOutsideHazardsPatch(IEnumerable<CodeInstruction> instructions)
     {
-      CodeMatcher codeMatcher = new(instructions);
+      CodeMatcher codeMatcher = new CodeMatcher(instructions);
 
       codeMatcher = codeMatcher.MatchForward(
         false,

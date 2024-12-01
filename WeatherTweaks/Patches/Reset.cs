@@ -6,9 +6,9 @@ namespace WeatherTweaks.Patches
   {
     public static void ResetThings()
     {
-      // Variables.WeatherTypes.Clear();
+      Variables.WeatherTypes.Clear();
       Variables.CurrentEffects.Clear();
-      // Variables.CurrentWeathers.Clear();
+      Variables.CurrentWeathers.Clear();
 
       Variables.IsSetupFinished = false;
     }

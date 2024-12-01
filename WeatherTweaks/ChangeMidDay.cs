@@ -28,7 +28,7 @@ namespace WeatherTweaks
     [HarmonyPatch("MoveTimeOfDay")]
     internal static void MoveTimeOfDayPatch(TimeOfDay __instance)
     {
-      if (Variables.CurrentLevelWeather.CustomType != CustomWeatherType.Progressing)
+      if (Variables.CurrentLevelWeather.Type != CustomWeatherType.Progressing)
       {
         return;
       }
@@ -49,7 +49,7 @@ namespace WeatherTweaks
 
     internal static void RunProgressingEntryActions(float normalizedTimeOfDay)
     {
-      WeatherTweaksWeather currentWeather = Variables.CurrentLevelWeather;
+      WeatherType currentWeather = Variables.CurrentLevelWeather;
 
       if (random == null)
       {
@@ -64,7 +64,7 @@ namespace WeatherTweaks
         {
           DayTime = 0.0f,
           Chance = 1.0f,
-          Weather = currentWeather.VanillaWeatherType
+          Weather = currentWeather.weatherType
         };
       }
 
@@ -89,7 +89,7 @@ namespace WeatherTweaks
         if (normalizedTimeOfDay > entry.DayTime && entry.DayTime > lastCheckedEntry)
         // this means we've passed the time of day for this entry and we haven't checked it yet
         {
-          logger.LogInfo($"Changing weather to {entry.GetWeather().Name} at {entry.DayTime}");
+          logger.LogInfo($"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}");
 
           float randomRoll = (float)random.NextDouble();
           // entry.Chance = 1;
@@ -102,7 +102,7 @@ namespace WeatherTweaks
           }
 
           NetworkedConfig.SetProgressingWeatherEntry(entry);
-          NetworkedConfig.SetWeatherEffects([entry.GetWeather()]);
+          NetworkedConfig.SetWeatherEffects([entry.GetWeatherType().Weather]);
 
           TimeOfDay.Instance.StartCoroutine(DoMidDayChange(entry));
 
@@ -122,24 +122,24 @@ namespace WeatherTweaks
       }
 
       logger.LogWarning(
-        $"Changing weather to {entry.GetWeather().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {EntranceTeleportPatch.isPlayerInside}"
+        $"Changing weather to {entry.GetWeatherType().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {EntranceTeleportPatch.isPlayerInside}"
       );
 
       HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());
 
       yield return new WaitForSeconds(3);
 
-      WeatherTweaksWeather fullWeatherType = (WeatherTweaksWeather)entry.GetWeather();
+      WeatherType fullWeatherType = Variables.GetFullWeatherType(entry.GetWeatherType());
 
-      logger.LogWarning($"{fullWeatherType.Name} {fullWeatherType.Type} {fullWeatherType.VanillaWeatherType}");
+      logger.LogWarning($"{fullWeatherType.Name} {fullWeatherType.Type} {fullWeatherType.weatherType}");
 
-      StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.VanillaWeatherType;
-      TimeOfDay.Instance.currentLevelWeather = fullWeatherType.VanillaWeatherType;
-      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.VanillaWeatherType;
+      StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.weatherType;
+      TimeOfDay.Instance.currentLevelWeather = fullWeatherType.weatherType;
+      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.weatherType;
 
       currentEntry = entry;
 
-      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Effect]);
+      GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Weather.Effect]);
 
       // TODO account for player being dead
     }

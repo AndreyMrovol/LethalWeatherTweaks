@@ -34,7 +34,7 @@ namespace WeatherTweaks.Patches
 
       // patch
       harmony = new Harmony("WeatherTweaks.Malfunctions");
-      HarmonyMethod transpiler = new(typeof(Malfunctions).GetMethod("EclipseOnEnablePatch"));
+      HarmonyMethod transpiler = new HarmonyMethod(typeof(Malfunctions).GetMethod("EclipseOnEnablePatch"));
       harmony.Patch(AccessTools.Method(StartOfRoundPatches, "OverwriteMapScreenInfo"), transpiler: transpiler);
     }
 

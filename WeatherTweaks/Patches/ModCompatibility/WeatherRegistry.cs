@@ -13,7 +13,6 @@ namespace WeatherTweaks.Patches
     [HarmonyPostfix]
     internal static void GetDisplayWeatherStringPatch(ref string __result, SelectableLevel level, Weather weather)
     {
-      Plugin.logger.LogDebug($"Getting display weather string for {level.PlanetName}");
       __result = Variables.GetPlanetCurrentWeather(level);
     }
 
@@ -35,11 +34,12 @@ namespace WeatherTweaks.Patches
         return;
       }
 
-      WeatherTweaksWeather currentWeather = Variables.GetPlanetCurrentWeatherType(StartOfRound.Instance.currentLevel);
+      Definitions.WeatherType currentWeather = Variables.GetPlanetCurrentWeatherType(StartOfRound.Instance.currentLevel);
       Plugin.DebugLogger.LogDebug($"Changing multipliers for weather {currentWeather.Name}");
       (float valueMultiplier, float amountMultiplier) = currentWeather.GetMultiplierData();
 
-      switch (currentWeather.CustomType)
+
+      switch (currentWeather.Type)
       {
         case CustomWeatherType.Normal:
           break;

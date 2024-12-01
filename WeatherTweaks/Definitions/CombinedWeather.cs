@@ -9,8 +9,15 @@ namespace WeatherTweaks.Definitions
 {
   public partial class Types
   {
-    public class CombinedWeatherType : WeatherTweaksWeather
+    public class CombinedWeatherType : WeatherType
     {
+      private List<LevelWeatherType> _levelweathertypes = [];
+      public List<LevelWeatherType> LevelWeatherTypes
+      {
+        get { return _levelweathertypes; }
+        private set { _levelweathertypes = value; }
+      }
+
       private List<Weather> _weathers = [];
       public List<Weather> Weathers
       {
@@ -18,7 +25,7 @@ namespace WeatherTweaks.Definitions
         {
           if (_weathers.Count == 0)
           {
-            _weathers = WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
+            _weathers = LevelWeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
           }
 
           return _weathers;
@@ -26,16 +33,11 @@ namespace WeatherTweaks.Definitions
         private set { _weathers = value; }
       }
 
-      public new WeatherTweaksConfig Config
-      {
-        get { return (WeatherTweaksConfig)base.Config; }
-      }
-
-      public new float WeightModify => Config.WeightModify.Value;
+      public new float WeightModify = 0.15f;
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {
-        if (!Enabled)
+        if (!Enabled.Value)
         {
           return false;
         }
@@ -56,7 +58,8 @@ namespace WeatherTweaks.Definitions
 
       public override (float valueMultiplier, float amountMultiplier) GetMultiplierData()
       {
-        WeatherMultiplierData Data = new(this.VanillaWeatherType, 0, 0);
+        WeatherMultiplierData Data = new(this.weatherType, 0, 0);
+
 
         foreach (Weather weather in this.Weathers)
         {
@@ -67,10 +70,10 @@ namespace WeatherTweaks.Definitions
         return (Data.valueMultiplier, Data.spawnMultiplier);
       }
 
-      public bool Enabled => this.Config.EnableWeather.Value;
+      public ConfigEntry<bool> Enabled;
 
       public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.15f)
-        : base(name, CustomWeatherType.Combined, weathers.ToArray())
+        : base(name, CustomWeatherType.Combined)
       {
         if (weathers.Count == 0)
         {
@@ -88,16 +91,25 @@ namespace WeatherTweaks.Definitions
 
         // WeatherType = new(Name, (LevelWeatherType)baseWeather, Weathers, CustomWeatherType.Combined) { Effects = [], };
 
-        Plugin.logger.LogWarning($"{Config} is null? {Config == null}");
-        Config.WeightModify = new(weightModifier);
+        LevelWeatherTypes = weathers.Distinct().ToList();
 
-        // WeatherTypes = weathers.Distinct().ToList();
         Name = name;
+        weatherType = weathers[0];
 
-        Plugin.logger.LogDebug($"Created CombinedWeatherType: {Name}");
+        WeightModify = weightModifier;
+
+        // TODO
+        // create configFile bindings
+        Enabled = ConfigManager.configFile.Bind("1b> Combined mechanics", $"{Name} Enabled", true, $"Enable {Name} combined weather");
+        // Weight = ConfigManager.Instance.configFile.Bind(
+        //   "1b> Combined mechanics",
+        //   $"{Name} Weight",
+        //   weightModify,
+        //   $"Weight of {Name} combined weather"
+        // );
 
         Variables.CombinedWeatherTypes.Add(this);
-        this.Init();
+        // Variables.WeatherTypes.Add(this);
       }
     }
   }
