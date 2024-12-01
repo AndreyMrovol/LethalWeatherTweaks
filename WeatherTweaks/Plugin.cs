@@ -87,24 +87,6 @@ namespace WeatherTweaks
         };
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
 
-      Weather weatherTweaksWeather =
-        new("WeatherTweaks", new(null, null))
-        {
-          Color = new(r: 0.3f, g: 1f, b: 1f, a: 0.7f),
-          Config = new()
-          {
-            DefaultWeight = new(0, false),
-            ScrapAmountMultiplier = new(0, false),
-            ScrapValueMultiplier = new(0, false),
-            LevelWeights = new("", false),
-            WeatherToWeatherWeights = new("", false),
-            LevelFilters = new("", false),
-            FilteringOption = new(false, false),
-          }
-        };
-      WeatherRegistry.WeatherManager.RegisterWeather(weatherTweaksWeather);
-      Variables.WeatherTweaksWeather = weatherTweaksWeather;
-
       WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
 
       logger.LogInfo(
