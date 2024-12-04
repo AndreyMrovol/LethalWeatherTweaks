@@ -1,3 +1,7 @@
+# 0.23.1
+
+- fixed an issue where special weathers weren't properly registered
+
 # 0.23.0
 
 - reworked the whole thing
