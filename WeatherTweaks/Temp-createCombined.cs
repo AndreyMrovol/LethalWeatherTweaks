@@ -68,15 +68,15 @@ namespace WeatherTweaks
   //     : base("Super Foggy", [LevelWeatherType.Foggy, LevelWeatherType.DustClouds], 0.3f) { }
   // }
 
-  internal class CombinedMadness : Definitions.Types.CombinedWeatherType
-  {
-    public CombinedMadness()
-      : base(
-        "Madness",
-        [LevelWeatherType.Foggy, LevelWeatherType.Eclipsed, LevelWeatherType.Rainy, LevelWeatherType.Stormy, LevelWeatherType.Flooded],
-        0.02f
-      ) { }
-  }
+  // internal class CombinedMadness : Definitions.Types.CombinedWeatherType
+  // {
+  //   public CombinedMadness()
+  //     : base(
+  //       "Madness",
+  //       [LevelWeatherType.Foggy, LevelWeatherType.Eclipsed, LevelWeatherType.Rainy, LevelWeatherType.Stormy, LevelWeatherType.Flooded],
+  //       0.02f
+  //     ) { }
+  // }
 
   internal class ProgressingNoneFoggy : Definitions.Types.ProgressingWeatherType
   {
@@ -245,21 +245,21 @@ namespace WeatherTweaks
       ) { }
   }
 
-  internal class ProgressingTesting : Definitions.Types.ProgressingWeatherType
-  {
-    public ProgressingTesting()
-      : base(
-        "> Testing >",
-        LevelWeatherType.Eclipsed,
-        [
-          new Definitions.Types.ProgressingWeatherEntry
-          {
-            DayTime = 0.20f,
-            Chance = 1f,
-            Weather = LevelWeatherType.None
-          },
-        ],
-        weightModifier: 500f
-      ) { }
-  }
+  // internal class ProgressingTesting : Definitions.Types.ProgressingWeatherType
+  // {
+  //   public ProgressingTesting()
+  //     : base(
+  //       "> Testing >",
+  //       LevelWeatherType.Eclipsed,
+  //       [
+  //         new Definitions.Types.ProgressingWeatherEntry
+  //         {
+  //           DayTime = 0.20f,
+  //           Chance = 1f,
+  //           Weather = LevelWeatherType.None
+  //         },
+  //       ],
+  //       weightModifier: 500f
+  //     ) { }
+  // }
 }
