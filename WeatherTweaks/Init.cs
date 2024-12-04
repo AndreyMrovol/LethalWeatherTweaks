@@ -11,7 +11,6 @@ namespace WeatherRegistry
       new CombinedStormyFlooded();
       new CombinedStormyRainy();
       new CombinedEclipsedRainy();
-      new CombinedMadness();
       new CombinedFoggyFlooded();
       new CombinedFoggyEclipsed();
       new CombinedStormyRainyEclipsed();
@@ -25,8 +24,6 @@ namespace WeatherRegistry
       new ProgressingStormyRainy();
       new ProgressingRainyEclipsed();
       new ProgressingMadness();
-
-      new ProgressingTesting();
     }
   }
 }
