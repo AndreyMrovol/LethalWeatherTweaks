@@ -18,7 +18,9 @@ namespace WeatherTweaks.Patches
       Variables.CurrentEffects.Clear();
       // Variables.CurrentWeathers.Clear();
 
-      Plugin.logger.LogWarning("Terminal start start");
+      // Plugin.logger.LogWarning("Terminal start start");
+
+      Init.InitMethod();
 
       // Variables.PopulateWeathers();
 
@@ -38,7 +40,7 @@ namespace WeatherTweaks.Patches
       WeatherRegistry.Settings.ScreenMapColors.Add("?", Color.white);
       WeatherRegistry.Settings.ScreenMapColors.Add("[UNKNOWN]", new Color(0.29f, 0.29f, 0.29f));
 
-      Variables.WeatherTweaksTypes.ForEach(weatherType => { });
+      // Variables.WeatherTweaksTypes.ForEach(weatherType => { });
 
       Variables.IsSetupFinished = true;
       StartOfRound.Instance.SetPlanetsWeather();
