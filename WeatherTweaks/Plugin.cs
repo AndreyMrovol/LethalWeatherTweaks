@@ -40,6 +40,8 @@ namespace WeatherTweaks
       WeatherRegistry.EventManager.SetupFinished.AddListener(() => TerminalStartPatch.Start());
       WeatherRegistry.EventManager.ShipLanding.AddListener(args => ShipLandingPatches.ShipLandingPatch(args.level, args.weather));
 
+      WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
+
       MrovLib.EventManager.TerminalStart.AddListener((terminal) => TerminalPatch.Postfix());
       MrovLib.EventManager.LobbyDisabled.AddListener((startofround) => Reset.ResetThings());
 
@@ -86,8 +88,6 @@ namespace WeatherTweaks
           },
         };
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
-
-      WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
 
       logger.LogInfo(
         @"
