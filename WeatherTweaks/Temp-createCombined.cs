@@ -242,7 +242,10 @@ namespace WeatherTweaks
           }
         ],
         weightModifier: 0.1f
-      ) { }
+      )
+    {
+      Color = new(1f, 0, 1f, 1f);
+    }
   }
 
   // internal class ProgressingTesting : Definitions.Types.ProgressingWeatherType

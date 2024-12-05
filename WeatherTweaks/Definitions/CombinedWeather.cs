@@ -31,7 +31,7 @@ namespace WeatherTweaks.Definitions
         get { return (WeatherTweaksConfig)base.Config; }
       }
 
-      public new float WeightModify => Config.WeightModify.Value;
+      public float WeightModify;
 
       public new bool CanWeatherBeApplied(SelectableLevel level)
       {
@@ -71,15 +71,13 @@ namespace WeatherTweaks.Definitions
 
       public override void Init()
       {
-        Weather baseWeather = WeatherManager.GetWeather(BaseWeatherType);
-        int newWeight = (int)(baseWeather.DefaultWeight * WeightModify);
-
-        Config.DefaultWeight = new(newWeight, false);
+        int averageWeight = (int)Weathers.Average(weather => weather.DefaultWeight);
+        Config.DefaultWeight = new((int)(averageWeight * WeightModify / Weathers.Count));
 
         base.Init();
       }
 
-      public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.15f)
+      public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.2f)
         : base(name, CustomWeatherType.Combined, weathers.ToArray())
       {
         if (weathers.Count == 0)
@@ -87,8 +85,7 @@ namespace WeatherTweaks.Definitions
           return;
         }
 
-        Plugin.logger.LogWarning($"{Config} is null? {Config == null}");
-        Config.WeightModify = new(weightModifier);
+        WeightModify = weightModifier;
 
         Name = name;
 

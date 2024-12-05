@@ -11,8 +11,6 @@ namespace WeatherTweaks.Definitions
   {
     public CustomWeatherType CustomType { get; set; } = CustomWeatherType.Normal;
 
-    public virtual float WeightModify { get; set; } = 1f;
-
     public virtual bool CanWeatherBeApplied(SelectableLevel level)
     {
       return true;
@@ -51,7 +49,7 @@ namespace WeatherTweaks.Definitions
     public WeatherTweaksWeather(Weather weather)
       : base(weather.Name, weather.Effect)
     {
-      Plugin.logger.LogWarning("Creating WeatherTweaksWeather from Weather");
+      Plugin.DebugLogger.LogWarning("Creating WeatherTweaksWeather from Weather");
 
       // make the Weather object work as a WeatherTweaksWeather object
       Name = weather.Name;
@@ -69,7 +67,7 @@ namespace WeatherTweaks.Definitions
     public WeatherTweaksWeather(string name, CustomWeatherType type, LevelWeatherType[] weatherTypes)
       : base(name)
     {
-      Plugin.logger.LogWarning($"Creating WeatherTweaksWeather: {name}");
+      Plugin.DebugLogger.LogDebug($"Creating WeatherTweaksWeather: {name}");
 
       Name = name;
       CustomType = type;
@@ -83,13 +81,12 @@ namespace WeatherTweaks.Definitions
       Config = new WeatherTweaksConfig()
       {
         EnableWeather = new(true),
-        WeightModify = new(1f),
-        DefaultWeight = new(0, false),
+        DefaultWeight = new(0),
         ScrapAmountMultiplier = new(0, false),
         ScrapValueMultiplier = new(0, false),
         FilteringOption = new(true, false),
         LevelFilters = new("", false),
-        LevelWeights = new("", false),
+        LevelWeights = new(""),
         WeatherToWeatherWeights = new("", false),
       };
     }

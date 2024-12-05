@@ -89,6 +89,8 @@ namespace WeatherTweaks
         };
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
 
+      Init.InitMethod();
+
       logger.LogInfo(
         @"
                   .::.                  

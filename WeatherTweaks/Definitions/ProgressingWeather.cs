@@ -62,7 +62,7 @@ namespace WeatherTweaks.Definitions
         {
           if (_weather == null)
           {
-            _weather = WeatherRegistry.WeatherManager.GetWeather(this.VanillaWeatherType);
+            _weather = WeatherRegistry.WeatherManager.GetWeather(this.StartingWeather);
           }
 
           return _weather;
@@ -70,7 +70,7 @@ namespace WeatherTweaks.Definitions
         set { _weather = value; }
       }
 
-      public new float WeightModify => Config.WeightModify.Value;
+      public float WeightModify;
 
       public new WeatherTweaksConfig Config
       {
@@ -101,10 +101,8 @@ namespace WeatherTweaks.Definitions
 
       public override void Init()
       {
-        Weather baseWeather = WeatherManager.GetWeather(BaseWeatherType);
-        int newWeight = (int)(baseWeather.DefaultWeight * WeightModify);
-
-        Config.DefaultWeight = new(newWeight, false);
+        int averageWeight = (int)WeatherEntries.ToList().Select(entry => entry.GetWeather()).Average(weather => weather.DefaultWeight);
+        Config.DefaultWeight = new((int)(averageWeight * WeightModify / WeatherEntries.Count));
 
         base.Init();
       }
@@ -146,7 +144,7 @@ namespace WeatherTweaks.Definitions
         string name,
         LevelWeatherType baseWeather,
         List<ProgressingWeatherEntry> weatherEntries,
-        float weightModifier = 0.45f
+        float weightModifier = 0.3f
       )
         : base(name, CustomWeatherType.Progressing, weatherEntries.Select(entry => entry.Weather).Append(baseWeather).Distinct().ToArray())
       {
@@ -158,7 +156,7 @@ namespace WeatherTweaks.Definitions
         WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
 
         Plugin.logger.LogWarning($"{Config} is null? {Config == null}");
-        Config.WeightModify = new(weightModifier);
+        WeightModify = weightModifier;
 
         StartingWeather = baseWeather;
 

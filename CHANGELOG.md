@@ -1,3 +1,9 @@
+# 0.23.2
+
+- made sure WeatherTweaks weathers are registered before Registry initialization
+- changed configs: `WeatherTweaksWeather` uses `DefaultWeight` instead of `WeightModify`
+- changed some logs
+
 # 0.23.1
 
 - fixed an issue where special weathers weren't properly registered

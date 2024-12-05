@@ -161,8 +161,6 @@ namespace WeatherTweaks
         Plugin.DebugLogger.LogDebug($"Getting current weather for {level.PlanetName}");
 
         Weather weather = WeatherManager.GetWeather(level.currentWeather);
-
-        Plugin.logger.LogWarning($"Current weather: {weather}");
         return weather.Name;
       }
     }
@@ -191,7 +189,7 @@ namespace WeatherTweaks
         return 0;
       }
 
-      logger.LogDebug(
+      Plugin.DebugLogger.LogDebug(
         $"Got weather variables for {level.PlanetName}:{weatherType} with variables {randomWeather.weatherVariable} {randomWeather.weatherVariable2}"
       );
 
@@ -202,28 +200,6 @@ namespace WeatherTweaks
 
       return randomWeather.weatherVariable;
     }
-
-    // public static LevelWeatherType LevelHasWeather(LevelWeatherType weatherType)
-    // {
-    //   Weather currentWeather = WeatherManager.GetWeather(weatherType);
-    //   SelectableLevel level = StartOfRound.Instance.currentLevel;
-
-    //   if (StartOfRound.Instance == null || level == null)
-    //   {
-    //     Plugin.logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
-    //     return LevelWeatherType.None;
-    //   }
-
-    //   LevelWeatherVariables weatherVariables = currentWeather.WeatherVariables.GetValueOrDefault(level);
-
-    //   if (weatherVariables != null)
-    //   {
-    //     Plugin.logger.LogDebug($"Weather variable: {weatherVariables}");
-    //     return weatherType;
-    //   }
-
-    //   return LevelWeatherType.None;
-    // }
 
     public static LevelWeatherType LevelHasWeather(LevelWeatherType weatherType)
     {

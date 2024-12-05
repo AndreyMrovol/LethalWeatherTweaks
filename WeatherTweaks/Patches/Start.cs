@@ -20,7 +20,7 @@ namespace WeatherTweaks.Patches
 
       // Plugin.logger.LogWarning("Terminal start start");
 
-      Init.InitMethod();
+      // Init.InitMethod();
 
       // Variables.PopulateWeathers();
 
