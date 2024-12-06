@@ -26,6 +26,8 @@ namespace WeatherTweaks
 
     public static ConfigEntry<bool> UncertainWeatherEnabled { get; private set; }
 
+    public static ConfigEntry<bool> GenerateSpecialWeatherEntries { get; private set; }
+
     public static ConfigEntry<bool> AlwaysUncertain { get; private set; }
     public static ConfigEntry<bool> AlwaysUnknown { get; private set; }
     public static ConfigEntry<bool> AlwaysClear { get; private set; }
@@ -45,46 +47,55 @@ namespace WeatherTweaks
 
       // create config entries
 
-      LogWeatherSelection = configFile.Bind("0> Debug", "LogWeatherSelection", true, "Log weather selection");
-      LogWeatherVariables = configFile.Bind("0> Debug", "LogWeatherVariables", true, "Log resolving weather variables");
-      LogLogs = configFile.Bind("0> Debug", "Logs", true, "Log logging logs");
+      LogWeatherSelection = configFile.Bind("Debug", "LogWeatherSelection", true, "Log weather selection");
+      LogWeatherVariables = configFile.Bind("Debug", "LogWeatherVariables", true, "Log resolving weather variables");
+      LogLogs = configFile.Bind("Debug", "Logs", true, "Log logging logs");
 
-      UncertainWeatherEnabled = configFile.Bind("1> Uncertain weather", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
+      UncertainWeatherEnabled = configFile.Bind("Uncertain Weathers", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
 
-      MaxMultiplier = configFile.Bind("2> Multipliers", "MaxMultiplier", 0.8f, "Maximum difficulty multiplier (between 0 and 1)");
+      MaxMultiplier = configFile.Bind(
+        "Multiplier Settings",
+        "MaxMultiplier",
+        0.8f,
+        new ConfigDescription("Maximum difficulty multiplier (between 0 and 1)", new AcceptableValueRange<float>(0, 1))
+      );
       ScaleDownClearWeather = configFile.Bind(
-        "2> Multipliers",
+        "Multiplier Settings",
         "ScaleDownClearWeather",
         true,
-        "Scale down clear weather's weight based on planet's available random weathers to match % chance "
+        "Scale down clear weather's weight to keep its % chance the same, no matter how many weathers are in the pool"
       );
 
       GameLengthMultiplier = configFile.Bind(
-        "2a> Difficulty multipliers",
+        "Difficulty Multiplier Settings",
         "GameLengthMultiplier",
         0.05f,
         "Difficulty multiplier - game length (quotas done)"
       );
       GamePlayersMultiplier = configFile.Bind(
-        "2a> Difficulty multipliers",
+        "Difficulty Multiplier Settings",
         "GamePlayersMultiplier",
         0.01f,
         "Difficulty multiplier - players amount"
       );
 
-      FirstDaySeed = configFile.Bind("3> First day", "FirstDaySeed", 0, "Seed for the first day's weather");
-      FirstDaySpecial = configFile.Bind("3> First day", "FirstDaySpecial", true, "Enable special weather picking algorithm for the first day");
-      FirstDayRandomSeed = configFile.Bind("3> First day", "FirstDayRandomSeed", true, "Use random seed for the first day's weather");
+      FirstDaySeed = configFile.Bind("First Day", "FirstDaySeed", 0, "Seed for the first day's weather");
+      FirstDaySpecial = configFile.Bind("First Day", "FirstDaySpecial", true, "Enable special weather picking algorithm for the first day");
+      FirstDayRandomSeed = configFile.Bind("First Day", "FirstDayRandomSeed", true, "Use random seed for the first day's weather");
 
-      AlwaysUncertain = configFile.Bind("4> Special modes", "AlwaysUncertain", false, "Always make weather uncertain");
-      AlwaysUnknown = configFile.Bind("4> Special modes", "AlwaysUnknown", false, "Always make weather unknown");
-      AlwaysClear = configFile.Bind("4> Special modes", "AlwaysClear", false, "Always make weather clear - good for testing");
-
-      FoggyIgnoreLevels = new LevelListConfigHandler(
-        "",
-        "FoggyIgnoreLevels",
-        new ConfigDescription("Levels to ignore applying foggy weather patch on")
+      GenerateSpecialWeatherEntries = configFile.Bind(
+        "Special Weather Configs",
+        "GenerateSpecialWeatherEntries",
+        false,
+        "Generate special weather entries for all levels"
       );
+
+      AlwaysUncertain = configFile.Bind("Special Modes", "AlwaysUncertain", false, "Always make weather uncertain");
+      AlwaysUnknown = configFile.Bind("Special Modes", "AlwaysUnknown", false, "Always make weather unknown");
+      AlwaysClear = configFile.Bind("Special Modes", "AlwaysClear", false, "Always make weather clear - good for testing");
+
+      FoggyIgnoreLevels = new LevelListConfigHandler("", false);
+      FoggyIgnoreLevels.CreateConfigEntry("Foggy patch", new ConfigDescription("Levels to ignore foggy weather on"));
     }
   }
 }
