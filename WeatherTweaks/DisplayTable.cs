@@ -25,10 +25,7 @@ namespace WeatherTweaks
       List<SelectableLevel> levels = MrovLib.LevelHelper.SortedLevels;
       foreach (SelectableLevel level in levels)
       {
-        Plugin.logger.LogWarning($"Level: {level.PlanetName}, is null: {level == null}");
-
         bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
-        Plugin.logger.LogDebug($"Is uncertain weather: {isUncertainWeather}");
 
         table.AddRow(
           MrovLib.StringResolver.GetNumberlessName(level),
@@ -37,7 +34,7 @@ namespace WeatherTweaks
         );
       }
 
-      Plugin.logger.LogInfo("Currently set weathers: \n" + table.ToMinimalString());
+      Plugin.logger.LogMessage("Currently set weathers: \n" + table.ToMinimalString());
     }
   }
 }
