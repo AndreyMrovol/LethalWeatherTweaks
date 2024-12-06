@@ -40,6 +40,11 @@ namespace WeatherTweaks
       WeatherRegistry.EventManager.SetupFinished.AddListener(() => TerminalStartPatch.Start());
       WeatherRegistry.EventManager.ShipLanding.AddListener(args => ShipLandingPatches.ShipLandingPatch(args.level, args.weather));
 
+      WeatherRegistry.EventManager.ShipLanding.AddListener(args => FoggyPatch.ToggleFogExclusionZones(args.level, false));
+      WeatherRegistry.EventManager.DisableAllWeathers.AddListener(
+        () => FoggyPatch.ToggleFogExclusionZones(StartOfRound.Instance.currentLevel, true)
+      );
+
       WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
 
       MrovLib.EventManager.TerminalStart.AddListener((terminal) => TerminalPatch.Postfix());

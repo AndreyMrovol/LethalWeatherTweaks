@@ -93,5 +93,25 @@ namespace WeatherTweaks.Patches
 
       return Fog;
     }
+
+    public static void ToggleFogExclusionZones(SelectableLevel level, bool enable = true)
+    {
+      Plugin.logger.LogDebug("DisableFogExclusionZones called");
+
+      if (!MrovLib.Defaults.IsVanillaLevel(level) && enable)
+      {
+        Plugin.logger.LogDebug("Level is not vanilla, skipping");
+        return;
+      }
+
+      List<GameObject> fogExclusionZones = GameObject.FindObjectsOfType<GameObject>().Where(obj => obj.name == "FogExclusionZone").ToList();
+      foreach (GameObject fogExclusionZone in fogExclusionZones)
+      {
+        Plugin.DebugLogger.LogDebug(
+          $"Setting fog exclusion zone {fogExclusionZone.name} (parent {fogExclusionZone.transform.parent.name}) to {enable}"
+        );
+        fogExclusionZone.SetActive(enable);
+      }
+    }
   }
 }
