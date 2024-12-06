@@ -44,8 +44,6 @@ namespace WeatherTweaks.Definitions
       base.Init();
     }
 
-    // public List<Weather> Weathers => WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
-
     public WeatherTweaksWeather(Weather weather)
       : base(weather.Name, weather.Effect)
     {
