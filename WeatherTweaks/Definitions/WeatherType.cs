@@ -33,8 +33,8 @@ namespace WeatherTweaks.Definitions
       {
         (float valueMultiplier, float amountMultiplier) = GetDefaultMultiplierData();
 
-        Config.ScrapValueMultiplier = new(valueMultiplier, false);
-        Config.ScrapAmountMultiplier = new(amountMultiplier, false);
+        Config.ScrapValueMultiplier = new(valueMultiplier, ConfigManager.GenerateSpecialWeatherEntries.Value);
+        Config.ScrapAmountMultiplier = new(amountMultiplier, ConfigManager.GenerateSpecialWeatherEntries.Value);
 
         // WeatherManagerManager.AddSpecialWeather(this);
 
@@ -82,12 +82,12 @@ namespace WeatherTweaks.Definitions
       {
         EnableWeather = new(true),
         DefaultWeight = new(0),
-        ScrapAmountMultiplier = new(0, false),
-        ScrapValueMultiplier = new(0, false),
-        FilteringOption = new(true, false),
-        LevelFilters = new("", false),
+        ScrapAmountMultiplier = new(0, ConfigManager.GenerateSpecialWeatherEntries.Value),
+        ScrapValueMultiplier = new(0, ConfigManager.GenerateSpecialWeatherEntries.Value),
+        FilteringOption = new(true, ConfigManager.GenerateSpecialWeatherEntries.Value),
+        LevelFilters = new("", ConfigManager.GenerateSpecialWeatherEntries.Value),
         LevelWeights = new(""),
-        WeatherToWeatherWeights = new("", false),
+        WeatherToWeatherWeights = new("", ConfigManager.GenerateSpecialWeatherEntries.Value),
       };
     }
   }
