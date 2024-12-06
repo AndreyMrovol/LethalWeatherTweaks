@@ -56,6 +56,7 @@ namespace WeatherTweaks
 
         return _weatherTweaksTypes;
       }
+      set { _weatherTweaksTypes = value; }
     }
 
     public static List<WeatherTweaksWeather> SpecialWeathers =>
