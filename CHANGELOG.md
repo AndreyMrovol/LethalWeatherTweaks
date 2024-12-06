@@ -1,3 +1,12 @@
+# 0.24.0
+
+## Please re-generate your configs!
+
+- changed config entry names
+- added an option to generate all hidden config entries for special weathers (thanks, `dragonmcmx`!)
+- updated how picked weathers are displayed
+- re-introduced foggy patch ||with a twist||
+
 # 0.23.2
 
 - made sure WeatherTweaks weathers are registered before Registry initialization
