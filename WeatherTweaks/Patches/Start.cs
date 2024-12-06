@@ -42,6 +42,8 @@ namespace WeatherTweaks.Patches
 
       // Variables.WeatherTweaksTypes.ForEach(weatherType => { });
 
+      FoggyPatch.CreateEffectOverrides();
+
       Variables.IsSetupFinished = true;
       StartOfRound.Instance.SetPlanetsWeather();
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();

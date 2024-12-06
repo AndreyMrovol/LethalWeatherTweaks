@@ -1,108 +1,97 @@
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Reflection.Emit;
-// using HarmonyLib;
-// using MonoMod.Cil;
-// using UnityEngine;
-// using UnityEngine.Rendering.HighDefinition;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
+using HarmonyLib;
+using MonoMod.Cil;
+using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
+using WeatherRegistry;
+using WeatherRegistry.Definitions;
 
-// namespace WeatherTweaks
-// {
-//   partial class BasegameWeatherPatch
-//   {
-//     internal static LocalVolumetricFog foggyObject = null;
+namespace WeatherTweaks.Patches
+{
+  class FoggyPatch
+  {
+    public static void CreateEffectOverrides()
+    {
+      Plugin.logger.LogInfo("CreateEffectOverrides called");
 
-//     internal static void FogPatch(TimeOfDay __instance, LocalVolumetricFog ___foggyWeather)
-//     {
-//       logger.LogInfo("Changing fog");
+      Weather foggyWeather = WeatherManager.GetWeather(LevelWeatherType.Foggy);
+      ImprovedWeatherEffect newFoggy = new(foggyWeather.Effect.EffectObject, GameObject.Instantiate(foggyWeather.Effect.WorldObject));
 
-//       if (___foggyWeather == null)
-//       {
-//         Plugin.logger.LogWarning("Failed to find LocalVolumetricFog \"Foggy\"");
-//         return;
-//       }
+      GameObject newFoggyEffect = newFoggy.WorldObject;
 
-//       ChangeFog(___foggyWeather);
-//     }
+      LocalVolumetricFog Fog = newFoggyEffect.GetComponent<LocalVolumetricFog>();
 
-//     internal static void ChangeFog()
-//     {
-//       // Get fog and call ChangeFog
+      // get new LocalVolumetricFog parameters
+      LocalVolumetricFog newFog = ChangeFogParams(Fog);
 
-//       if (ConfigManager.FoggyIgnoreLevels.Value.Contains(StartOfRound.Instance.currentLevel))
-//       {
-//         return;
-//       }
+      // replace old LocalVolumetricFog with new one
+      List<LocalVolumetricFog> fogs = newFoggyEffect.GetComponents<LocalVolumetricFog>().ToList();
+      fogs.Remove(Fog);
+      fogs.Add(newFog);
 
-//       LocalVolumetricFog Fog = Resources
-//         .FindObjectsOfTypeAll<LocalVolumetricFog>()
-//         .ToList()
-//         .Where(fog => fog.name == "Foggy")
-//         .ToList()
-//         .FirstOrDefault();
+      // replace old foggy effect with new one
+      newFoggy.WorldObject = newFoggyEffect;
 
-//       if (Fog == null)
-//       {
-//         Plugin.logger.LogWarning("Failed to find LocalVolumetricFog \"Foggy\"");
-//         return;
-//       }
+      // create weather override for every level
 
-//       ChangeFog(Fog);
-//     }
+      foreach (SelectableLevel level in MrovLib.LevelHelper.Levels)
+      {
+        if (ConfigManager.FoggyIgnoreLevels.Value.Contains(level))
+        {
+          continue;
+        }
 
-//     internal static void ChangeFog(LocalVolumetricFog Fog)
-//     {
-//       Plugin.logger.LogInfo("ChangeFog called");
+        WeatherEffectOverride effectOverride = new(foggyWeather, level, newFoggy);
+      }
+    }
 
-//       try
-//       {
-//         Plugin.logger.LogWarning($"Fog null? : {foggyObject == null}");
+    public static LocalVolumetricFog ChangeFogParams(LocalVolumetricFog Fog)
+    {
+      Plugin.logger.LogInfo("ChangeFog called");
 
-//         if (foggyObject != null)
-//         {
-//           Plugin.logger.LogInfo(
-//             $"FOG is already changed to: {Fog.name} {Fog.parameters.size} {Fog.transform.position} {Fog.parameters.albedo} {Fog.parameters.meanFreePath}"
-//           );
-//           throw new Exception("Fog has already been changed");
-//         }
+      Plugin.logger.LogInfo($"is null? {Fog == null}");
 
-//         LocalVolumetricFog localFog = Fog;
-//         LocalVolumetricFogArtistParameters parameters = localFog.parameters;
+      try
+      {
+        LocalVolumetricFogArtistParameters parameters = Fog.parameters;
 
-//         Plugin.logger.LogWarning($"FOG: {Fog.name} {parameters.size} {Fog.transform.position} {parameters.albedo} {parameters.meanFreePath}");
+        Plugin.DebugLogger.LogWarning(
+          $"FOG: {Fog.name} {parameters.size} {Fog.transform.position} {parameters.albedo} {parameters.meanFreePath}"
+        );
 
-//         // change the position of the fog to be 128 units higher
-//         Fog.transform.position = new Vector3(Fog.transform.position.x, Fog.transform.position.y + 128f, Fog.transform.position.z);
+        // change the position of the fog to be 128 units higher
+        Fog.transform.position = new Vector3(Fog.transform.position.x, Fog.transform.position.y + 128f, Fog.transform.position.z);
 
-//         parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
+        parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
 
-//         // parameters.meanFreePath *= 1.45f;
-//         parameters.meanFreePath = 11f;
-//         parameters.falloffMode = LocalVolumetricFogFalloffMode.Linear;
+        // parameters.meanFreePath *= 1.45f;
+        parameters.meanFreePath = 11f;
+        parameters.falloffMode = LocalVolumetricFogFalloffMode.Linear;
 
-//         parameters.distanceFadeEnd = 200;
-//         parameters.distanceFadeStart = 0;
-//         parameters.blendingMode = LocalVolumetricFogBlendingMode.Additive;
+        parameters.distanceFadeEnd = 200;
+        parameters.distanceFadeStart = 0;
+        parameters.blendingMode = LocalVolumetricFogBlendingMode.Additive;
 
-//         parameters.size.y += 256f;
+        parameters.size.y += 256f;
 
-//         parameters.size.x *= 5;
-//         parameters.size.z *= 5;
+        parameters.size.x *= 5;
+        parameters.size.z *= 5;
 
-//         Plugin.logger.LogWarning($"FOG: {Fog.name} {parameters.size} {Fog.transform.position} {parameters.albedo} {parameters.meanFreePath}");
+        Plugin.DebugLogger.LogWarning(
+          $"FOG: {Fog.name} {parameters.size} {Fog.transform.position} {parameters.albedo} {parameters.meanFreePath}"
+        );
 
-//         Fog.parameters = parameters;
-//         foggyObject = Fog;
+        Fog.parameters = parameters;
+      }
+      catch (Exception e)
+      {
+        Plugin.logger.LogWarning("Failed to change fog");
+      }
 
-//         // logger.LogWarning(
-//         //   $"Changing freeMeanPath from {___foggyWeather.parameters.meanFreePath} to {___foggyWeather.parameters.meanFreePath * 1.5f}"
-//         // );
-//       }
-//       catch (Exception e)
-//       {
-//         Plugin.logger.LogWarning("Failed to change fog");
-//       }
-//     }
-//   }
-// }
+      return Fog;
+    }
+  }
+}
