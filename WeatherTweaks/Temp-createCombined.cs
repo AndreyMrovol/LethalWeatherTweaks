@@ -32,10 +32,7 @@ namespace WeatherTweaks
   internal class CombinedStormyFlooded : Definitions.Types.CombinedWeatherType
   {
     public CombinedStormyFlooded()
-      : base("Stormy + Flooded", [LevelWeatherType.Stormy, LevelWeatherType.Flooded])
-    {
-      // weightModify = 10f;
-    }
+      : base("Stormy + Flooded", [LevelWeatherType.Stormy, LevelWeatherType.Flooded]) { }
   }
 
   internal class CombinedFoggyFlooded : Definitions.Types.CombinedWeatherType
