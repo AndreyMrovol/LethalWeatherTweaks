@@ -98,11 +98,11 @@ namespace WeatherTweaks.Patches
     {
       Plugin.logger.LogDebug("DisableFogExclusionZones called");
 
-      if (!MrovLib.Defaults.IsVanillaLevel(level) && enable)
-      {
-        Plugin.logger.LogDebug("Level is not vanilla, skipping");
-        return;
-      }
+      // if (!MrovLib.Defaults.IsVanillaLevel(level) && !enable)
+      // {
+      //   Plugin.logger.LogDebug("Level is not vanilla, skipping");
+      //   return;
+      // }
 
       List<GameObject> fogExclusionZones = GameObject.FindObjectsOfType<GameObject>().Where(obj => obj.name == "FogExclusionZone").ToList();
       foreach (GameObject fogExclusionZone in fogExclusionZones)
