@@ -1,3 +1,9 @@
+# 0.24.1
+
+- added ||Blackout|| weather
+  - ||disables all lights on the planet and in the dungeon||
+  - ||makes the floodlight work like real ones||
+
 # 0.24.0
 
 ## Please re-generate your configs!

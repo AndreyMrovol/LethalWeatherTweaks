@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using UnityEngine;
 using WeatherRegistry;
 using WeatherTweaks.Patches;
 
@@ -24,6 +25,8 @@ namespace WeatherTweaks
     internal static bool IsLLLPresent = false;
 
     internal static GeneralImprovementsWeather GeneralImprovements;
+
+    internal static Weather BlackoutWeather;
 
     private void Awake()
     {
@@ -88,11 +91,32 @@ namespace WeatherTweaks
           {
             ScrapAmountMultiplier = new(1.6f),
             ScrapValueMultiplier = new(0.8f),
-            WeatherToWeatherWeights = new(["Eclipsed@200", "Stormy@80"]),
+            WeatherToWeatherWeights = new(["Eclipsed@50", "Stormy@80"]),
             DefaultWeight = new(25),
           },
         };
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
+
+      GameObject blackoutObject = GameObject.Instantiate(new GameObject());
+      blackoutObject.hideFlags = HideFlags.HideAndDontSave;
+      blackoutObject.AddComponent<Weathers.Blackout>();
+      GameObject.DontDestroyOnLoad(blackoutObject);
+
+      Weather Blackout =
+        new("Blackout", new(null, blackoutObject) { SunAnimatorBool = "eclipse", })
+        {
+          Color = new(r: 0.2f, g: 0.2f, b: 0.2f, a: 1),
+          Config =
+          {
+            ScrapAmountMultiplier = new(0.65f),
+            ScrapValueMultiplier = new(1.7f),
+            DefaultWeight = new(25),
+            LevelWeights = new("Rend@200; Dine@200; Titan@200"),
+            WeatherToWeatherWeights = new("None@200; Cloudy@250")
+          },
+        };
+      WeatherRegistry.WeatherManager.RegisterWeather(Blackout);
+      BlackoutWeather = Blackout;
 
       Init.InitMethod();
 
