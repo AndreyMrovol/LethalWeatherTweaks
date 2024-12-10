@@ -26,10 +26,12 @@ namespace WeatherTweaks.Definitions
           if (Variables.CombinedWeatherTypes.Contains(LevelWeatherType))
           {
             EnableCombinedEffect();
+            return;
           }
           else if (Variables.ProgressingWeatherTypes.Contains(LevelWeatherType))
           {
-            // EnableSpecialEffect();
+            EnableProgressingEffect();
+            return;
           }
         }
 
@@ -55,7 +57,13 @@ namespace WeatherTweaks.Definitions
 
     public void EnableProgressingEffect()
     {
-      Weather weather = WeatherRegistry.WeatherManager.GetWeather(LevelWeatherType);
+      Definitions.Types.ProgressingWeatherType currentWeather = Variables.ProgressingWeathers.First(weather =>
+        weather.VanillaWeatherType == StartOfRound.Instance.currentLevel.currentWeather
+      );
+
+      LevelWeatherType startingWeatherType = currentWeather.StartingWeather;
+
+      WeatherEffectController.SetWeatherEffects(startingWeatherType);
     }
 
     public override void DisableEffect(bool permament = false)
