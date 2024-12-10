@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameNetcodeStuff;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -130,12 +132,34 @@ namespace WeatherTweaks.Weathers
 
     private void OnEnable()
     {
+      if (!WeatherRegistry.WeatherManager.IsSetupFinished)
+      {
+        return;
+      }
+
+      LungProp currentApparatus = UnityEngine.Object.FindObjectOfType<LungProp>();
+
       // disable all lights in the level's scene
       AllPoweredLights = LightUtils.GetLightsInScene(StartOfRound.Instance.currentLevel.sceneName);
       Logger.LogInfo($"Found {AllPoweredLights.Count} lights in scene {StartOfRound.Instance.currentLevel.sceneName}");
       foreach (Light light in AllPoweredLights)
       {
-        Logger.LogDebug($"Disabling light {light.name}");
+        if (currentApparatus != null)
+        {
+          if (light.transform.parent == currentApparatus.gameObject.transform)
+          {
+            Plugin.logger.LogDebug($"Skipping light {light.name} (parent {light.transform.parent.name})");
+
+            light.gameObject.TryGetComponent<UnityEngine.Rendering.HighDefinition.HDAdditionalLightData>(out var hdLight);
+            if (hdLight != null)
+            {
+              hdLight.SetIntensity(600);
+            }
+            continue;
+          }
+        }
+
+        Logger.LogDebug($"Disabling light {light.name} (parent {light.transform.parent.name})");
         light.gameObject.SetActive(false);
       }
 
@@ -146,31 +170,66 @@ namespace WeatherTweaks.Weathers
       RoundManager.Instance.TurnOnAllLights(false);
 
       // destroy the breaker box so power can't be turned back on
-      BreakerBox currentBreakerBox = Object.FindObjectOfType<BreakerBox>();
+      BreakerBox currentBreakerBox = UnityEngine.Object.FindObjectOfType<BreakerBox>();
       if (currentBreakerBox != null)
       {
-        GameObject.Destroy(currentBreakerBox);
+        currentBreakerBox.gameObject.SetActive(false);
+      }
+
+      // disable sun
+      UnityEngine.GameObject sun = UnityEngine.GameObject.Find("Sun");
+      if (sun != null)
+      {
+        sun.SetActive(false);
       }
 
       // improve the range of floodlights
-      Transform FloodlightParentTransform = GameObject.Find("ShipLightsPost").GetComponent<Transform>();
-      List<Light> floodlights = LightUtils.GetLightsUnderParent(FloodlightParentTransform);
-      Logger.LogInfo($"Found {floodlights.Count} floodlights in scene SampleSceneRelay");
-
-      foreach (Light light in floodlights)
+      // it's like that because of imperium race-condition
+      try
       {
-        light.gameObject.TryGetComponent<UnityEngine.Rendering.HighDefinition.HDAdditionalLightData>(out var hdLight);
-        if (hdLight != null)
+        Transform FloodlightParentTransform = GameObject.Find("ShipLightsPost").GetComponent<Transform>();
+        List<Light> floodlights = LightUtils.GetLightsUnderParent(FloodlightParentTransform);
+        Logger.LogInfo($"Found {floodlights.Count} floodlights in scene SampleSceneRelay");
+
+        foreach (Light light in floodlights)
         {
-          hdLight.SetIntensity(40000);
-          hdLight.SetSpotAngle(180);
-          hdLight.SetRange(1000);
+          light.gameObject.TryGetComponent<UnityEngine.Rendering.HighDefinition.HDAdditionalLightData>(out var hdLight);
+          if (hdLight != null)
+          {
+            hdLight.SetIntensity(30000);
+            hdLight.SetSpotAngle(120);
+            hdLight.SetRange(600);
+          }
         }
       }
+      catch (Exception ex)
+      {
+        Logger.LogWarning($"Error while trying to modify floodlights: {ex}");
+      }
+
+      // improve the range of visibility inside the dungeon
+      // List<PlayerControllerB> players = UnityEngine.Object.FindObjectsOfType<PlayerControllerB>().ToList();
+      // players.ForEach(player =>
+      // {
+      //   Light nightVision = player.GetComponent
+      // });
+
+      // turn off ship lights
+
+      // tweak flashlights a little
+
+      // reduce range of helmet light
     }
 
     private void OnDisable()
     {
+      if (!WeatherRegistry.WeatherManager.IsSetupFinished)
+      {
+        return;
+      }
+
+      AllPoweredLights.Clear();
+
       // revert all lights to their original state
       Transform FloodlightParentTransform = GameObject.Find("ShipLightsPost").GetComponent<Transform>();
       List<Light> floodlights = LightUtils.GetLightsUnderParent(FloodlightParentTransform);

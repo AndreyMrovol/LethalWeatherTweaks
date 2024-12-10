@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
@@ -97,10 +98,13 @@ namespace WeatherTweaks
         };
       WeatherRegistry.WeatherManager.RegisterWeather(cloudyWeather);
 
-      GameObject blackoutObject = GameObject.Instantiate(new GameObject());
+      GameObject blackoutObject = GameObject.Instantiate(new GameObject() { name = "BlackoutWeather" });
       blackoutObject.hideFlags = HideFlags.HideAndDontSave;
       blackoutObject.AddComponent<Weathers.Blackout>();
       GameObject.DontDestroyOnLoad(blackoutObject);
+
+      var BlackoutAssets = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Info.Location), "blackout"));
+      AnimationClip blackoutClip = BlackoutAssets.LoadAsset<AnimationClip>("BlackoutSunClip");
 
       Weather Blackout =
         new("Blackout", new(null, blackoutObject) { SunAnimatorBool = "eclipse", })
@@ -114,6 +118,7 @@ namespace WeatherTweaks
             LevelWeights = new("Rend@200; Dine@200; Titan@200"),
             WeatherToWeatherWeights = new("None@200; Cloudy@250")
           },
+          AnimationClip = blackoutClip
         };
       WeatherRegistry.WeatherManager.RegisterWeather(Blackout);
       BlackoutWeather = Blackout;

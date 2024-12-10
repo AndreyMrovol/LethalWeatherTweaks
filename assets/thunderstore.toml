@@ -36,5 +36,9 @@ target = "/"
 source = "../Opensource.md"
 target = "/"
 
+[[build.copy]]
+source = "./bundles"
+target = "/"
+
 [publish]
 communities = [ "lethal-company", ]
