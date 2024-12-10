@@ -1,3 +1,14 @@
+# 0.24.2
+
+- changes to Blackout:
+  - fixed errors during game startup
+  - apparatus lights won't be disabled anymore
+  - fixed breaker box being non-functional and throwing errors
+    - i was trying to destroy the breakerbox object, which caused errors
+    - now the breaker box will be inactive
+  - reduced the range of floodlights
+- (hopefully) fixed all issues with progressing weathers changing during the landing
+
 # 0.24.1
 
 - added ||Blackout|| weather
@@ -26,6 +37,9 @@
 # 0.23.0
 
 - reworked the whole thing
+
+<details>
+  <summary><b> Changelog from earlier "Beta" version</summary>
 
 # 0.22.0
 
@@ -142,3 +156,5 @@
 
 - started doing changelog
 - fixed an issue where the game would softlock if any levels had no defined randomWeathers
+
+</details>
