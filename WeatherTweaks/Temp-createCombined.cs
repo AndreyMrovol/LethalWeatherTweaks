@@ -59,6 +59,15 @@ namespace WeatherTweaks
       : base("Stormy + Rainy + Flooded", [LevelWeatherType.Stormy, LevelWeatherType.Rainy, LevelWeatherType.Flooded]) { }
   }
 
+  internal class CombinedStormyRainyFloodedEclipsed : Definitions.Types.CombinedWeatherType
+  {
+    public CombinedStormyRainyFloodedEclipsed()
+      : base(
+        "Stormy + Rainy + Flooded + Eclipsed",
+        [LevelWeatherType.Stormy, LevelWeatherType.Rainy, LevelWeatherType.Flooded, LevelWeatherType.Eclipsed]
+      ) { }
+  }
+
   // internal class SuperFoggy : Definitions.Types.CombinedWeatherType
   // {
   //   public SuperFoggy()
@@ -210,39 +219,6 @@ namespace WeatherTweaks
           }
         ]
       ) { }
-  }
-
-  internal class ProgressingMadness : Definitions.Types.ProgressingWeatherType
-  {
-    public ProgressingMadness()
-      : base(
-        ">Madness>",
-        LevelWeatherType.Eclipsed,
-        [
-          new Definitions.Types.ProgressingWeatherEntry
-          {
-            DayTime = 0.10f,
-            Chance = 0.5f,
-            Weather = LevelWeatherType.Flooded
-          },
-          new Definitions.Types.ProgressingWeatherEntry
-          {
-            DayTime = 0.40f,
-            Chance = 0.5f,
-            Weather = LevelWeatherType.Foggy
-          },
-          new Definitions.Types.ProgressingWeatherEntry
-          {
-            DayTime = 0.65f,
-            Chance = 1f,
-            Weather = LevelWeatherType.Stormy
-          }
-        ],
-        weightModifier: 0.1f
-      )
-    {
-      Color = new(1f, 0, 1f, 1f);
-    }
   }
 
   // internal class ProgressingTesting : Definitions.Types.ProgressingWeatherType
