@@ -230,20 +230,27 @@ namespace WeatherTweaks.Weathers
 
       AllPoweredLights.Clear();
 
-      // revert all lights to their original state
-      Transform FloodlightParentTransform = GameObject.Find("ShipLightsPost").GetComponent<Transform>();
-      List<Light> floodlights = LightUtils.GetLightsUnderParent(FloodlightParentTransform);
-      Logger.LogInfo($"Found {floodlights.Count} floodlights in scene SampleSceneRelay");
-
-      foreach (Light light in floodlights)
+      try
       {
-        light.gameObject.TryGetComponent<UnityEngine.Rendering.HighDefinition.HDAdditionalLightData>(out var hdLight);
-        if (hdLight != null)
+        // revert all lights to their original state
+        Transform FloodlightParentTransform = GameObject.Find("ShipLightsPost").GetComponent<Transform>();
+        List<Light> floodlights = LightUtils.GetLightsUnderParent(FloodlightParentTransform);
+        Logger.LogInfo($"Found {floodlights.Count} floodlights in scene SampleSceneRelay");
+
+        foreach (Light light in floodlights)
         {
-          hdLight.SetIntensity(FloodlightIntensity);
-          hdLight.SetSpotAngle(FloodlightAngle);
-          hdLight.SetRange(FloodlightRange);
+          light.gameObject.TryGetComponent<UnityEngine.Rendering.HighDefinition.HDAdditionalLightData>(out var hdLight);
+          if (hdLight != null)
+          {
+            hdLight.SetIntensity(FloodlightIntensity);
+            hdLight.SetSpotAngle(FloodlightAngle);
+            hdLight.SetRange(FloodlightRange);
+          }
         }
+      }
+      catch (Exception ex)
+      {
+        Logger.LogWarning($"Error while trying to modify floodlights: {ex}");
       }
     }
   }
