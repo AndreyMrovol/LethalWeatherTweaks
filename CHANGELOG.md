@@ -1,4 +1,4 @@
-# 0.24.3
+# 0.24.4
 
 - added `CombinedStormyRainyFloodedEclipsed` weather
 - removed `ProgressingMadness` weather

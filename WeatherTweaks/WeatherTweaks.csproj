@@ -55,6 +55,7 @@
             <HintPath>$(LibraryDirectory)/Malfunctions.dll</HintPath>
         </Reference>
 
+
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
