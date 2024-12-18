@@ -44,57 +44,17 @@
         <PackageReference Include="mrov.WeatherRegistry" Version="*-*" Publicize="true" />
         <PackageReference Include="mrov.MrovLib" Version="*-*" />
 
+        <PackageReference Include="IAmBatby.LethalLevelLoader" Version="*-*" />
+
         <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false"/>
     </ItemGroup>
 
     <ItemGroup>
-
-        <Reference Include="LethalLevelLoader" PrivateAssets="All">
-            <HintPath>$(LibraryDirectory)/LethalLevelLoader.dll</HintPath>
-        </Reference>
-
-        <Reference Include="MrovLib" PrivateAssets="All">
-            <HintPath>$(LibraryDirectory)/MrovLib.dll</HintPath>
-        </Reference>
-
-        <Reference Include="MoreShipUpgrades" PrivateAssets="All">
-            <HintPath>$(LibraryDirectory)/MoreShipUpgrades.dll</HintPath>
-        </Reference>
-
-        <Reference Include="MeteoMultiplier" PrivateAssets="All">
-            <HintPath>$(LibraryDirectory)/MeteoMultiplier.dll</HintPath>
-        </Reference>
-
         <Reference Include="Malfunctions" PrivateAssets="All">
             <HintPath>$(LibraryDirectory)/Malfunctions.dll</HintPath>
         </Reference>
 
-        <Reference Include="LethalLib" PrivateAssets="All">
-            <HintPath>$(LibraryDirectory)/LethalLib.dll</HintPath>
-        </Reference>
-
-        </ItemGroup>
-
-
-    <!-- <ItemGroup>
-        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-
-
-        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
-        <PackageReference Include="BepInEx.Core" Version="5.*" />
-        <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*"/>
-        <PackageReference Include="LethalAPI.GameLibs" Version="49.0.0" />
-        <PackageReference Include="Lib.Harmony" Version="2.2.2" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
-
-        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.1.0" />
-
-        
-    </ItemGroup> -->
+    </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
@@ -111,6 +71,25 @@
         <MinVerTagPrefix>v</MinVerTagPrefix>
     </PropertyGroup>
 
+    <!-- Target to download dependencies -->
+    <Target Name="DownloadDependencies" Condition="'$(Configuration)'=='Release'" BeforeTargets="BeforeBuild">
+        <MakeDir Directories="$(ProjectDir)$(LibraryDirectory)" Condition="!Exists('$(ProjectDir)$(LibraryDirectory)')" />
+        <Exec Command="node $(ProjectDir)../downloader.js $(TomlFile) $(LibraryDirectory)" />
+    </Target>
+
+    <Target Name="CopyLocalDependencies" AfterTargets="DownloadDependencies" Condition="'$(Configuration)'=='Release'">
+        <!-- copy all files from ../assets/lib into ../lib -->
+
+        <ItemGroup>
+            <LibraryFiles Include="$(ProjectDir)../assets/lib/*" />
+        </ItemGroup>
+
+        <Copy SourceFiles="@(LibraryFiles)" DestinationFolder="$(LibraryDirectory)" />
+    </Target>
+
+    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
+        <Exec Command="netcode-patch -nv 1.5.2 &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
+    </Target>
 
     <!-- MinVer Set Mod Version from Git -->
     <Target Name="SetPluginVersion" BeforeTargets="AddGeneratedFile" DependsOnTargets="MinVer">
