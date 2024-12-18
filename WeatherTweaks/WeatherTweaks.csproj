@@ -13,6 +13,7 @@
         <GameDirectory>V:\Steam\steamapps\common\Lethal Company</GameDirectory>
         <LibraryDirectory>../lib</LibraryDirectory>
         <DebugLibraryDirectory>V:\LC-ModLibraries</DebugLibraryDirectory>
+        <TomlFile>$(ProjectDir)../assets/libs.toml</TomlFile>
     </PropertyGroup>
 
     <ItemGroup>
