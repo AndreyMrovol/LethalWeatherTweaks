@@ -11,7 +11,8 @@
 
     <PropertyGroup>
         <GameDirectory>V:\Steam\steamapps\common\Lethal Company</GameDirectory>
-        <LibraryDirectory>V:\LC-ModLibraries</LibraryDirectory>
+        <LibraryDirectory>../lib</LibraryDirectory>
+        <DebugLibraryDirectory>V:\LC-ModLibraries</DebugLibraryDirectory>
     </PropertyGroup>
 
     <ItemGroup>
