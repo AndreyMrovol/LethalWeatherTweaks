@@ -13,9 +13,21 @@ namespace WeatherTweaks.Definitions
     [JsonObject(MemberSerialization.OptIn)]
     public class ProgressingWeatherEntry
     {
+      /// <summary>
+      /// Time to start the weather event.
+      /// </summary>
+      /// <value>
+      /// Value between 0 and 1 representing the normalized time of day to start the weather event.
+      /// </value>
       [JsonProperty]
       public float DayTime;
 
+      /// <summary>
+      /// The chance of the weather event occurring.
+      /// </summary>
+      /// <value>
+      /// The probability of the weather event, represented as a float between 0 and 1.
+      /// </value>
       [JsonProperty]
       public float Chance;
 
