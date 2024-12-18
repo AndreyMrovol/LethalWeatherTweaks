@@ -48,7 +48,10 @@ namespace WeatherTweaks
         () => FoggyPatch.ToggleFogExclusionZones(StartOfRound.Instance.currentLevel, true)
       );
 
-      WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
+      if (WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm != WeatherRegistry.WeatherCalculation.VanillaAlgorithm)
+      {
+        WeatherRegistry.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
+      }
 
       MrovLib.EventManager.TerminalStart.AddListener((terminal) => TerminalPatch.Postfix());
       MrovLib.EventManager.LobbyDisabled.AddListener((startofround) => Reset.ResetThings());
