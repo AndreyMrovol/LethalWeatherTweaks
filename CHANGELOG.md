@@ -1,3 +1,9 @@
+# 0.24.3
+
+- added `CombinedStormyRainyFloodedEclipsed` weather
+- removed `ProgressingMadness` weather
+- fixed an issue where WeatherTweaks would override WeatherRegistry's vanilla algorithm
+
 # 0.24.2
 
 - changes to Blackout:
