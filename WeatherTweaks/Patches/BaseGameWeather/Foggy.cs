@@ -86,7 +86,7 @@ namespace WeatherTweaks.Patches
 
         Fog.parameters = parameters;
       }
-      catch (Exception e)
+      catch (Exception)
       {
         Plugin.logger.LogWarning("Failed to change fog");
       }
