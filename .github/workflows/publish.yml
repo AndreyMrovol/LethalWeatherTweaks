@@ -23,11 +23,5 @@ jobs:
 
       - name: Upload artifacts to Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB }}
+          GH_TOKEN: ${{ github.token }}
         run: gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*/dist/*.zip
-
-  release-thunderstore:
-    needs: build
-    uses: ./.github/workflows/release-thunderstore.yml
-    secrets:
-      thunderstore-token: ${{ secrets.THUNDERSTORE_API_KEY }}
