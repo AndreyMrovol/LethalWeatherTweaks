@@ -55,6 +55,8 @@ namespace WeatherTweaks.Patches
         case CustomWeatherType.Progressing:
           __0.scrapValueMultiplier = valueMultiplier;
           __0.scrapAmountMultiplier = amountMultiplier;
+
+          Plugin.logger.LogMessage($"Changed multipliers to {valueMultiplier} (value), {amountMultiplier} (amount)");
           break;
         default:
           Plugin.logger.LogError($"Unknown weather type {currentWeather.Type}");
