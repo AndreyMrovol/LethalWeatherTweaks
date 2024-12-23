@@ -1,3 +1,8 @@
+# 0.24.5
+
+- fixed an issue where _something_ tried to access game's weather too early (thanks, `moroxide`!)
+- added logs for scrap multipliers going off the rails (cause i still don't know what's happening)
+
 # 0.24.4
 
 - added `CombinedStormyRainyFloodedEclipsed` weather
