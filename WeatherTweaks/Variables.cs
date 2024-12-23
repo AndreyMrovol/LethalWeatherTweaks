@@ -152,6 +152,12 @@ namespace WeatherTweaks
     {
       bool isUncertainWeather = UncertainWeather.uncertainWeathers.ContainsKey(level.PlanetName);
 
+      if (!Variables.IsSetupFinished)
+      {
+        Plugin.DebugLogger.LogDebug("Setup is not finished yet");
+        return level.currentWeather.ToString();
+      }
+
       if (isUncertainWeather && uncertain)
       {
         Plugin.DebugLogger.LogDebug($"Getting uncertain weather for {level.PlanetName}");
