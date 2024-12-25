@@ -13,7 +13,7 @@ namespace WeatherTweaks
   {
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
-    [HarmonyAfter([WeatherRegistry.Plugin.GUID, "imabatby.lethallevelloader"])]
+    [HarmonyAfter(WeatherRegistry.Plugin.GUID)]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
@@ -83,25 +83,6 @@ namespace WeatherTweaks
         {
           GameNetworkManager.Instance.currentLobby?.SetData("WeatherTweaks", "true");
         }
-      }
-      else
-      {
-        Plugin.logger.LogMessage("Not a host");
-
-        if (isLobby)
-        {
-          if (GameNetworkManager.Instance.currentLobby?.GetData("WeatherTweaks") != null)
-          {
-            Plugin.logger.LogMessage("Detected mod on host, waiting for weather data");
-          }
-          else
-          {
-            Plugin.logger.LogMessage("Mod not detected on host, falling back to vanilla");
-            return true;
-          }
-        }
-
-        // Plugin.logger.LogDebug($"Current data: {NetworkedConfig.currentWeatherDictionarySynced.Value}");
       }
 
       return false;
