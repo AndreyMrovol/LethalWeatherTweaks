@@ -1,3 +1,8 @@
+# 0.24.6
+
+- fixed an issue where WeatherTweaks would override WeatherRegistry's configured scrap multipliers (thanks, `crutled`!)
+- changed Blackout's display color to be more visible
+
 # 0.24.5
 
 - fixed an issue where _something_ tried to access game's weather too early (thanks, `moroxide`!)
@@ -15,8 +20,6 @@
   - fixed errors during game startup
   - apparatus lights won't be disabled anymore
   - fixed breaker box being non-functional and throwing errors
-    - i was trying to destroy the breakerbox object, which caused errors
-    - now the breaker box will be inactive
   - reduced the range of floodlights
 - (hopefully) fixed all issues with progressing weathers changing during the landing
 
