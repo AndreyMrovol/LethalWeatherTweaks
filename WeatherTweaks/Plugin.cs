@@ -111,7 +111,8 @@ namespace WeatherTweaks
       Weather Blackout =
         new("Blackout", new(null, blackoutObject) { SunAnimatorBool = "eclipse", })
         {
-          Color = new(r: 0.2f, g: 0.2f, b: 0.2f, a: 1),
+          // in case i ever forget: screen is fucking green, so green channel *has to* have 20% less value to be gray
+          Color = new(r: 0.5f, g: 0.4f, b: 0.5f, a: 1),
           Config =
           {
             ScrapAmountMultiplier = new(0.65f),
