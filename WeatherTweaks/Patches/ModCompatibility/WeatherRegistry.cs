@@ -32,36 +32,5 @@ namespace WeatherTweaks.Patches
     {
       return Variables.IsSetupFinished;
     }
-
-    [HarmonyPatch(typeof(WeatherRegistry.Patches.SpawnScrapInLevelPatches))]
-    [HarmonyPatch("ChangeMultipliers")]
-    [HarmonyPostfix]
-    internal static void ChangeMultipliersPatch(RoundManager __0)
-    {
-      if (!StartOfRound.Instance.IsHost)
-      {
-        return;
-      }
-
-      WeatherTweaksWeather currentWeather = Variables.GetPlanetCurrentWeatherType(StartOfRound.Instance.currentLevel);
-      Plugin.DebugLogger.LogDebug($"Changing multipliers for weather {currentWeather.Name}");
-      (float valueMultiplier, float amountMultiplier) = currentWeather.GetDefaultMultiplierData();
-
-      switch (currentWeather.CustomType)
-      {
-        case CustomWeatherType.Normal:
-          break;
-        case CustomWeatherType.Combined:
-        case CustomWeatherType.Progressing:
-          __0.scrapValueMultiplier = valueMultiplier;
-          __0.scrapAmountMultiplier = amountMultiplier;
-
-          Plugin.logger.LogMessage($"Changed multipliers to {valueMultiplier} (value), {amountMultiplier} (amount)");
-          break;
-        default:
-          Plugin.logger.LogError($"Unknown weather type {currentWeather.Type}");
-          break;
-      }
-    }
   }
 }
