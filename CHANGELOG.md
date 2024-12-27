@@ -1,3 +1,7 @@
+# 0.24.7
+
+- moved `TextPostProcess` patch to `WeatherRegistry`
+
 # 0.24.6
 
 - fixed an issue where WeatherTweaks would override WeatherRegistry's configured scrap multipliers (thanks, `crutled`!)
