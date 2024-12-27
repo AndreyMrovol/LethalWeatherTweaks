@@ -1,22 +1,17 @@
 using HarmonyLib;
 
-namespace WeatherTweaks.Patches
+namespace WeatherTweaks.Compatibility
 {
-  public class OpenMonitorsPatch
+  public class OpenMonitorsCompat
   {
     private static string guid = "xxxstoner420bongmasterxxx.open_monitors";
 
     public static void Init()
     {
-      Plugin.logger.LogDebug("OpenMonitorsPatch Init");
-
-      // var screenMethod = tyStartOfRound.SetMapScreenInfoToCurrentLevel;
-
+      Plugin.logger.LogInfo("OpenMonitorsPatch:");
       Harmony harmony = new("WeatherTweaks.OpenMonitors");
 
       // unpatch the methods that we're patching ourselves
-
-
       harmony.Unpatch(
         typeof(StartOfRound).GetMethod(
           "SetMapScreenInfoToCurrentLevel",
@@ -25,14 +20,14 @@ namespace WeatherTweaks.Patches
         HarmonyPatchType.All,
         guid
       );
-      Plugin.logger.LogWarning("Unpatched StartOfRound.SetMapScreenInfoToCurrentLevel");
+      Plugin.logger.LogInfo("Unpatched StartOfRound.SetMapScreenInfoToCurrentLevel");
 
       harmony.Unpatch(
         typeof(Terminal).GetMethod("TextPostProcess", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance),
         HarmonyPatchType.All,
         guid
       );
-      Plugin.logger.LogWarning("Unpatched Terminal.TextPostProcess");
+      Plugin.logger.LogInfo("Unpatched Terminal.TextPostProcess");
     }
   }
 }

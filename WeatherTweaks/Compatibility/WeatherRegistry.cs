@@ -3,7 +3,7 @@ using HarmonyLib;
 using WeatherRegistry;
 using WeatherTweaks.Definitions;
 
-namespace WeatherTweaks.Patches
+namespace WeatherTweaks.Compatibility
 {
   [HarmonyPatch(typeof(WeatherRegistry.WeatherManager))]
   internal class WeatherRegistryPatches
@@ -31,6 +31,18 @@ namespace WeatherTweaks.Patches
     internal static bool GameMethodPatch()
     {
       return Variables.IsSetupFinished;
+    }
+
+    [HarmonyPatch(typeof(WeatherRegistry.WeatherManager))]
+    [HarmonyPatch("WeatherDisplayOverride")]
+    [HarmonyPostfix]
+    internal static void WeatherDisplayOverridePatch(ref string __result, SelectableLevel level)
+    {
+      if (Variables.IsSetupFinished)
+      {
+        Plugin.logger.LogDebug($"Getting display weather string for {level.PlanetName}");
+        __result = Variables.GetPlanetCurrentWeather(level);
+      }
     }
   }
 }

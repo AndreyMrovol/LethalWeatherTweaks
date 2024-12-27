@@ -10,9 +10,9 @@ using TMPro;
 
 // using static GeneralImprovements.Utilities.MonitorsHelper;
 
-namespace WeatherTweaks.Patches
+namespace WeatherTweaks.Compatibility
 {
-  public class GeneralImprovementsWeather(string guid, string version = null) : MrovLib.Compatibility.CompatibilityBase(guid, version)
+  public class GeneralImprovementsCompat(string guid, string version = null) : MrovLib.Compatibility.CompatibilityBase(guid, version)
   {
     static Type type;
 
@@ -59,9 +59,7 @@ namespace WeatherTweaks.Patches
         var harmony = new Harmony("WeatherTweaks.GeneralImprovements");
 
         // Create a HarmonyMethod for the postfix
-        var patch = new HarmonyMethod(
-          typeof(GeneralImprovementsWeather).GetMethod(nameof(TextPatch), BindingFlags.Static | BindingFlags.Public)
-        );
+        var patch = new HarmonyMethod(typeof(GeneralImprovementsCompat).GetMethod(nameof(TextPatch), BindingFlags.Static | BindingFlags.Public));
 
         // Apply the patch
         harmony.Patch(method, prefix: patch);

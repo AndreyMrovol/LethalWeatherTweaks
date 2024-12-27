@@ -6,6 +6,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using WeatherRegistry;
+using WeatherTweaks.Compatibility;
 using WeatherTweaks.Patches;
 
 namespace WeatherTweaks
@@ -15,9 +16,6 @@ namespace WeatherTweaks
   [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
-  // [BepInDependency("ShaosilGaming.GeneralImprovements", BepInDependency.DependencyFlags.SoftDependency)]
-  [BepInDependency("com.malco.lethalcompany.moreshipupgrades", BepInDependency.DependencyFlags.SoftDependency)]
-  [BepInDependency("com.github.fredolx.meteomultiplier", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("xxxstoner420bongmasterxxx.open_monitors", BepInDependency.DependencyFlags.SoftDependency)]
   public class Plugin : BaseUnityPlugin
   {
@@ -25,7 +23,7 @@ namespace WeatherTweaks
     internal static MrovLib.Logger DebugLogger = new(PluginInfo.PLUGIN_GUID);
     internal static bool IsLLLPresent = false;
 
-    internal static GeneralImprovementsWeather GeneralImprovements;
+    internal static GeneralImprovementsCompat GeneralImprovements;
 
     internal static Weather BlackoutWeather;
 
@@ -58,27 +56,17 @@ namespace WeatherTweaks
 
       if (Chainloader.PluginInfos.ContainsKey("imabatby.lethallevelloader"))
       {
-        Patches.LLL.Init();
+        Compatibility.LLL.Init();
       }
 
       var weatherMethod = typeof(StartOfRound).GetMethod("SetPlanetsWeather");
       harmony.Unpatch(weatherMethod, HarmonyPatchType.Postfix, "imabatby.lethallevelloader");
 
-      GeneralImprovements = new GeneralImprovementsWeather("ShaosilGaming.GeneralImprovements");
-
-      // if (Chainloader.PluginInfos.ContainsKey("com.github.fredolx.meteomultiplier"))
-      // {
-      //   Patches.MeteoMultiplierPatches.Init();
-      // }
+      GeneralImprovements = new GeneralImprovementsCompat("ShaosilGaming.GeneralImprovements");
 
       if (Chainloader.PluginInfos.ContainsKey("xxxstoner420bongmasterxxx.open_monitors"))
       {
-        Patches.OpenMonitorsPatch.Init();
-      }
-
-      if (Chainloader.PluginInfos.ContainsKey("com.zealsprince.malfunctions"))
-      {
-        Patches.Malfunctions.Init();
+        Compatibility.OpenMonitorsCompat.Init();
       }
 
       if (Chainloader.PluginInfos.ContainsKey("BMX.LobbyCompatibility"))
@@ -158,7 +146,7 @@ namespace WeatherTweaks
       if (Plugin.GeneralImprovements.IsModPresent)
       {
         Plugin.logger.LogInfo("GeneralImprovements is present");
-        GeneralImprovementsWeather.Init();
+        Compatibility.GeneralImprovementsCompat.Init();
       }
     }
   }

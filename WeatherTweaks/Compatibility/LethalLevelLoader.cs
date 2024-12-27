@@ -7,7 +7,7 @@ using LethalLevelLoader;
 using MrovLib;
 using UnityEngine;
 
-namespace WeatherTweaks.Patches
+namespace WeatherTweaks.Compatibility
 {
   public static class LLL
   {
@@ -23,7 +23,7 @@ namespace WeatherTweaks.Patches
         // Patch the ExtendedLevel GetWeatherConditions method
         harmony.Patch(
           AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
-          postfix: new HarmonyMethod(typeof(Patches.LLL), "PatchNewLLL")
+          postfix: new HarmonyMethod(typeof(Compatibility.LLL), "PatchNewLLL")
         );
       }
 
