@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using MrovLib;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -60,6 +61,12 @@ namespace WeatherTweaks
       for (int i = 0; i < howManyPlanetsUncertain; i++)
       {
         SelectableLevel randomLevel = Variables.GameLevels[random.Next(Variables.GameLevels.Count)];
+
+        if (randomLevel == LevelHelper.CompanyMoon)
+        {
+          i--;
+          continue;
+        }
 
         if (!whereWeatherUncertain.Contains(randomLevel))
         {
