@@ -188,12 +188,13 @@ namespace WeatherTweaks
       }
 
       SelectableLevel level = StartOfRound.Instance.currentLevel;
-      RandomWeatherWithVariables randomWeather = level.randomWeathers.First(x => x.weatherType == weatherType);
+      Weather weather = WeatherManager.GetWeather(weatherType);
+      RandomWeatherWithVariables randomWeather = level.randomWeathers.FirstOrDefault(x => x.weatherType == weatherType);
 
-      if (randomWeather == null || StartOfRound.Instance == null || level == null)
+      if (randomWeather == null || level == null)
       {
-        logger.LogError($"Failed to get weather variables for {level.PlanetName}:{weatherType}");
-        return 0;
+        logger.LogWarning($"Level {StringResolver.GetNumberlessName(level)} doesn't have weather variables defined for weather {weatherType}!");
+        return variable2 ? weather.Effect.DefaultVariable2 : weather.Effect.DefaultVariable1;
       }
 
       Plugin.DebugLogger.LogDebug(
