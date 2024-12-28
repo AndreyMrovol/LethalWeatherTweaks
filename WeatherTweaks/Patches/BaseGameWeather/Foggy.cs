@@ -107,6 +107,12 @@ namespace WeatherTweaks.Patches
       List<GameObject> fogExclusionZones = GameObject.FindObjectsOfType<GameObject>().Where(obj => obj.name == "FogExclusionZone").ToList();
       foreach (GameObject fogExclusionZone in fogExclusionZones)
       {
+        if (fogExclusionZone.transform.parent.name == "HangarShip")
+        {
+          // just give up and skip this one
+          continue;
+        }
+
         Plugin.DebugLogger.LogDebug(
           $"Setting fog exclusion zone {fogExclusionZone.name} (parent {fogExclusionZone.transform.parent.name}) to {enable}"
         );
