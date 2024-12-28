@@ -1,12 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
-using Dissonance;
 using LethalNetworkAPI;
 using Newtonsoft.Json;
 using WeatherRegistry;
-using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
-using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
 {

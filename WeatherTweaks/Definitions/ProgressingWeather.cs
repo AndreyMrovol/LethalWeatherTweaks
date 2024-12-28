@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Configuration;
-using HarmonyLib;
 using Newtonsoft.Json;
 using WeatherRegistry;
 

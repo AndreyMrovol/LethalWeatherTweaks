@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using HarmonyLib;
-using MonoMod.Cil;
 using UnityEngine;
-using WeatherTweaks;
 
 namespace WeatherTweaks
 {

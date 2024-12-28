@@ -1,8 +1,3 @@
-using System;
-using BepInEx.Logging;
-using HarmonyLib;
-using WeatherRegistry;
-
 namespace WeatherTweaks
 {
   public static class DisableAllWeathers

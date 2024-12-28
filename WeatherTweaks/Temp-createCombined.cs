@@ -1,8 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using WeatherTweaks;
-using WeatherTweaks.Definitions;
-
 namespace WeatherTweaks
 {
   internal class CombinedEclipsedFlooded : Definitions.Types.CombinedWeatherType

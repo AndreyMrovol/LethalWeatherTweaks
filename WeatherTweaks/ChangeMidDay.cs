@@ -1,16 +1,12 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using WeatherRegistry;
 using WeatherTweaks.Definitions;
 using static WeatherTweaks.Definitions.Types;
-using static WeatherTweaks.Modules.Types;
 
 namespace WeatherTweaks
 {

@@ -1,5 +1,4 @@
 using System.Linq;
-using BepInEx.Configuration;
 
 namespace WeatherTweaks
 {

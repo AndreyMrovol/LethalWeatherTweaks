@@ -1,4 +1,3 @@
-using BepInEx.Configuration;
 using WeatherRegistry;
 using WeatherRegistry.Modules;
 

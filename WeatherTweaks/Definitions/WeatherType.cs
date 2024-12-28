@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using WeatherRegistry;
-using WeatherRegistry.Definitions;
-using WeatherRegistry.Modules;
 
 namespace WeatherTweaks.Definitions
 {

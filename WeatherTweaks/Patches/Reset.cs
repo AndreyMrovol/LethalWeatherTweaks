@@ -1,4 +1,3 @@
-using HarmonyLib;
 using UnityEngine;
 using WeatherTweaks.Definitions;
 

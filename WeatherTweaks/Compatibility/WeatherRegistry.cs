@@ -1,7 +1,5 @@
-using System.Linq;
 using HarmonyLib;
 using WeatherRegistry;
-using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Compatibility
 {

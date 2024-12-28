@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Configuration;
-using HarmonyLib;
 using WeatherRegistry;
-using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Definitions
 {

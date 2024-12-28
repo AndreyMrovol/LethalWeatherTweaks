@@ -1,11 +1,5 @@
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using BepInEx.Logging;
 using HarmonyLib;
 using LethalLevelLoader;
-using MrovLib;
-using UnityEngine;
 
 namespace WeatherTweaks.Compatibility
 {
