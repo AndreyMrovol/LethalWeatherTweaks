@@ -1,6 +1,6 @@
 using WeatherTweaks;
 
-namespace WeatherRegistry
+namespace WeatherTweaks
 {
   public class Init
   {
