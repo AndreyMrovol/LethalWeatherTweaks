@@ -327,7 +327,7 @@ namespace WeatherTweaks
 
           if (combinedWeather.CanWeatherBeApplied(level))
           {
-            weatherWeight = combinedWeather.DefaultWeight;
+            weatherWeight = combinedWeather.GetWeight(level);
           }
           else
           {
@@ -337,7 +337,7 @@ namespace WeatherTweaks
         }
         else if (weatherType.CustomType == CustomWeatherType.Progressing)
         {
-          weatherWeight = weatherType.DefaultWeight;
+          weatherWeight = weatherType.GetWeight(level);
         }
 
         if (difficulty != 0 && weatherType.VanillaWeatherType == LevelWeatherType.None)
