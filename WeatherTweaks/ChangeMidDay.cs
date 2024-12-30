@@ -6,7 +6,6 @@ using HarmonyLib;
 using UnityEngine;
 using WeatherRegistry;
 using WeatherTweaks.Definitions;
-using static WeatherTweaks.Definitions.Types;
 
 namespace WeatherTweaks
 {
