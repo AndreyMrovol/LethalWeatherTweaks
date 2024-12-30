@@ -72,7 +72,7 @@ namespace WeatherTweaks.Definitions
 
       WeatherTypes = weatherTypes.ToList();
 
-      Effect = new WeatherTweaksEffect(null, null, WeatherTypes);
+      Effect = new WeatherTweaksEffect(null, null, WeatherTypes) { name = name, };
 
       Config = new WeatherTweaksConfig()
       {
