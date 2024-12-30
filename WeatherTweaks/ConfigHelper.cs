@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using WeatherRegistry;
 
 namespace WeatherTweaks
 {
@@ -14,10 +15,13 @@ namespace WeatherTweaks
     {
       ConfigEntry = ConfigManager.configFile.Bind($"Foggy patch", configTitle, DefaultValue, configDescription);
     }
+  }
 
-    // public override SelectableLevel[] Value
-    // {
-    //   get { return WeatherRegistry.ConfigHelper.ConvertStringToLevels(ConfigEntry.Value); }
-    // }
+  public class ConfigHelper
+  {
+    public static Weather GetWeatherFromString(string weatherName)
+    {
+      return WeatherRegistry.ConfigHelper.ResolveStringToWeather(weatherName);
+    }
   }
 }
