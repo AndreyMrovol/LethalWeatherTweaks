@@ -38,7 +38,6 @@ namespace WeatherTweaks.Compatibility
     {
       if (Variables.IsSetupFinished)
       {
-        Plugin.logger.LogDebug($"Getting display weather string for {level.PlanetName}");
         __result = Variables.GetPlanetCurrentWeather(level);
       }
     }
