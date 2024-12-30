@@ -17,10 +17,10 @@ namespace WeatherTweaks
 
     internal static Weather NoneWeather => WeatherRegistry.WeatherManager.NoneWeather;
 
-    public static List<Definitions.Types.CombinedWeatherType> CombinedWeathers = [];
+    public static List<Definitions.CombinedWeatherType> CombinedWeathers = [];
     public static List<LevelWeatherType> CombinedWeatherTypes => CombinedWeathers.Select(x => x.VanillaWeatherType).ToList();
 
-    public static List<Definitions.Types.ProgressingWeatherType> ProgressingWeathers = [];
+    public static List<Definitions.ProgressingWeatherType> ProgressingWeathers = [];
     public static List<LevelWeatherType> ProgressingWeatherTypes => ProgressingWeathers.Select(x => x.VanillaWeatherType).ToList();
 
     public static List<Weather> WeatherTypes => WeatherRegistry.WeatherManager.Weathers;
@@ -126,7 +126,7 @@ namespace WeatherTweaks
           switch (weather.CustomType)
           {
             case CustomWeatherType.Combined:
-              Definitions.Types.CombinedWeatherType combinedWeather = CombinedWeathers.Find(x => x.Name == weather.Name);
+              Definitions.CombinedWeatherType combinedWeather = CombinedWeathers.Find(x => x.Name == weather.Name);
               if (combinedWeather.CanWeatherBeApplied(level))
               {
                 possibleTypes.Add(weather);
@@ -134,7 +134,7 @@ namespace WeatherTweaks
               break;
 
             case CustomWeatherType.Progressing:
-              Definitions.Types.ProgressingWeatherType progressingWeather = ProgressingWeathers.Find(x => x.Name == weather.Name);
+              Definitions.ProgressingWeatherType progressingWeather = ProgressingWeathers.Find(x => x.Name == weather.Name);
               if (progressingWeather.CanWeatherBeApplied(level))
               {
                 possibleTypes.Add(weather);
@@ -226,7 +226,7 @@ namespace WeatherTweaks
       switch (currentWeather.CustomType)
       {
         case CustomWeatherType.Combined:
-          Definitions.Types.CombinedWeatherType combinedWeather = (Definitions.Types.CombinedWeatherType)currentWeather;
+          Definitions.CombinedWeatherType combinedWeather = (Definitions.CombinedWeatherType)currentWeather;
           if (combinedWeather.WeatherTypes.Any(x => x == weatherType))
           {
             Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
@@ -234,7 +234,7 @@ namespace WeatherTweaks
           }
           break;
         case CustomWeatherType.Progressing:
-          Definitions.Types.ProgressingWeatherType progressingWeather = (Definitions.Types.ProgressingWeatherType)currentWeather;
+          Definitions.ProgressingWeatherType progressingWeather = (Definitions.ProgressingWeatherType)currentWeather;
 
           if (progressingWeather.DoesHaveWeatherHappening(weatherType))
           {

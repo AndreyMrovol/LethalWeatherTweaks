@@ -6,174 +6,170 @@ using WeatherRegistry;
 
 namespace WeatherTweaks.Definitions
 {
-  partial class Types
+  [JsonObject(MemberSerialization.OptIn)]
+  public class ProgressingWeatherEntry
   {
-    [JsonObject(MemberSerialization.OptIn)]
-    public class ProgressingWeatherEntry
+    /// <summary>
+    /// Time to start the weather event.
+    /// </summary>
+    /// <value>
+    /// Value between 0 and 1 representing the normalized time of day to start the weather event.
+    /// </value>
+    [JsonProperty]
+    public float DayTime;
+
+    /// <summary>
+    /// The chance of the weather event occurring.
+    /// </summary>
+    /// <value>
+    /// The probability of the weather event, represented as a float between 0 and 1.
+    /// </value>
+    [JsonProperty]
+    public float Chance = 0.8f;
+
+    [JsonProperty]
+    public LevelWeatherType Weather;
+
+    // [Obsolete("Use GetWeather() instead")]
+    // internal Weather GetWeatherType()
+    // {
+    //   return GetWeather();
+    // }
+
+    internal Weather GetWeather()
     {
-      /// <summary>
-      /// Time to start the weather event.
-      /// </summary>
-      /// <value>
-      /// Value between 0 and 1 representing the normalized time of day to start the weather event.
-      /// </value>
-      [JsonProperty]
-      public float DayTime;
-
-      /// <summary>
-      /// The chance of the weather event occurring.
-      /// </summary>
-      /// <value>
-      /// The probability of the weather event, represented as a float between 0 and 1.
-      /// </value>
-      [JsonProperty]
-      public float Chance;
-
-      [JsonProperty]
-      public LevelWeatherType Weather;
-
-      [Obsolete("Use GetWeather() instead")]
-      internal Weather GetWeatherType()
-      {
-        return GetWeather();
-      }
-
-      internal Weather GetWeather()
-      {
-        return WeatherRegistry.WeatherManager.GetWeather(Weather);
-      }
-
-      internal List<DialogueSegment> GetDialogueSegment()
-      {
-        return
-        [
-          new DialogueSegment
-          {
-            speakerText = "Weather Forecast",
-            bodyText = $"The weather will be changing to {GetWeather().Name}",
-            waitTime = 7f
-          }
-        ];
-      }
+      return WeatherRegistry.WeatherManager.GetWeather(Weather);
     }
 
-    public class ProgressingWeatherType : WeatherTweaksWeather
+    internal List<DialogueSegment> GetDialogueSegment()
     {
-      // public abstract string CreateChangingString(SelectableLevel level, System.Random random);
-      public bool Enabled => Config.EnableWeather.Value;
-
-      public List<ProgressingWeatherEntry> WeatherEntries = [];
-      public LevelWeatherType StartingWeather;
-
-      private Weather _weather = null;
-      public Weather Weather
-      {
-        get
+      return
+      [
+        new DialogueSegment
         {
-          if (_weather == null)
-          {
-            _weather = WeatherRegistry.WeatherManager.GetWeather(this.StartingWeather);
-          }
-
-          return _weather;
+          speakerText = "Weather Forecast",
+          bodyText = $"The weather will be changing to {GetWeather().Name}",
+          waitTime = 7f
         }
-        set { _weather = value; }
-      }
+      ];
+    }
+  }
 
-      public float WeightModify;
+  public class ProgressingWeatherType : WeatherTweaksWeather
+  {
+    public bool Enabled => Config.EnableWeather.Value;
 
-      public new WeatherTweaksConfig Config
+    public List<ProgressingWeatherEntry> WeatherEntries = [];
+    public LevelWeatherType StartingWeather;
+
+    private Weather _weather = null;
+    public Weather Weather
+    {
+      get
       {
-        get { return (WeatherTweaksConfig)base.Config; }
-      }
-
-      public new bool CanWeatherBeApplied(SelectableLevel level)
-      {
-        if (!Enabled)
+        if (_weather == null)
         {
-          return false;
+          _weather = WeatherRegistry.WeatherManager.GetWeather(this.StartingWeather);
         }
 
-        var randomWeathers = level.randomWeathers;
-        List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.Weather).Append(StartingWeather).Distinct().ToList();
-        remainingWeathers.RemoveAll(weather => weather == LevelWeatherType.None);
+        return _weather;
+      }
+      set { _weather = value; }
+    }
 
-        foreach (RandomWeatherWithVariables weather in randomWeathers)
+    public float WeightModify;
+
+    public new WeatherTweaksConfig Config
+    {
+      get { return (WeatherTweaksConfig)base.Config; }
+    }
+
+    public new bool CanWeatherBeApplied(SelectableLevel level)
+    {
+      if (!Enabled)
+      {
+        return false;
+      }
+
+      var randomWeathers = level.randomWeathers;
+      List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.Weather).Append(StartingWeather).Distinct().ToList();
+      remainingWeathers.RemoveAll(weather => weather == LevelWeatherType.None);
+
+      foreach (RandomWeatherWithVariables weather in randomWeathers)
+      {
+        if (remainingWeathers.Contains(weather.weatherType))
         {
-          if (remainingWeathers.Contains(weather.weatherType))
-          {
-            remainingWeathers.Remove(weather.weatherType);
-          }
+          remainingWeathers.Remove(weather.weatherType);
         }
-
-        return remainingWeathers.Count == 0;
       }
 
-      public override void Init()
+      return remainingWeathers.Count == 0;
+    }
+
+    public override void Init()
+    {
+      int averageWeight = (int)WeatherEntries.ToList().Select(entry => entry.GetWeather()).Average(weather => weather.DefaultWeight);
+      Config.DefaultWeight = new((int)(averageWeight * WeightModify / WeatherEntries.Count));
+
+      base.Init();
+    }
+
+    public override (float valueMultiplier, float amountMultiplier) GetDefaultMultiplierData()
+    {
+      WeatherMultiplierData Data = new(this.VanillaWeatherType, 0, 0);
+
+      float sumMultiplier = 0;
+      float sumSpawnMultiplier = 0;
+
+      float sumChances = 0;
+
+      foreach (ProgressingWeatherEntry entry in this.WeatherEntries)
       {
-        int averageWeight = (int)WeatherEntries.ToList().Select(entry => entry.GetWeather()).Average(weather => weather.DefaultWeight);
-        Config.DefaultWeight = new((int)(averageWeight * WeightModify / WeatherEntries.Count));
+        Weather weather = entry.GetWeather();
 
-        base.Init();
+        WeatherMultiplierData data = new(weather.VanillaWeatherType, weather.ScrapValueMultiplier, weather.ScrapAmountMultiplier);
+
+        sumMultiplier += data.valueMultiplier * entry.Chance;
+        sumSpawnMultiplier += data.spawnMultiplier * entry.Chance;
+        sumChances += entry.Chance;
       }
 
-      public override (float valueMultiplier, float amountMultiplier) GetDefaultMultiplierData()
-      {
-        WeatherMultiplierData Data = new(this.VanillaWeatherType, 0, 0);
+      Data.valueMultiplier = sumMultiplier / sumChances;
+      Data.spawnMultiplier = sumSpawnMultiplier / sumChances;
 
-        float sumMultiplier = 0;
-        float sumSpawnMultiplier = 0;
+      return (Data.valueMultiplier, Data.spawnMultiplier);
+    }
 
-        float sumChances = 0;
+    public bool DoesHaveWeatherHappening(LevelWeatherType weatherType)
+    {
+      return WeatherEntries.Any(entry => entry.Weather == weatherType);
+    }
 
-        foreach (ProgressingWeatherEntry entry in this.WeatherEntries)
-        {
-          Weather weather = entry.GetWeather();
+    // public override List<LevelWeatherType> WeatherTypes { get; set; } = [];
 
-          WeatherMultiplierData data = new(weather.VanillaWeatherType, weather.ScrapValueMultiplier, weather.ScrapAmountMultiplier);
+    public ProgressingWeatherType(
+      string name,
+      LevelWeatherType baseWeather,
+      List<ProgressingWeatherEntry> weatherEntries,
+      float weightModifier = 0.3f
+    )
+      : base(name, CustomWeatherType.Progressing, weatherEntries.Select(entry => entry.Weather).Append(baseWeather).Distinct().ToArray())
+    {
+      Name = name;
 
-          sumMultiplier += data.valueMultiplier * entry.Chance;
-          sumSpawnMultiplier += data.spawnMultiplier * entry.Chance;
-          sumChances += entry.Chance;
-        }
+      Plugin.logger.LogDebug($"Creating ChangingWeatherType: {Name}");
 
-        Data.valueMultiplier = sumMultiplier / sumChances;
-        Data.spawnMultiplier = sumSpawnMultiplier / sumChances;
+      WeatherEntries = weatherEntries;
+      WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
 
-        return (Data.valueMultiplier, Data.spawnMultiplier);
-      }
+      Plugin.logger.LogWarning($"{Config} is null? {Config == null}");
+      WeightModify = weightModifier;
 
-      public bool DoesHaveWeatherHappening(LevelWeatherType weatherType)
-      {
-        return WeatherEntries.Any(entry => entry.Weather == weatherType);
-      }
+      StartingWeather = baseWeather;
 
-      // public override List<LevelWeatherType> WeatherTypes { get; set; } = [];
-
-      public ProgressingWeatherType(
-        string name,
-        LevelWeatherType baseWeather,
-        List<ProgressingWeatherEntry> weatherEntries,
-        float weightModifier = 0.3f
-      )
-        : base(name, CustomWeatherType.Progressing, weatherEntries.Select(entry => entry.Weather).Append(baseWeather).Distinct().ToArray())
-      {
-        Name = name;
-
-        Plugin.logger.LogDebug($"Creating ChangingWeatherType: {Name}");
-
-        WeatherEntries = weatherEntries;
-        WeatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
-
-        Plugin.logger.LogWarning($"{Config} is null? {Config == null}");
-        WeightModify = weightModifier;
-
-        StartingWeather = baseWeather;
-
-        Variables.ProgressingWeathers.Add(this);
-        WeatherManager.RegisterWeather(this);
-        // this.Init();
-      }
+      Variables.ProgressingWeathers.Add(this);
+      WeatherManager.RegisterWeather(this);
+      // this.Init();
     }
   }
 }

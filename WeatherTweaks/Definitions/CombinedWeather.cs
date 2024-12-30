@@ -4,95 +4,92 @@ using WeatherRegistry;
 
 namespace WeatherTweaks.Definitions
 {
-  public partial class Types
+  public class CombinedWeatherType : WeatherTweaksWeather
   {
-    public class CombinedWeatherType : WeatherTweaksWeather
+    private List<Weather> _weathers = [];
+    public List<Weather> Weathers
     {
-      private List<Weather> _weathers = [];
-      public List<Weather> Weathers
+      get
       {
-        get
+        if (_weathers.Count == 0)
         {
-          if (_weathers.Count == 0)
-          {
-            _weathers = WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
-          }
-
-          return _weathers;
-        }
-        private set { _weathers = value; }
-      }
-
-      public new WeatherTweaksConfig Config
-      {
-        get { return (WeatherTweaksConfig)base.Config; }
-      }
-
-      public float WeightModify;
-
-      public new bool CanWeatherBeApplied(SelectableLevel level)
-      {
-        if (!Enabled)
-        {
-          return false;
+          _weathers = WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
         }
 
-        var randomWeathers = level.randomWeathers;
-        List<LevelWeatherType> remainingWeathers = Weathers.Select(weather => weather.VanillaWeatherType).ToList();
-
-        foreach (RandomWeatherWithVariables weather in randomWeathers)
-        {
-          if (remainingWeathers.Contains(weather.weatherType))
-          {
-            remainingWeathers.Remove(weather.weatherType);
-          }
-        }
-
-        return remainingWeathers.Count == 0;
+        return _weathers;
       }
+      private set { _weathers = value; }
+    }
 
-      public override (float valueMultiplier, float amountMultiplier) GetDefaultMultiplierData()
+    public new WeatherTweaksConfig Config
+    {
+      get { return (WeatherTweaksConfig)base.Config; }
+    }
+
+    public float WeightModify;
+
+    public new bool CanWeatherBeApplied(SelectableLevel level)
+    {
+      if (!Enabled)
       {
-        WeatherMultiplierData Data = new(this.VanillaWeatherType, 0, 0);
-
-        foreach (Weather weather in this.Weathers)
-        {
-          Data.valueMultiplier += weather.ScrapValueMultiplier * 0.45f;
-          Data.spawnMultiplier += weather.ScrapAmountMultiplier * 0.45f;
-        }
-
-        return (Data.valueMultiplier, Data.spawnMultiplier);
+        return false;
       }
 
-      public bool Enabled => this.Config.EnableWeather.Value;
+      var randomWeathers = level.randomWeathers;
+      List<LevelWeatherType> remainingWeathers = Weathers.Select(weather => weather.VanillaWeatherType).ToList();
 
-      public override void Init()
+      foreach (RandomWeatherWithVariables weather in randomWeathers)
       {
-        int averageWeight = (int)Weathers.Average(weather => weather.DefaultWeight);
-        Config.DefaultWeight = new((int)(averageWeight * WeightModify / Weathers.Count));
-
-        base.Init();
-      }
-
-      public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.2f)
-        : base(name, CustomWeatherType.Combined, weathers.ToArray())
-      {
-        if (weathers.Count == 0)
+        if (remainingWeathers.Contains(weather.weatherType))
         {
-          return;
+          remainingWeathers.Remove(weather.weatherType);
         }
-
-        WeightModify = weightModifier;
-
-        Name = name;
-
-        this.CustomType = CustomWeatherType.Combined;
-
-        Plugin.logger.LogDebug($"Created CombinedWeatherType: {Name}");
-
-        Variables.CombinedWeathers.Add(this);
-        WeatherManager.RegisterWeather(this);
       }
+
+      return remainingWeathers.Count == 0;
+    }
+
+    public override (float valueMultiplier, float amountMultiplier) GetDefaultMultiplierData()
+    {
+      WeatherMultiplierData Data = new(this.VanillaWeatherType, 0, 0);
+
+      foreach (Weather weather in this.Weathers)
+      {
+        Data.valueMultiplier += weather.ScrapValueMultiplier * 0.45f;
+        Data.spawnMultiplier += weather.ScrapAmountMultiplier * 0.45f;
+      }
+
+      return (Data.valueMultiplier, Data.spawnMultiplier);
+    }
+
+    public bool Enabled => this.Config.EnableWeather.Value;
+
+    public override void Init()
+    {
+      int averageWeight = (int)Weathers.Average(weather => weather.DefaultWeight);
+      Config.DefaultWeight = new((int)(averageWeight * WeightModify / Weathers.Count));
+
+      base.Init();
+    }
+
+    public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.2f)
+      : base(name, CustomWeatherType.Combined, weathers.ToArray())
+    {
+      if (weathers.Count == 0)
+      {
+        return;
+      }
+
+      WeightModify = weightModifier;
+
+      Name = name;
+
+      this.CustomType = CustomWeatherType.Combined;
+
+      Plugin.logger.LogDebug($"Created CombinedWeatherType: {Name}");
+
+      Variables.CombinedWeathers.Add(this);
+      WeatherManager.RegisterWeather(this);
     }
   }
 }

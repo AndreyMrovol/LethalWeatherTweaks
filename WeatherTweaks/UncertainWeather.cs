@@ -7,7 +7,7 @@ namespace WeatherTweaks
   internal class UncertainWeather
   {
     public static Dictionary<string, string> uncertainWeathers = [];
-    public static List<Modules.Types.UncertainWeatherType> uncertainWeatherTypes = [];
+    public static List<Modules.UncertainWeatherType> uncertainWeatherTypes = [];
 
     public static void Init()
     {
@@ -76,9 +76,9 @@ namespace WeatherTweaks
 
       // create uncertainty strings
       Dictionary<string, string> uncertainWeathersRolled = [];
-      List<Modules.Types.UncertainWeatherType> uncertainTypes = [];
+      List<Modules.UncertainWeatherType> uncertainTypes = [];
 
-      foreach (Modules.Types.UncertainWeatherType type in uncertainWeatherTypes)
+      foreach (Modules.UncertainWeatherType type in uncertainWeatherTypes)
       {
         if (type.Enabled.Value)
         {

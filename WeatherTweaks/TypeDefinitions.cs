@@ -4,7 +4,7 @@ namespace WeatherTweaks
 {
   class UncertainTypes
   {
-    public class Uncertain : Modules.Types.UncertainWeatherType
+    public class Uncertain : Modules.UncertainWeatherType
     {
       public Uncertain()
         : base("Uncertain") { }
@@ -32,7 +32,7 @@ namespace WeatherTweaks
       }
     }
 
-    public class Uncertain5050 : Modules.Types.UncertainWeatherType
+    public class Uncertain5050 : Modules.UncertainWeatherType
     {
       public Uncertain5050()
         : base("Uncertain5050") { }
@@ -60,7 +60,7 @@ namespace WeatherTweaks
       }
     }
 
-    public class Unknown : Modules.Types.UncertainWeatherType
+    public class Unknown : Modules.UncertainWeatherType
     {
       public Unknown()
         : base("Unknown") { }

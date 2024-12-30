@@ -57,7 +57,7 @@ namespace WeatherTweaks.Definitions
 
     public void EnableProgressingEffect()
     {
-      Definitions.Types.ProgressingWeatherType currentWeather = Variables.ProgressingWeathers.First(weather =>
+      Definitions.ProgressingWeatherType currentWeather = Variables.ProgressingWeathers.First(weather =>
         weather.VanillaWeatherType == StartOfRound.Instance.currentLevel.currentWeather
       );
 
