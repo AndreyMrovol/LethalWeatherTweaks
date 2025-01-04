@@ -60,7 +60,6 @@ namespace WeatherTweaks
 
         if (randomLevel == LevelHelper.CompanyMoon)
         {
-          i--;
           continue;
         }
 

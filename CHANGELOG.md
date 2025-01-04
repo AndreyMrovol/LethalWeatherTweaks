@@ -1,3 +1,7 @@
+# 0.25.2
+
+- fixed an issue where the game would try to generate uncertain weather on Gordion (thanks, `barkosharko`!)
+
 # 0.25.1
 
 - fixed special weathers not using level weights (thanks, `zetaarcade`!)
