@@ -119,11 +119,6 @@ namespace WeatherTweaks
           // currentWeather[level.PlanetName] = currentWeather[level.PlanetName];
         }
 
-        if (CompanyMoon != null)
-        {
-          currentWeather[CompanyMoon] = Variables.NoneWeather;
-        }
-
         Plugin.logger.LogDebug("-------------");
 
         Dictionary<SelectableLevel, LevelWeatherType> selectedWeathersLevel = [];

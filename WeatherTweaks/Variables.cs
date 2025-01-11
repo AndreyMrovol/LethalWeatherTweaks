@@ -89,14 +89,9 @@ namespace WeatherTweaks
       return weatherDataDict;
     }
 
-    internal static List<SelectableLevel> GetGameLevels(bool includeCompanyMoon = false)
+    internal static List<SelectableLevel> GetGameLevels()
     {
-      if (includeCompanyMoon)
-      {
-        return GameLevels;
-      }
-
-      return GameLevels.Where(x => x != MrovLib.LevelHelper.CompanyMoon).ToList();
+      return GameLevels;
     }
 
     internal static List<WeatherTweaksWeather> GetPlanetWeatherTypes(SelectableLevel level, bool specialWeathers = false)
