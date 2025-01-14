@@ -6,15 +6,14 @@ repository = "https://thunderstore.io"
 
 [package]
 namespace = "mrov"
-name = "BetaWeatherTweaksBeta"
-description = "Changes to the weather system in Lethal Company."
+name = "WeatherTweaks"
+description = "Difficulty tweaks to the weather system in Lethal Company."
 websiteUrl = "https://github.com/AndreyMrovol/LethalWeatherTweaks"
 containsNsfwContent = false
 
 [package.dependencies]
 BepInEx-BepInExPack = "5.4.2100"
-mrov-WeatherRegistry = "0.3.13"
-mrov-MrovWeathers = "0.0.1"
+mrov-WeatherRegistry = "0.3.15"
 xilophor-LethalNetworkAPI = "3.3.1"
 
 [build]

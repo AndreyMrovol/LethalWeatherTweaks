@@ -1,3 +1,7 @@
+# 1.0.0
+
+- moved the `Beta` branch into `Stable` 🎉
+
 # 0.25.2
 
 - fixed an issue where the game would try to generate uncertain weather on Gordion (thanks, `barkosharko`!)
