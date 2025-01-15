@@ -16,6 +16,8 @@ namespace WeatherTweaks
   [BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
   [BepInDependency("xxxstoner420bongmasterxxx.open_monitors", BepInDependency.DependencyFlags.SoftDependency)]
+  [BepInDependency("MrovWeathers", BepInDependency.DependencyFlags.SoftDependency)]
+  [BepInDependency("voxx.LethalElementsPlugin", BepInDependency.DependencyFlags.SoftDependency)]
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
@@ -24,6 +26,7 @@ namespace WeatherTweaks
 
     internal static GeneralImprovementsCompat GeneralImprovements;
     internal static MrovWeathersCompat MrovWeathersCompat;
+    internal static LethalElementsCompat LethalElementsCompat;
 
     private void Awake()
     {
@@ -63,6 +66,7 @@ namespace WeatherTweaks
 
       GeneralImprovements = new GeneralImprovementsCompat("ShaosilGaming.GeneralImprovements");
       MrovWeathersCompat = new MrovWeathersCompat("MrovWeathers");
+      LethalElementsCompat = new LethalElementsCompat("voxx.LethalElementsPlugin", "1.3.0");
 
       if (Chainloader.PluginInfos.ContainsKey("xxxstoner420bongmasterxxx.open_monitors"))
       {
