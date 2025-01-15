@@ -41,6 +41,7 @@ namespace WeatherTweaks
       WeatherRegistry.EventManager.SetupFinished.AddListener(() => TerminalStartPatch.Start());
 
       WeatherRegistry.EventManager.ShipLanding.AddListener(args => FoggyPatch.ToggleFogExclusionZones(args.level, false));
+      WeatherRegistry.EventManager.ShipLanding.AddListener(args => ChangeMidDay.ShipLandingPatch(args.level, args.weather));
       WeatherRegistry.EventManager.DisableAllWeathers.AddListener(
         () => FoggyPatch.ToggleFogExclusionZones(StartOfRound.Instance.currentLevel, true)
       );

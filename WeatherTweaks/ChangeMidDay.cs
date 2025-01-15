@@ -119,6 +119,14 @@ namespace WeatherTweaks
       // TODO account for player being dead
     }
 
+    internal static void ShipLandingPatch(SelectableLevel currentLevel, Weather currentWeather)
+    {
+      if (currentWeather is ProgressingWeatherType progressingWeather)
+      {
+        ChangeMidDay.SetCurrentWeather(progressingWeather);
+      }
+    }
+
     internal static void SetCurrentWeather(ProgressingWeatherType weather)
     {
       logger.LogInfo($"Setting current weather to {weather.Name}");
