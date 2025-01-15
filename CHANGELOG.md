@@ -1,3 +1,11 @@
+# 1.0.1
+
+- changed config descriptions to be _a bit_ clearer
+- added `WeatherResolvable` options to special weathers constructors
+- fixed progressing weathers not working correctly
+- added compatibility for `MrovWeathers` weathers
+- added compatibility for `LethalElements` weathers
+
 # 1.0.0
 
 - moved the `Beta` branch into `Stable` 🎉
