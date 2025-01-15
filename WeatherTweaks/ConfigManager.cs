@@ -41,22 +41,27 @@ namespace WeatherTweaks
 
     private ConfigManager(ConfigFile config)
     {
-      // god forgive me for this
       configFile = config;
-
-      // create config entries
 
       LogWeatherSelection = configFile.Bind("Debug", "LogWeatherSelection", true, "Log weather selection");
       LogWeatherVariables = configFile.Bind("Debug", "LogWeatherVariables", true, "Log resolving weather variables");
       LogLogs = configFile.Bind("Debug", "Logs", true, "Log logging logs");
 
-      UncertainWeatherEnabled = configFile.Bind("Uncertain Weathers", "UncertainWeatherEnabled", true, "Enable uncertain weather mechanic");
+      UncertainWeatherEnabled = configFile.Bind(
+        "Uncertain Weathers",
+        "UncertainWeatherEnabled",
+        true,
+        "Enable uncertain weather mechanic: some planets will not display current weather"
+      );
 
       MaxMultiplier = configFile.Bind(
         "Multiplier Settings",
         "MaxMultiplier",
         0.8f,
-        new ConfigDescription("Maximum difficulty multiplier (between 0 and 1)", new AcceptableValueRange<float>(0, 1))
+        new ConfigDescription(
+          "Maximum difficulty multiplier (between 0 and 1). Overrides GameLengthMultiplier and GamePlayersMultiplier",
+          new AcceptableValueRange<float>(0, 1)
+        )
       );
       ScaleDownClearWeather = configFile.Bind(
         "Multiplier Settings",
@@ -78,15 +83,25 @@ namespace WeatherTweaks
         "Difficulty multiplier - players amount"
       );
 
-      FirstDaySeed = configFile.Bind("First Day", "FirstDaySeed", 0, "Seed for the first day's weather");
-      FirstDaySpecial = configFile.Bind("First Day", "FirstDaySpecial", true, "Enable special weather picking algorithm for the first day");
-      FirstDayRandomSeed = configFile.Bind("First Day", "FirstDayRandomSeed", true, "Use random seed for the first day's weather");
+      FirstDaySeed = configFile.Bind("First Day", "FirstDaySeed", 0, "Seed for the first day's weather.");
+      FirstDaySpecial = configFile.Bind(
+        "First Day",
+        "FirstDaySpecial",
+        true,
+        "Enable a vanilla-like weather picking algorithm for the first day."
+      );
+      FirstDayRandomSeed = configFile.Bind(
+        "First Day",
+        "FirstDayRandomSeed",
+        true,
+        "Use random seed for the first day's weather. Works independently from ButteryFixes."
+      );
 
       GenerateSpecialWeatherEntries = configFile.Bind(
         "Special Weather Configs",
         "GenerateSpecialWeatherEntries",
         false,
-        "Generate special weather entries for all levels"
+        "Generate special weather entries' in Registry config."
       );
 
       AlwaysUncertain = configFile.Bind("Special Modes", "AlwaysUncertain", false, "Always make weather uncertain");
@@ -94,7 +109,10 @@ namespace WeatherTweaks
       AlwaysClear = configFile.Bind("Special Modes", "AlwaysClear", false, "Always make weather clear - good for testing");
 
       FoggyIgnoreLevels = new LevelListConfigHandler("", false);
-      FoggyIgnoreLevels.CreateConfigEntry("Foggy patch", new ConfigDescription("Levels to ignore foggy weather on"));
+      FoggyIgnoreLevels.CreateConfigEntry(
+        "Foggy patch",
+        new ConfigDescription("Levels to blacklist foggy patch from applying on (semicolon-separated)")
+      );
     }
   }
 }
