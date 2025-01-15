@@ -91,5 +91,21 @@ namespace WeatherTweaks.Definitions
       Variables.CombinedWeathers.Add(this);
       WeatherManager.RegisterWeather(this);
     }
+
+    public CombinedWeatherType(string name, List<string> weatherNames, float weightModifier = 0.2f)
+      : base(name, CustomWeatherType.Combined, [])
+    {
+      WeatherTypeNames = weatherNames;
+      WeightModify = weightModifier;
+
+      Name = name;
+
+      this.CustomType = CustomWeatherType.Combined;
+
+      Plugin.logger.LogDebug($"Created CombinedWeatherType: {Name}");
+
+      Variables.CombinedWeathers.Add(this);
+      WeatherManager.RegisterWeather(this);
+    }
   }
 }
