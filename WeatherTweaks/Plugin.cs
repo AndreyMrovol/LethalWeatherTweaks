@@ -23,8 +23,7 @@ namespace WeatherTweaks
     internal static bool IsLLLPresent = false;
 
     internal static GeneralImprovementsCompat GeneralImprovements;
-
-    internal static Weather BlackoutWeather;
+    internal static MrovWeathersCompat MrovWeathersCompat;
 
     private void Awake()
     {
@@ -63,6 +62,7 @@ namespace WeatherTweaks
       harmony.Unpatch(weatherMethod, HarmonyPatchType.Postfix, "imabatby.lethallevelloader");
 
       GeneralImprovements = new GeneralImprovementsCompat("ShaosilGaming.GeneralImprovements");
+      MrovWeathersCompat = new MrovWeathersCompat("MrovWeathers");
 
       if (Chainloader.PluginInfos.ContainsKey("xxxstoner420bongmasterxxx.open_monitors"))
       {
