@@ -8,12 +8,12 @@ namespace WeatherTweaks.Definitions
 {
   public class WeatherTweaksEffect : ImprovedWeatherEffect
   {
-    public List<LevelWeatherType> weatherTypes;
+    public List<WeatherResolvable> weathers;
 
-    public WeatherTweaksEffect(GameObject effectObject, GameObject worldObject, List<LevelWeatherType> weatherTypes)
+    public WeatherTweaksEffect(GameObject effectObject, GameObject worldObject, List<WeatherResolvable> weatherTypes)
       : base(effectObject, worldObject)
     {
-      this.weatherTypes = weatherTypes;
+      this.weathers = weatherTypes;
     }
 
     public override bool EffectEnabled
@@ -41,6 +41,8 @@ namespace WeatherTweaks.Definitions
 
     public void EnableCombinedEffect()
     {
+      List<LevelWeatherType> weatherTypes = weathers.Select(weather => weather.WeatherType).ToList();
+
       foreach (LevelWeatherType weatherType in weatherTypes)
       {
         Weather weather = WeatherRegistry.WeatherManager.GetWeather(weatherType);
@@ -61,7 +63,7 @@ namespace WeatherTweaks.Definitions
         weather.VanillaWeatherType == StartOfRound.Instance.currentLevel.currentWeather
       );
 
-      LevelWeatherType startingWeatherType = currentWeather.StartingWeather;
+      LevelWeatherType startingWeatherType = currentWeather.StartingWeather.WeatherType;
 
       WeatherEffectController.SetWeatherEffects(startingWeatherType);
     }
@@ -70,6 +72,8 @@ namespace WeatherTweaks.Definitions
     {
       if (!permament)
       {
+        List<LevelWeatherType> weatherTypes = weathers.Select(weather => weather.WeatherType).ToList();
+
         foreach (LevelWeatherType weatherType in weatherTypes)
         {
           WeatherRegistry.WeatherManager.GetWeather(weatherType).Effect.EffectObject?.SetActive(false);

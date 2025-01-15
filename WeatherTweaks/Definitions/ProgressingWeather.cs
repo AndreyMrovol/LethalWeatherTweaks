@@ -28,17 +28,13 @@ namespace WeatherTweaks.Definitions
     public float Chance = 0.8f;
 
     [JsonProperty]
-    public LevelWeatherType Weather;
+    public WeatherResolvable Weather;
 
-    // [Obsolete("Use GetWeather() instead")]
-    // internal Weather GetWeatherType()
-    // {
-    //   return GetWeather();
-    // }
+    public string WeatherName;
 
     internal Weather GetWeather()
     {
-      return WeatherRegistry.WeatherManager.GetWeather(Weather);
+      return WeatherRegistry.WeatherManager.GetWeather(Weather.WeatherType);
     }
 
     internal List<DialogueSegment> GetDialogueSegment()
@@ -60,7 +56,7 @@ namespace WeatherTweaks.Definitions
     public bool Enabled => Config.EnableWeather.Value;
 
     public List<ProgressingWeatherEntry> WeatherEntries = [];
-    public LevelWeatherType StartingWeather;
+    public WeatherResolvable StartingWeather;
 
     private Weather _weather = null;
     public Weather Weather
@@ -69,7 +65,7 @@ namespace WeatherTweaks.Definitions
       {
         if (_weather == null)
         {
-          _weather = WeatherRegistry.WeatherManager.GetWeather(this.StartingWeather);
+          _weather = WeatherRegistry.WeatherManager.GetWeather(this.StartingWeather.WeatherType);
         }
 
         return _weather;
@@ -92,7 +88,11 @@ namespace WeatherTweaks.Definitions
       }
 
       var randomWeathers = level.randomWeathers;
-      List<LevelWeatherType> remainingWeathers = WeatherEntries.Select(entry => entry.Weather).Append(StartingWeather).Distinct().ToList();
+      List<LevelWeatherType> remainingWeathers = WeatherEntries
+        .Select(entry => entry.Weather.WeatherType)
+        .Append(StartingWeather.WeatherType)
+        .Distinct()
+        .ToList();
       remainingWeathers.RemoveAll(weather => weather == LevelWeatherType.None);
 
       foreach (RandomWeatherWithVariables weather in randomWeathers)
@@ -142,14 +142,14 @@ namespace WeatherTweaks.Definitions
 
     public bool DoesHaveWeatherHappening(LevelWeatherType weatherType)
     {
-      return WeatherEntries.Any(entry => entry.Weather == weatherType);
+      return WeatherEntries.Any(entry => entry.Weather.WeatherType == weatherType);
     }
 
     // public override List<LevelWeatherType> WeatherTypes { get; set; } = [];
 
     public ProgressingWeatherType(
       string name,
-      LevelWeatherType baseWeather,
+      WeatherResolvable baseWeather,
       List<ProgressingWeatherEntry> weatherEntries,
       float weightModifier = 0.3f
     )

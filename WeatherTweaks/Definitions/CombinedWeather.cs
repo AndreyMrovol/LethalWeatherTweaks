@@ -13,7 +13,7 @@ namespace WeatherTweaks.Definitions
       {
         if (_weathers.Count == 0)
         {
-          _weathers = WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType)).ToList();
+          _weathers = WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType.WeatherType)).ToList();
         }
 
         return _weathers;
@@ -72,7 +72,7 @@ namespace WeatherTweaks.Definitions
       base.Init();
     }
 
-    public CombinedWeatherType(string name, List<LevelWeatherType> weathers, float weightModifier = 0.2f)
+    public CombinedWeatherType(string name, List<WeatherResolvable> weathers, float weightModifier = 0.2f)
       : base(name, CustomWeatherType.Combined, weathers.ToArray())
     {
       if (weathers.Count == 0)
@@ -80,22 +80,6 @@ namespace WeatherTweaks.Definitions
         return;
       }
 
-      WeightModify = weightModifier;
-
-      Name = name;
-
-      this.CustomType = CustomWeatherType.Combined;
-
-      Plugin.logger.LogDebug($"Created CombinedWeatherType: {Name}");
-
-      Variables.CombinedWeathers.Add(this);
-      WeatherManager.RegisterWeather(this);
-    }
-
-    public CombinedWeatherType(string name, List<string> weatherNames, float weightModifier = 0.2f)
-      : base(name, CustomWeatherType.Combined, [])
-    {
-      WeatherTypeNames = weatherNames;
       WeightModify = weightModifier;
 
       Name = name;

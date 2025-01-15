@@ -222,7 +222,7 @@ namespace WeatherTweaks
       {
         case CustomWeatherType.Combined:
           Definitions.CombinedWeatherType combinedWeather = (Definitions.CombinedWeatherType)currentWeather;
-          if (combinedWeather.WeatherTypes.Any(x => x == weatherType))
+          if (combinedWeather.WeatherTypes.Any(x => x.WeatherType == weatherType))
           {
             Plugin.logger.LogWarning($"Level {level.PlanetName} has weather {weatherType}");
             return weatherType;

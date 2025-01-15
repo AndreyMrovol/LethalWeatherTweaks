@@ -143,7 +143,7 @@ namespace WeatherTweaks
       {
         DayTime = 0.0f,
         Chance = 1.0f,
-        Weather = weather.StartingWeather
+        Weather = new WeatherTypeResolvable(weather.StartingWeather.WeatherType)
       };
 
       weatherEntries.Sort((a, b) => a.DayTime.CompareTo(b.DayTime));
