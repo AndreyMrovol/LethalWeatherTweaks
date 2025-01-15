@@ -19,8 +19,9 @@ namespace WeatherTweaks.Definitions
       return (this?.ScrapValueMultiplier ?? 1f, this?.ScrapAmountMultiplier ?? 1f);
     }
 
+    public virtual List<string> WeatherTypeNames { get; set; } = [];
     public virtual List<LevelWeatherType> WeatherTypes { get; set; } = [];
-    public LevelWeatherType BaseWeatherType => WeatherTypes.Max();
+    public LevelWeatherType BaseWeatherType => WeatherTypes.Count > 0 ? WeatherTypes.Max() : LevelWeatherType.None;
 
     public override string ConfigCategory =>
       this.Origin == WeatherOrigin.WeatherTweaks ? $"WeatherTweaks Weather: {this.name}" : base.ConfigCategory;
@@ -34,7 +35,15 @@ namespace WeatherTweaks.Definitions
         Config.ScrapValueMultiplier = new(valueMultiplier, ConfigManager.GenerateSpecialWeatherEntries.Value);
         Config.ScrapAmountMultiplier = new(amountMultiplier, ConfigManager.GenerateSpecialWeatherEntries.Value);
 
-        // WeatherManagerManager.AddSpecialWeather(this);
+        if (WeatherTypes.Count == 0 && WeatherTypeNames.Count > 0)
+        {
+          // resolve weather names into LevelWeatherTypes
+          WeatherTypes = WeatherTypeNames
+            .Select(name => WeatherRegistry.ConfigHelper.ResolveStringToWeather(name))
+            .Where(weather => weather != null)
+            .Select(weather => weather.VanillaWeatherType)
+            .ToList();
+        }
 
         Effect.SunAnimatorBool = WeatherManager.GetWeather(WeatherTypes.Max()).Effect.SunAnimatorBool;
       }
