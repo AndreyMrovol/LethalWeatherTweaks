@@ -1,3 +1,7 @@
+# 1.0.2
+
+- fixed the mod breaking with WeatherRegistry `v0.4.0` (thanks, `pacoito`!)
+
 # 1.0.1
 
 - changed config descriptions to be _a bit_ clearer
