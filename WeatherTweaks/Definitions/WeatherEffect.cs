@@ -63,9 +63,9 @@ namespace WeatherTweaks.Definitions
         weather.VanillaWeatherType == StartOfRound.Instance.currentLevel.currentWeather
       );
 
-      LevelWeatherType startingWeatherType = currentWeather.StartingWeather.WeatherType;
+      // LevelWeatherType startingWeatherType = currentWeather.Weather;
 
-      WeatherEffectController.SetWeatherEffects(startingWeatherType);
+      WeatherEffectController.SetWeatherEffects(currentWeather.Weather);
     }
 
     public override void DisableEffect(bool permament = false)
