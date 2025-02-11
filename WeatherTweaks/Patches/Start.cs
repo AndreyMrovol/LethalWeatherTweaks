@@ -14,8 +14,6 @@ namespace WeatherTweaks.Patches
       WeatherRegistry.Settings.ScreenMapColors.Add("?", Color.white);
       WeatherRegistry.Settings.ScreenMapColors.Add("[UNKNOWN]", new Color(0.29f, 0.29f, 0.29f));
 
-      FoggyPatch.CreateEffectOverrides();
-
       Variables.IsSetupFinished = true;
       StartOfRound.Instance.SetPlanetsWeather();
       StartOfRound.Instance.SetMapScreenInfoToCurrentLevel();
