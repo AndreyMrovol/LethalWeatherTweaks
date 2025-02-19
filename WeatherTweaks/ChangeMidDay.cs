@@ -211,8 +211,8 @@ namespace WeatherTweaks
         for (int i = 0; i < numberOfPuddles; i++)
         {
             Vector3 mudPosition = RoundManager.Instance.outsideAINodes[random.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
-            mudPosition = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(mudPosition, 30f, navMeshHit, random, -1) + Vector3.up;
-            mudPosition = TryGetValidMudPick(mudPosition);
+            mudPosition = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(mudPosition, 30f, navMeshHit, random, -1);
+            mudPosition = TryGetValidMudPick(mudPosition) + Vector3.up;
             GameObject.Instantiate(RoundManager.Instance.quicksandPrefab, mudPosition, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
             yield return null;
         }
