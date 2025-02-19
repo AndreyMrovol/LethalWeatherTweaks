@@ -1,3 +1,13 @@
+# 1.1.0
+
+- Implemented custom quicksand spawning logic (PR [#42](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/42) and [#43](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/43)) (thank you, `voxx`!)
+- (hopefully) fixed an issue with progressing weather effects not correctly enabling ([#37](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/37))
+- changed the name of uncertain weathers' config category
+
+# 1.0.3
+
+- moved foggy overrides to MrovWeathers
+
 # 1.0.2
 
 - fixed the mod breaking with WeatherRegistry `v0.4.0` (thanks, `pacoito`!)
