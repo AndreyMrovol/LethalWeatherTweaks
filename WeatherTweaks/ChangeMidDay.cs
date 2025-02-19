@@ -170,7 +170,6 @@ namespace WeatherTweaks
     {
         if (position == default)
             return false;
-
         float mudSqrDistance = 100f; //Squared distance between possible mud location and a player
         bool isValidPick = true;
         foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
