@@ -68,15 +68,15 @@ namespace WeatherTweaks.Definitions
 
     public override void DisableEffect(bool permament = false)
     {
-      if (!permament)
-      {
-        List<LevelWeatherType> weatherTypes = weathers.Select(weather => weather.WeatherType).ToList();
-
-        foreach (LevelWeatherType weatherType in weatherTypes)
-        {
-          WeatherRegistry.WeatherManager.GetWeather(weatherType).Effect.EffectObject?.SetActive(false);
-        }
-      }
+      // if (!permament)
+      // {
+      //   List<LevelWeatherType> weatherTypes = weathers.Select(weather => weather.WeatherType).ToList();
+      //
+      //   foreach (LevelWeatherType weatherType in weatherTypes)
+      //   {
+      //     WeatherRegistry.WeatherManager.GetWeather(weatherType).Effect.EffectObject?.SetActive(false);
+      //   }
+      // }
 
       base.DisableEffect(permament);
     }
