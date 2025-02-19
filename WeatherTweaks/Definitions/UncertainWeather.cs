@@ -15,7 +15,7 @@ namespace WeatherTweaks.Modules
       Plugin.logger.LogDebug($"Creating UncertainWeatherType: {Name}");
 
       // create configFile bindings
-      Enabled = ConfigManager.configFile.Bind("1a> Uncertain mechanics", $"{Name} Enabled", true, $"Enable {Name} uncertainty");
+      Enabled = ConfigManager.configFile.Bind("Uncertain mechanics", $"{Name} Enabled", true, $"Enable {Name} uncertainty");
     }
   }
 }
