@@ -168,6 +168,9 @@ namespace WeatherTweaks
 
     internal static bool IsMudPickValid(Vector3 position)
     {
+        if (position == default)
+            return false;
+
         float mudSqrDistance = 100f; //Squared distance between possible mud location and a player
         bool isValidPick = true;
         foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
@@ -181,28 +184,26 @@ namespace WeatherTweaks
         return isValidPick;
     }
 
-    internal static Vector3 TryGetValidMudPick(Vector3 position)
+    internal static Vector3 TryGetValidMudPick(System.Random seededRandom, NavMeshHit navHit)
     {
-        System.Random random = new(StartOfRound.Instance.randomMapSeed + 2);
-        NavMeshHit navHit = new();
+        Vector3 mudPosition = default;
         int attemptNum = 0;
         int maxMudPlacementAttempts = 10;
-        Vector3 adjustedPosition = position;
-        while (attemptNum < maxMudPlacementAttempts && !IsMudPickValid(position))
+        while (attemptNum < maxMudPlacementAttempts && !IsMudPickValid(mudPosition))
         {
-            adjustedPosition = RoundManager.Instance.outsideAINodes[random.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
-            adjustedPosition = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(adjustedPosition, 30f, navHit, random, -1) + Vector3.up;
+            mudPosition = RoundManager.Instance.outsideAINodes[seededRandom.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
+            mudPosition = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(mudPosition, 30f, navHit, seededRandom, -1) + Vector3.up;
             attemptNum++;
         }
 
-        return adjustedPosition;
+        return mudPosition;
     }
 
     internal static IEnumerator SpawnMudPatches()
     {
         logger.LogDebug("Spawning mud patches!");
-        System.Random random = new(StartOfRound.Instance.randomMapSeed + 2);
-        NavMeshHit navMeshHit = new();
+        System.Random seededRandom = new(StartOfRound.Instance.randomMapSeed + 2);
+        NavMeshHit navHit = new();
         int numberOfPuddles = random.Next(5, 15);
         if (random.Next(0, 100) < 7)
         {
@@ -210,9 +211,7 @@ namespace WeatherTweaks
         }
         for (int i = 0; i < numberOfPuddles; i++)
         {
-            Vector3 mudPosition = RoundManager.Instance.outsideAINodes[random.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
-            mudPosition = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(mudPosition, 30f, navMeshHit, random, -1);
-            mudPosition = TryGetValidMudPick(mudPosition) + Vector3.up;
+            Vector3 mudPosition = TryGetValidMudPick(seededRandom, navHit) + Vector3.up;
             GameObject.Instantiate(RoundManager.Instance.quicksandPrefab, mudPosition, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
             yield return null;
         }
