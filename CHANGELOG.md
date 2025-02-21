@@ -1,3 +1,7 @@
+# 1.1.1
+
+- (hopefully) fixed an issue with progressing weather effects being disabled by AudioReverbTriggers ([#37](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/37))
+
 # 1.1.0
 
 - Implemented custom quicksand spawning logic (PR [#42](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/42) and [#43](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/43)) (thank you, `voxx`!)
