@@ -71,7 +71,10 @@ namespace WeatherTweaks
 
     public static void SetProgressingWeatherEntry(ProgressingWeatherEntry entry)
     {
-      entry.WeatherName = entry.Weather.WeatherName;
+      if (entry != null)
+      {
+        entry.WeatherName = entry.Weather.WeatherName;
+      }
 
       string serialized = JsonConvert.SerializeObject(
         entry,
