@@ -1,3 +1,7 @@
+# 1.1.2
+
+- fixed an issue with progressing weathers not working correctly on clients (thanks, `sciencebird`!)
+
 # 1.1.1
 
 - (hopefully) fixed an issue with progressing weather effects being disabled by AudioReverbTriggers ([#37](https://github.com/AndreyMrovol/LethalWeatherTweaks/issues/37))
