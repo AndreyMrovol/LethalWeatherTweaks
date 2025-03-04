@@ -15,14 +15,6 @@ namespace WeatherTweaks.Compatibility
       __result = Variables.GetPlanetCurrentWeather(level);
     }
 
-    [HarmonyPatch(typeof(WeatherRegistry.WeatherManager))]
-    [HarmonyPatch("GetCurrentWeatherName")]
-    [HarmonyPostfix]
-    internal static void GetCurrentWeatherNamePatch(ref string __result, SelectableLevel level)
-    {
-      __result = Variables.GetPlanetCurrentWeather(level, false);
-    }
-
     [HarmonyPatch(typeof(WeatherRegistry.Patches.SetPlanetsWeatherPatch))]
     [HarmonyPatch("GameMethodPatch")]
     [HarmonyPrefix]
@@ -38,7 +30,7 @@ namespace WeatherTweaks.Compatibility
     {
       if (Variables.IsSetupFinished)
       {
-        __result = Variables.GetPlanetCurrentWeather(level);
+        __result = Variables.GetPlanetCurrentWeather(level, true);
       }
     }
   }
