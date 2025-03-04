@@ -29,11 +29,6 @@ namespace WeatherTweaks.Compatibility
       __result = PatchLLL(extendedLevel.SelectableLevel);
     }
 
-    private static void PatchOldLLL(SelectableLevel selectableLevel, ref string __result)
-    {
-      __result = PatchLLL(selectableLevel);
-    }
-
     private static string PatchLLL(SelectableLevel selectableLevel)
     {
       string currentWeather = Variables.GetPlanetCurrentWeather(selectableLevel);
