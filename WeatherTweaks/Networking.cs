@@ -53,6 +53,7 @@ namespace WeatherTweaks
 
       Plugin.logger.LogWarning($"Received progressing weather entry data {progressingWeatherEntry} from server, applying");
 
+      entry.Weather = new WeatherNameResolvable(entry.WeatherName);
       TimeOfDay.Instance.StartCoroutine(ChangeMidDay.DoMidDayChange(entry));
     }
 
@@ -70,6 +71,8 @@ namespace WeatherTweaks
 
     public static void SetProgressingWeatherEntry(ProgressingWeatherEntry entry)
     {
+      entry.WeatherName = entry.Weather.WeatherName;
+
       string serialized = JsonConvert.SerializeObject(
         entry,
         Formatting.None,

@@ -30,6 +30,7 @@ namespace WeatherTweaks.Definitions
     [JsonProperty]
     public WeatherResolvable Weather;
 
+    [JsonProperty]
     public string WeatherName;
 
     internal Weather GetWeather()
