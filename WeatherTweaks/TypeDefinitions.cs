@@ -1,4 +1,5 @@
 using System.Linq;
+using WeatherRegistry;
 
 namespace WeatherTweaks
 {
@@ -11,23 +12,23 @@ namespace WeatherTweaks
 
       public override string CreateUncertaintyString(SelectableLevel level, System.Random random)
       {
-        var weather = level.currentWeather;
-        var randomWeathers = level.randomWeathers.Where(w => w.weatherType != weather).ToList();
+        Weather weather = WeatherManager.GetWeather(level.currentWeather);
+        var randomWeathers = level.randomWeathers.Where(w => w.weatherType != weather.VanillaWeatherType).ToList();
 
         if (randomWeathers.Count == 0)
         {
-          return weather.ToString();
+          return weather.name;
         }
 
-        var randomWeather = randomWeathers[random.Next(randomWeathers.Count)];
+        Weather randomWeather = WeatherManager.GetWeather(randomWeathers[random.Next(randomWeathers.Count)].weatherType);
 
         if (random.Next(0, 3) == 0)
         {
-          return $"{randomWeather.weatherType}?";
+          return $"{randomWeather.name}?";
         }
         else
         {
-          return $"{weather}?";
+          return $"{weather.name}?";
         }
       }
     }
@@ -39,23 +40,23 @@ namespace WeatherTweaks
 
       public override string CreateUncertaintyString(SelectableLevel level, System.Random random)
       {
-        var weather = level.currentWeather;
-        var randomWeathers = level.randomWeathers.Where(w => w.weatherType != weather).ToList();
+        Weather weather = WeatherManager.GetWeather(level.currentWeather);
+        var randomWeathers = level.randomWeathers.Where(w => w.weatherType != weather.VanillaWeatherType).ToList();
 
         if (randomWeathers.Count == 0)
         {
           return weather.ToString();
         }
 
-        var randomWeather = randomWeathers[random.Next(randomWeathers.Count)];
+        Weather randomWeather = WeatherManager.GetWeather(randomWeathers[random.Next(randomWeathers.Count)].weatherType);
 
         if (random.Next(0, 1) == 0)
         {
-          return $"{weather}/{randomWeather.weatherType}";
+          return $"{weather.name}/{randomWeather.name}";
         }
         else
         {
-          return $"{randomWeather.weatherType}/{weather}";
+          return $"{randomWeather.name}/{weather.name}";
         }
       }
     }
