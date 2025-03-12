@@ -33,5 +33,16 @@ namespace WeatherTweaks.Compatibility
         __result = Variables.GetPlanetCurrentWeather(level, true);
       }
     }
+
+    [HarmonyPatch(typeof(WeatherRegistry.Patches.TerminalPostprocessPatch))]
+    [HarmonyPatch("GetPlanetWeatherDisplayString")]
+    [HarmonyPostfix]
+    internal static void GetPlanetWeatherDisplayStringPatch(ref string __result, bool parentheses)
+    {
+      if (__result.Contains("[UNKNOWN]"))
+      {
+        __result = "[UNKNOWN]";
+      }
+    }
   }
 }
