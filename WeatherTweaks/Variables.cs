@@ -261,7 +261,7 @@ namespace WeatherTweaks
 
     internal static WeatherTweaksWeather GetFullWeatherType(LevelWeatherType weatherType)
     {
-      Plugin.logger.LogDebug($"Getting full weather type for {weatherType}");
+      Plugin.DebugLogger.LogDebug($"Getting full weather type for {weatherType}");
 
       return WeatherTweaksTypes.Find(x => x.VanillaWeatherType == weatherType);
     }
