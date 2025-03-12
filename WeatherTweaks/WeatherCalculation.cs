@@ -81,25 +81,7 @@ namespace WeatherTweaks
           Plugin.logger.LogDebug($"{level.PlanetName}");
           Plugin.logger.LogDebug($"previousDayWeather: {previousDayWeather[level.PlanetName]}");
 
-          // change dust clouds to none (not defined in config)
-          if (previousDayWeather[level.PlanetName] == LevelWeatherType.DustClouds)
-          {
-            previousDayWeather[level.PlanetName] = LevelWeatherType.None;
-          }
-
           currentWeather[level] = Variables.NoneWeather;
-
-          // List<WeatherType> possibleWeathers = Variables.GetPlanetWeatherTypes(level);
-
-          // if (possibleWeathers.Count == 0)
-          // {
-          //   Plugin.logger.LogDebug("No possible weathers, setting to None");
-          //   currentWeather[level.PlanetName] = Variables.NoneWeather;
-          //   continue;
-          // }
-
-          // add None to the list of possible weathers
-          // List<LevelWeatherType> weathersToChooseFrom = possibleWeathers.Select(x => x.weatherType).Append(LevelWeatherType.None).ToList();
 
           // get the weighted list of weathers
           MrovLib.WeightHandler<Weather> weights = Variables.GetPlanetWeightedList(level);
