@@ -6,19 +6,10 @@ namespace WeatherTweaks.Definitions
 {
   public class CombinedWeatherType : WeatherTweaksWeather
   {
-    private List<Weather> _weathers = [];
+    // private List<Weather> _weathers = [];
     public List<Weather> Weathers
     {
-      get
-      {
-        if (_weathers.Count == 0)
-        {
-          _weathers = WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType.WeatherType)).ToList();
-        }
-
-        return _weathers;
-      }
-      private set { _weathers = value; }
+      get { return WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType.WeatherType)).ToList(); }
     }
 
     public new WeatherTweaksConfig Config
