@@ -1,3 +1,8 @@
+# 1.1.3
+
+- fixed an issue with uncertain weathers displaying incorrect names
+- fixed an issue with combined weathers resolving partial weathers incorrectly (thanks, `mooface64`!)
+
 # 1.1.2
 
 - fixed an issue with progressing weathers not working correctly on clients (thanks, `sciencebird`!)
