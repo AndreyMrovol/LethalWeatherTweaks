@@ -50,7 +50,7 @@ namespace WeatherTweaks
 
         Weather randomWeather = WeatherManager.GetWeather(randomWeathers[random.Next(randomWeathers.Count)].weatherType);
 
-        if (random.Next(0, 1) == 0)
+        if (random.Next(0, 2) == 0)
         {
           return $"{weather.name}/{randomWeather.name}";
         }
