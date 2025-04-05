@@ -23,6 +23,12 @@ namespace WeatherTweaks
       if (!ConfigManager.UncertainWeatherEnabled.Value)
       {
         Plugin.logger.LogInfo("Uncertain weathers are disabled.");
+
+        if (ConfigManager.AlwaysUncertain.Value)
+        {
+          Plugin.logger.LogWarning("AlwaysUncertain is enabled, but uncertain weathers are disabled. Uncertainty will not be generated!");
+        }
+
         return uncertainWeathers;
       }
 
