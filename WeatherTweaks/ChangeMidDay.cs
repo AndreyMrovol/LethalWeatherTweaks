@@ -118,7 +118,7 @@ namespace WeatherTweaks
 
       if (entry.Weather.WeatherType == LevelWeatherType.Rainy)
       {
-        TimeOfDay.Instance.StartCoroutine(SpawnMudPatches());
+        TimeOfDay.Instance.StartCoroutine(MudPatches.SpawnMudPatches());
       }
 
       // GameInteraction.SetWeatherEffects(TimeOfDay.Instance, [fullWeatherType.Effect]);
@@ -166,63 +166,6 @@ namespace WeatherTweaks
       currentWeather = null;
       LastCheckedEntry = 0;
       weatherEntries = [];
-    }
-
-    internal static bool IsMudPickValid(Vector3 position)
-    {
-      if (position == default)
-      {
-        return false;
-      }
-      float mudSqrDistance = 100f; //Squared distance between possible mud location and a player
-      bool isValidPick = true;
-      foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
-      {
-        if (Vector3.SqrMagnitude(position - player.transform.position) < mudSqrDistance)
-        {
-          isValidPick = false;
-          break;
-        }
-      }
-      return isValidPick;
-    }
-
-    internal static Vector3 TryGetValidMudPick(System.Random seededRandom, NavMeshHit navHit)
-    {
-      Vector3 mudPosition = default;
-      int attemptNum = 0;
-      int maxMudPlacementAttempts = 10;
-      while (attemptNum < maxMudPlacementAttempts && !IsMudPickValid(mudPosition))
-      {
-        mudPosition = RoundManager.Instance.outsideAINodes[seededRandom.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
-        mudPosition = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(mudPosition, 30f, navHit, seededRandom, -1) + Vector3.up;
-        attemptNum++;
-      }
-
-      return mudPosition;
-    }
-
-    internal static IEnumerator SpawnMudPatches()
-    {
-      logger.LogDebug("Spawning mud patches!");
-      System.Random seededRandom = new(StartOfRound.Instance.randomMapSeed + 2);
-      NavMeshHit navHit = new();
-      int numberOfPuddles = random.Next(5, 15);
-      if (random.Next(0, 100) < 7)
-      {
-        numberOfPuddles = random.Next(5, 30);
-      }
-      for (int i = 0; i < numberOfPuddles; i++)
-      {
-        Vector3 mudPosition = TryGetValidMudPick(seededRandom, navHit) + Vector3.up;
-        GameObject.Instantiate(
-          RoundManager.Instance.quicksandPrefab,
-          mudPosition,
-          Quaternion.identity,
-          RoundManager.Instance.mapPropsContainer.transform
-        );
-        yield return null;
-      }
     }
   }
 }

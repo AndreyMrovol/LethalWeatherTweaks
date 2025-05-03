@@ -54,6 +54,11 @@ namespace WeatherTweaks.Definitions
         {
           SunAnimator.OverrideSunAnimator(weatherType);
         }
+
+        if (weatherType == LevelWeatherType.Rainy)
+        {
+          TimeOfDay.Instance.StartCoroutine(MudPatches.SpawnMudPatches());
+        }
       }
     }
 
