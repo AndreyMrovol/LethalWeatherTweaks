@@ -98,7 +98,7 @@ namespace WeatherTweaks
       }
 
       logger.LogMessage(
-        $"Changing weather to {entry.GetWeather().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {WeatherRegistry.Patches.EntranceTeleportPatch.isPlayerInside}"
+        $"Changing weather to {entry.GetWeather().Name} at {entry.DayTime}, chance {entry.Chance} - is player inside? {WeatherRegistry.Settings.IsPlayerInside}"
       );
 
       HUDManager.Instance.ReadDialogue(entry.GetDialogueSegment().ToArray());

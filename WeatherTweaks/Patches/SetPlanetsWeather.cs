@@ -9,7 +9,7 @@ namespace WeatherTweaks
   {
     [HarmonyPatch("SetPlanetsWeather")]
     [HarmonyPrefix]
-    [HarmonyAfter(WeatherRegistry.Plugin.GUID)]
+    [HarmonyAfter(WeatherRegistry.PluginInfo.PLUGIN_GUID)]
     private static bool GameMethodPatch(int connectedPlayersOnServer, StartOfRound __instance)
     {
       Plugin.logger.LogMessage("SetPlanetsWeather called.");
@@ -35,7 +35,7 @@ namespace WeatherTweaks
 
       // Variables.PopulateWeathers(__instance);
       ChangeMidDay.Reset();
-      WeatherRegistry.Patches.EntranceTeleportPatch.isPlayerInside = false;
+      WeatherRegistry.Settings.IsPlayerInside = false;
 
       // NetworkedConfig.SetWeatherEffects([]);
       // Variables.CurrentWeathers = [];

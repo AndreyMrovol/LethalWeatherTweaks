@@ -56,7 +56,7 @@ namespace WeatherTweaks
         {
           logger.LogDebug($"Enabling effect from weather: {weather.Name}");
 
-          if (!WeatherRegistry.Patches.EntranceTeleportPatch.isPlayerInside)
+          if (!WeatherRegistry.Settings.IsPlayerInside)
           {
             weather.Effect.EffectEnabled = true;
           }
