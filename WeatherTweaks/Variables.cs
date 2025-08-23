@@ -174,7 +174,7 @@ namespace WeatherTweaks
 
     public static float GetLevelWeatherVariable(LevelWeatherType weatherType, bool variable2 = false)
     {
-      MrovLib.Logger logger = new("WeatherTweaks Variables", ConfigManager.LogWeatherVariables);
+      Logger logger = new("Variables", LoggingType.Developer);
 
       if (StartOfRound.Instance == null)
       {
@@ -273,7 +273,7 @@ namespace WeatherTweaks
 
     internal static MrovLib.WeightHandler<Weather> GetPlanetWeightedList(SelectableLevel level, float difficulty = 0)
     {
-      MrovLib.Logger Logger = new("WeatherTweaks WeatherSelection", ConfigManager.LogWeatherSelection);
+      Logger Logger = new("WeatherSelection", LoggingType.Debug);
 
       WeightHandler<Weather> weights = new();
       WeightHandler<LevelWeatherType> weatherTypeWeights = new();

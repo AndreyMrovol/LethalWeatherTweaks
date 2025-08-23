@@ -19,7 +19,7 @@ namespace WeatherTweaks.Compatibility
 
     static int frame = 0;
 
-    internal static MrovLib.Logger logger = new("WeatherTweaks GI", ConfigManager.LogLogs);
+    internal static Logger logger = new("GI", MrovLib.LoggingType.Debug);
 
     public static void Init()
     {

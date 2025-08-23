@@ -21,7 +21,7 @@ namespace WeatherTweaks
   public class Plugin : BaseUnityPlugin
   {
     internal static ManualLogSource logger;
-    internal static MrovLib.Logger DebugLogger = new(PluginInfo.PLUGIN_GUID);
+    internal static Logger DebugLogger = new("Debug", MrovLib.LoggingType.Debug);
     internal static bool IsLLLPresent = false;
 
     internal static GeneralImprovementsCompat GeneralImprovements;

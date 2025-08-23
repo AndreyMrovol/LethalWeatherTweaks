@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using MrovLib;
 
 namespace WeatherTweaks
 {
@@ -15,9 +16,7 @@ namespace WeatherTweaks
 
     // i love creating config hell
 
-    public static ConfigEntry<bool> LogWeatherSelection { get; private set; }
-    public static ConfigEntry<bool> LogWeatherVariables { get; private set; }
-    public static ConfigEntry<bool> LogLogs { get; private set; }
+    public static ConfigEntry<LoggingType> LoggingLevels { get; private set; }
 
     public static ConfigEntry<int> FirstDaySeed { get; private set; }
     public static ConfigEntry<bool> FirstDaySpecial { get; private set; }
@@ -41,9 +40,7 @@ namespace WeatherTweaks
     {
       configFile = config;
 
-      LogWeatherSelection = configFile.Bind("Debug", "LogWeatherSelection", true, "Log weather selection");
-      LogWeatherVariables = configFile.Bind("Debug", "LogWeatherVariables", true, "Log resolving weather variables");
-      LogLogs = configFile.Bind("Debug", "Logs", true, "Log logging logs");
+      LoggingLevels = configFile.Bind("Debug", "Logging levels", LoggingType.Basic, "Set the logging level.");
 
       UncertainWeatherEnabled = configFile.Bind(
         "Uncertain Weathers",

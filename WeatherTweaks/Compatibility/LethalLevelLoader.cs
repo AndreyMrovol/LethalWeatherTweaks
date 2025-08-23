@@ -5,7 +5,7 @@ namespace WeatherTweaks.Compatibility
 {
   public static class LLL
   {
-    internal static MrovLib.Logger logger = new("WeatherTweaks LLL", ConfigManager.LogLogs);
+    internal static Logger logger = new("LLL", MrovLib.LoggingType.Debug);
 
     internal static void Init()
     {

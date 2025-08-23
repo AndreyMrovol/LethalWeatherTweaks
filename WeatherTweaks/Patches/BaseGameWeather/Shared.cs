@@ -6,7 +6,7 @@ namespace WeatherTweaks
 {
   partial class BasegameWeatherPatch
   {
-    internal static MrovLib.Logger logger = new("WeatherTweaks BaseGameWeatherPatches", ConfigManager.LogLogs);
+    internal static Logger logger = new("BaseGameWeatherPatches", MrovLib.LoggingType.Debug);
     internal static Harmony harmony = new("WeatherTweaks.BaseGame");
 
     internal static IEnumerable<CodeInstruction> VariablePatch(
