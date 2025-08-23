@@ -1,3 +1,13 @@
+# 1.1.5
+
+- bumped default combined weathers' scrap multipliers
+- changed loggers to use MrovLib's Logger
+
+# 1.1.4
+
+- fixed mud patches
+- fixed 50/50 weathers
+
 # 1.1.3
 
 - fixed an issue with uncertain weathers displaying incorrect names
