@@ -54,7 +54,6 @@ namespace WeatherTweaks.Definitions
       Origin = weather.Origin;
       Config = weather.Config;
 
-      AnimationClip = weather.AnimationClip;
       WeatherTypes = [new WeatherTypeResolvable(weather.VanillaWeatherType)];
     }
 
