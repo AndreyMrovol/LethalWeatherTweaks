@@ -45,8 +45,8 @@ namespace WeatherTweaks.Definitions
 
       foreach (Weather weather in this.Weathers)
       {
-        Data.valueMultiplier += weather.ScrapValueMultiplier * 0.45f;
-        Data.spawnMultiplier += weather.ScrapAmountMultiplier * 0.45f;
+        Data.valueMultiplier += weather.ScrapValueMultiplier * 0.75f;
+        Data.spawnMultiplier += weather.ScrapAmountMultiplier * 0.75f;
       }
 
       return (Data.valueMultiplier, Data.spawnMultiplier);
