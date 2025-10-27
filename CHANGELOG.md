@@ -1,3 +1,8 @@
+# 1.1.6
+
+- fixed an issue with progressing weather effects persisting between days/saves (thanks: `zigzagawaka`, `thecheesexd`!)
+- fixed an issue with difficulty multipliers not being applied (thanks, `shaydelity`!)
+
 # 1.1.5
 
 - bumped default combined weathers' scrap multipliers
