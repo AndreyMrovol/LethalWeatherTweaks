@@ -335,9 +335,9 @@ namespace WeatherTweaks
           weatherWeight = weatherType.GetWeight(level);
         }
 
-        if (difficulty != 0 && weatherType.VanillaWeatherType == LevelWeatherType.None)
+        if (weatherType.VanillaWeatherType != LevelWeatherType.None)
         {
-          weatherWeight = (int)(weatherWeight * (1 - difficulty));
+          weatherWeight = (int)(weatherWeight * (1 + difficulty));
         }
 
         Logger.LogDebug($"{weatherType.Name} has weight {weatherWeight}");

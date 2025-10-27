@@ -84,7 +84,7 @@ namespace WeatherTweaks
           currentWeather[level] = Variables.NoneWeather;
 
           // get the weighted list of weathers
-          MrovLib.WeightHandler<Weather> weights = Variables.GetPlanetWeightedList(level);
+          MrovLib.WeightHandler<Weather> weights = Variables.GetPlanetWeightedList(level, difficultyMultiplier);
           var weather = weights.Random();
 
           currentWeather[level] = weather;
