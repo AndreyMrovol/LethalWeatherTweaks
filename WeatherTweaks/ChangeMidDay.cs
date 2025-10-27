@@ -111,8 +111,7 @@ namespace WeatherTweaks
 
       StartOfRound.Instance.currentLevel.currentWeather = fullWeatherType.VanillaWeatherType;
       TimeOfDay.Instance.currentLevelWeather = fullWeatherType.VanillaWeatherType;
-      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.weatherEffect = (int)fullWeatherType.VanillaWeatherType;
-      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.effectEnabled = true;
+      GameNetworkManager.Instance.localPlayerController.currentAudioTrigger.effectEnabled = false;
 
       CurrentEntry = entry;
 
