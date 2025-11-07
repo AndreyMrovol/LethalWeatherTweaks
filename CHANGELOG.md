@@ -1,3 +1,7 @@
+# 1.1.7
+
+- fixed an error with soft-compatibility with LLL
+
 # 1.1.6
 
 - fixed an issue with progressing weather effects persisting between days/saves (thanks: `zigzagawaka`, `thecheesexd`!)

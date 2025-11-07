@@ -11,15 +11,12 @@ namespace WeatherTweaks.Compatibility
     {
       var harmony = new Harmony("WeatherTweaks.LLL");
 
-      if (MrovLib.Plugin.LLL.IsModPresent)
-      {
-        logger.LogWarning("Patching LethalLevelLoader");
-        // Patch the ExtendedLevel GetWeatherConditions method
-        harmony.Patch(
-          AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
-          postfix: new HarmonyMethod(typeof(Compatibility.LLL), "PatchNewLLL")
-        );
-      }
+      logger.LogWarning("Patching LethalLevelLoader");
+      // Patch the ExtendedLevel GetWeatherConditions method
+      harmony.Patch(
+        AccessTools.Method(typeof(LethalLevelLoader.TerminalManager), "GetWeatherConditions"),
+        postfix: new HarmonyMethod(typeof(Compatibility.LLL), "PatchNewLLL")
+      );
 
       Plugin.IsLLLPresent = true;
     }
