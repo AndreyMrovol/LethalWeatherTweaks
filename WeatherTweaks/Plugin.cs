@@ -44,9 +44,9 @@ namespace WeatherTweaks
 
       WeatherRegistry.EventManager.ShipLanding.AddListener(args => ChangeMidDay.ShipLandingPatch(args.level, args.weather));
 
-      if (WeatherRegistry.Settings.WeatherSelectionAlgorithm != WeatherRegistry.WeatherCalculation.VanillaAlgorithm)
+      if (WeatherRegistry.Settings.WeatherSelectionAlgorithm != WeatherRegistry.Modules.WeatherCalculation.VanillaAlgorithm)
       {
-        WeatherRegistry.Settings.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
+        WeatherRegistry.Modules.WeatherCalculation.WeatherSelectionAlgorithm = WeatherCalculation.weatherTweaksWeatherAlgorithm;
       }
 
       MrovLib.EventManager.TerminalStart.AddListener((terminal) => TerminalPatch.Postfix());

@@ -1,3 +1,7 @@
+# 1.1.8
+
+- updated to work with WeatherRegistry v0.8.0
+
 # 1.1.7
 
 - fixed an error with soft-compatibility with LLL

@@ -1,4 +1,5 @@
 using UnityEngine;
+using WeatherRegistry.Enums;
 using WeatherTweaks.Definitions;
 
 namespace WeatherTweaks.Patches
@@ -10,15 +11,6 @@ namespace WeatherTweaks.Patches
       Variables.CurrentEffects.Clear();
       Variables.IsSetupFinished = false;
       Variables.WeatherTweaksTypes.Clear();
-
-      // destroy all objects of class WeatherTweaksWeather that are vanilla weathers
-      foreach (WeatherTweaksWeather weather in Object.FindObjectsOfType<WeatherTweaksWeather>())
-      {
-        if (weather.Type == WeatherRegistry.WeatherType.Vanilla || weather.Type == WeatherRegistry.WeatherType.Clear)
-        {
-          Object.Destroy(weather);
-        }
-      }
     }
   }
 }

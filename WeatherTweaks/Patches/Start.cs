@@ -8,11 +8,14 @@ namespace WeatherTweaks.Patches
     {
       Variables.CurrentEffects.Clear();
 
-      WeatherRegistry.Settings.ScreenMapColors.Add("+", Color.white);
-      WeatherRegistry.Settings.ScreenMapColors.Add("/", Color.white);
-      WeatherRegistry.Settings.ScreenMapColors.Add(">", Color.white);
-      WeatherRegistry.Settings.ScreenMapColors.Add("?", Color.white);
-      WeatherRegistry.Settings.ScreenMapColors.Add("[UNKNOWN]", new Color(0.29f, 0.29f, 0.29f));
+      WeatherRegistry.Settings.ScreenMapColors.Add("+", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
+      WeatherRegistry.Settings.ScreenMapColors.Add("/", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
+      WeatherRegistry.Settings.ScreenMapColors.Add(">", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
+      WeatherRegistry.Settings.ScreenMapColors.Add("?", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
+      WeatherRegistry.Settings.ScreenMapColors.Add(
+        "[UNKNOWN]",
+        WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(new Color(0.29f, 0.29f, 0.29f))
+      );
 
       Variables.IsSetupFinished = true;
       StartOfRound.Instance.SetPlanetsWeather();
