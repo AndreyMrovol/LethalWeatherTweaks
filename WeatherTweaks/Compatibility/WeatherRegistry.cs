@@ -11,7 +11,7 @@ namespace WeatherTweaks.Compatibility
     [HarmonyPostfix]
     internal static void GetDisplayWeatherStringPatch(ref string __result, SelectableLevel level, Weather weather)
     {
-      Plugin.logger.LogDebug($"Getting display weather string for {level.PlanetName}");
+      Plugin.DebugLogger.LogDebug($"Getting display weather string for {level.PlanetName}");
       __result = Variables.GetPlanetCurrentWeather(level);
     }
 
@@ -20,6 +20,7 @@ namespace WeatherTweaks.Compatibility
     [HarmonyPrefix]
     internal static bool GameMethodPatch()
     {
+      WeatherRegistry.Plugin.logger.LogWarning("WeatherManager is not set up yet!");
       return Variables.IsSetupFinished;
     }
 
