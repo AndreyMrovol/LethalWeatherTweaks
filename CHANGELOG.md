@@ -1,3 +1,7 @@
+# 1.1.9
+
+- fixed an issue with special weathers not displaying their symbols correctly
+
 # 1.1.8
 
 - updated to work with WeatherRegistry v0.8.0
