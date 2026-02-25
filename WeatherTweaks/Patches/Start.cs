@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 namespace WeatherTweaks.Patches
@@ -8,10 +9,20 @@ namespace WeatherTweaks.Patches
     {
       Variables.CurrentEffects.Clear();
 
-      WeatherRegistry.Settings.ScreenMapColors.Add("+", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
-      WeatherRegistry.Settings.ScreenMapColors.Add("/", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
-      WeatherRegistry.Settings.ScreenMapColors.Add(">", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
-      WeatherRegistry.Settings.ScreenMapColors.Add("?", WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white));
+      TMP_ColorGradient specialSymbolGradient = WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(Color.white);
+
+      WeatherRegistry.Settings.ScreenMapColors.Add("+", specialSymbolGradient);
+      WeatherRegistry.Settings.ScreenMapColors.Add("plus", specialSymbolGradient);
+
+      WeatherRegistry.Settings.ScreenMapColors.Add("/", specialSymbolGradient);
+      WeatherRegistry.Settings.ScreenMapColors.Add("slash", specialSymbolGradient);
+
+      WeatherRegistry.Settings.ScreenMapColors.Add(">", specialSymbolGradient);
+      WeatherRegistry.Settings.ScreenMapColors.Add("arrow", specialSymbolGradient);
+
+      WeatherRegistry.Settings.ScreenMapColors.Add("?", specialSymbolGradient);
+      WeatherRegistry.Settings.ScreenMapColors.Add("question", specialSymbolGradient);
+
       WeatherRegistry.Settings.ScreenMapColors.Add(
         "[UNKNOWN]",
         WeatherRegistry.Utils.ColorConverter.ToTMPColorGradient(new Color(0.29f, 0.29f, 0.29f))
