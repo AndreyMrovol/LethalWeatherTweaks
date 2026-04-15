@@ -51,7 +51,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Malfunctions" PrivateAssets="All">
+        <Reference Include="Malfunctions" PrivateAssets="all">
             <HintPath>$(LibraryDirectory)/Malfunctions.dll</HintPath>
         </Reference>
 

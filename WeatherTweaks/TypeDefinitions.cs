@@ -17,18 +17,18 @@ namespace WeatherTweaks
 
         if (randomWeathers.Count == 0)
         {
-          return weather.name;
+          return weather.Name;
         }
 
         Weather randomWeather = WeatherManager.GetWeather(randomWeathers[random.Next(randomWeathers.Count)].weatherType);
 
         if (random.Next(0, 3) == 0)
         {
-          return $"{randomWeather.name}?";
+          return $"{randomWeather.Name}?";
         }
         else
         {
-          return $"{weather.name}?";
+          return $"{weather.Name}?";
         }
       }
     }
@@ -52,11 +52,11 @@ namespace WeatherTweaks
 
         if (random.Next(0, 2) == 0)
         {
-          return $"{weather.name}/{randomWeather.name}";
+          return $"{weather.Name}/{randomWeather.Name}";
         }
         else
         {
-          return $"{randomWeather.name}/{weather.name}";
+          return $"{randomWeather.Name}/{weather.Name}";
         }
       }
     }

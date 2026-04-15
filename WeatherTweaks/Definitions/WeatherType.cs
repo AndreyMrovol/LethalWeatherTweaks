@@ -24,7 +24,7 @@ namespace WeatherTweaks.Definitions
     public LevelWeatherType BaseWeatherType => WeatherTypes.Count > 0 ? WeatherTypes.Last().WeatherType : LevelWeatherType.None;
 
     public override string ConfigCategory =>
-      this.Origin == WeatherOrigin.WeatherTweaks ? $"WeatherTweaks Weather: {this.name}" : base.ConfigCategory;
+      this.Origin == WeatherOrigin.WeatherTweaks ? $"WeatherTweaks Weather: {this.Name}" : base.ConfigCategory;
 
     public override void Init()
     {

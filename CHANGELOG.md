@@ -1,3 +1,7 @@
+# 1.1.10
+
+- updated WeatherTweaks to work on v80
+
 # 1.1.9
 
 - fixed an issue with special weathers not displaying their symbols correctly
