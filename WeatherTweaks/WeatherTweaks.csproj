@@ -15,6 +15,15 @@
         <DebugLibraryDirectory>V:\LC-ModLibraries</DebugLibraryDirectory>
         <TomlFile>$(ProjectDir)../assets/libs.toml</TomlFile>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <RestoreAdditionalProjectSources>
+            https://api.nuget.org/v3/index.json;
+            https://nuget.bepinex.dev/v3/index.json;
+            https://nuget.samboy.dev/v3/index.json;
+            https://nuget.windows10ce.com/nuget/v3/index.json
+        </RestoreAdditionalProjectSources>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
@@ -42,20 +51,15 @@
 
         <PackageReference Include="Evaisa.LethalLib" Version="*-*" />
 
-        <PackageReference Include="mrov.WeatherRegistry" Version="*-*" Publicize="true" />
-        <PackageReference Include="mrov.MrovLib" Version="*-*" />
-
-        <PackageReference Include="IAmBatby.LethalLevelLoader" Version="*-*" />
-
         <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Malfunctions" PrivateAssets="all">
-            <HintPath>$(LibraryDirectory)/Malfunctions.dll</HintPath>
-        </Reference>
 
-
+        <PackageReference Include="zealsprince-Malfunctions" Version="*-*" Publicize="true" PrivateAssets="all"/>
+        <PackageReference Include="IAmBatby-LethalLevelLoader" Version="*-*" Publicize="true" PrivateAssets="all"/>
+        <PackageReference Include="mrov-MrovLib" Version="*-*" Publicize="true" PrivateAssets="all"/>
+        <PackageReference Include="mrov-WeatherRegistry" Version="*-*" Publicize="true" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

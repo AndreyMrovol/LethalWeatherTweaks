@@ -31,10 +31,6 @@ jobs:
         with:
           dotnet-version: "8.0.100"
 
-      - name: NPM install
-        run: |
-          npm install
-
       - name: Install Evaisa's netcode-patcher
         run: |
           dotnet tool install -g Evaisa.NetcodePatcher.Cli
