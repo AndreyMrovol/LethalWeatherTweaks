@@ -56,6 +56,30 @@ namespace WeatherTweaks.Definitions
   {
     public bool Enabled => Config.EnableWeather.Value;
 
+    // split Name on ">" character and return shortened version of both weathers
+    public override string NameShort
+    {
+      get
+      {
+        if (!Name.Contains(">"))
+        {
+          return base.NameShort;
+        }
+
+        string[] weatherNames = Name.Split(">");
+        foreach (string weatherName in weatherNames)
+        {
+          Weather resolvedWeather = WeatherRegistry.ConfigHelper.ResolveStringToWeather(weatherName.Trim());
+          if (resolvedWeather != null)
+          {
+            weatherNames[Array.IndexOf(weatherNames, weatherName)] = resolvedWeather.NameShort;
+          }
+        }
+
+        return string.Join(">", weatherNames);
+      }
+    }
+
     public List<ProgressingWeatherEntry> WeatherEntries = [];
     public WeatherResolvable StartingWeather;
 

@@ -11,6 +11,19 @@ namespace WeatherTweaks.Definitions
       get { return WeatherTypes.Select(weatherType => WeatherRegistry.WeatherManager.GetWeather(weatherType.WeatherType)).ToList(); }
     }
 
+    public override string NameShort
+    {
+      get
+      {
+        if (!Name.Contains("+"))
+        {
+          return base.NameShort;
+        }
+
+        return string.Join("+", Weathers.Select(weather => weather.NameShort));
+      }
+    }
+
     public new WeatherTweaksConfig Config
     {
       get { return (WeatherTweaksConfig)base.Config; }
