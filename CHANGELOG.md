@@ -1,3 +1,7 @@
+# 1.1.11
+
+- changed how `NameShort` is generated for combined and progressing weathers
+
 # 1.1.10
 
 - updated WeatherTweaks to work on v80
